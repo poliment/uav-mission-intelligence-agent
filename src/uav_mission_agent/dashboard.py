@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from .agent_graph import run_agent_workflow
-from .benchmark import run_benchmark
+from .benchmark_v2 import run_benchmark_v2
 from .scenario_loader import load_scenarios
 
 
@@ -18,7 +18,7 @@ def build_dashboard_html(
     scenario_dir: str | Path = DEFAULT_SCENARIO_DIR,
 ) -> str:
     plan = run_agent_workflow(mission_text)
-    benchmark = run_benchmark(load_scenarios(scenario_dir))
+    benchmark = run_benchmark_v2(load_scenarios(scenario_dir))
     return _render_dashboard(plan, benchmark)
 
 
@@ -100,6 +100,7 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
       padding: 18px;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }}
+    .span-3 {{ grid-column: span 3; }}
     .span-4 {{ grid-column: span 4; }}
     .span-6 {{ grid-column: span 6; }}
     .span-8 {{ grid-column: span 8; }}
@@ -190,6 +191,25 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
       height: 100%;
       background: linear-gradient(90deg, #2563eb, #16a34a);
     }}
+    table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }}
+    th, td {{
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }}
+    th {{
+      color: var(--muted);
+      font-weight: 700;
+    }}
+    .numeric {{
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }}
     pre {{
       overflow: auto;
       max-height: 420px;
@@ -203,7 +223,7 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
     @media (max-width: 860px) {{
       header {{ padding: 26px 22px; }}
       main {{ padding: 16px; }}
-      .span-4, .span-6, .span-8, .span-12 {{ grid-column: span 12; }}
+      .span-3, .span-4, .span-6, .span-8, .span-12 {{ grid-column: span 12; }}
       .node-flow {{ grid-template-columns: 1fr; }}
     }}
   </style>
@@ -242,12 +262,20 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
         <h2>Benchmark Scores</h2>
         {_render_scores(benchmark["results"])}
       </article>
+      <article class="panel span-6" id="provider-comparison">
+        <h2>Provider Comparison</h2>
+        {_render_provider_comparison(benchmark["provider_comparison"])}
+      </article>
+      <article class="panel span-6" id="cost-summary">
+        <h2>Cost Summary</h2>
+        {_render_cost_summary(benchmark)}
+      </article>
       <article class="panel span-6">
         <h2>Agent JSON</h2>
         <pre>{html.escape(json_plan)}</pre>
       </article>
       <article class="panel span-6">
-        <h2>Benchmark JSON</h2>
+        <h2>Benchmark v2 JSON</h2>
         <pre>{html.escape(json_benchmark)}</pre>
       </article>
     </section>
@@ -261,23 +289,86 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
 def _render_metric_cards(summary: dict) -> str:
     average_score = summary.get("average_score", 0)
     total = summary.get("total_scenarios", 0)
-    passed = summary.get("passed_scenarios", 0)
+    providers = summary.get("provider_count", 0)
+    passed = summary.get("passed_runs", summary.get("passed_scenarios", 0))
+    total_cost = summary.get("estimated_total_cost", 0.0)
+    currency = summary.get("currency", "USD")
     return f"""
-      <article class="panel span-4 metric">
+      <article class="panel span-3 metric">
         <span class="muted">average_score</span>
         <strong>{average_score:.2f}</strong>
         <span>Mean benchmark scenario score</span>
       </article>
-      <article class="panel span-4 metric">
+      <article class="panel span-3 metric">
         <span class="muted">total_scenarios</span>
         <strong>{total}</strong>
         <span>UAV mission benchmark cases</span>
       </article>
-      <article class="panel span-4 metric">
-        <span class="muted">passed_scenarios</span>
-        <strong>{passed}</strong>
-        <span>Scenarios scoring at least 0.80</span>
+      <article class="panel span-3 metric">
+        <span class="muted">providers</span>
+        <strong>{providers}</strong>
+        <span>Compared execution providers</span>
       </article>
+      <article class="panel span-3 metric">
+        <span class="muted">estimated_total_cost</span>
+        <strong>{total_cost:.6f}</strong>
+        <span>{html.escape(currency)} estimated total cost, passed_runs: {passed}</span>
+      </article>
+    """
+
+
+def _render_provider_comparison(rows: list[dict]) -> str:
+    if not rows:
+        return "<p class=\"muted\">No provider comparison rows.</p>"
+    rendered_rows = []
+    for row in rows:
+        rendered_rows.append(
+            f"""
+            <tr>
+              <td>{html.escape(row.get("provider_label", ""))}</td>
+              <td>{html.escape(str(row.get("model", "")))}</td>
+              <td class="numeric">{float(row.get("average_score", 0)):.2f}</td>
+              <td class="numeric">{float(row.get("average_latency_ms", 0)):.3f}</td>
+              <td class="numeric">{float(row.get("estimated_total_cost", 0)):.8f} {html.escape(row.get("currency", "USD"))}</td>
+            </tr>
+            """
+        )
+    return f"""
+      <table>
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Model</th>
+            <th class="numeric">Avg Score</th>
+            <th class="numeric">Latency ms</th>
+            <th class="numeric">Estimated Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          {"".join(rendered_rows)}
+        </tbody>
+      </table>
+    """
+
+
+def _render_cost_summary(benchmark: dict) -> str:
+    summary = benchmark.get("summary", {})
+    results = benchmark.get("results", [])
+    prompt_tokens = sum(result.get("token_usage", {}).get("prompt_tokens", 0) for result in results)
+    completion_tokens = sum(result.get("token_usage", {}).get("completion_tokens", 0) for result in results)
+    total_tokens = sum(result.get("token_usage", {}).get("total_tokens", 0) for result in results)
+    currency = summary.get("currency", "USD")
+    total_cost = summary.get("estimated_total_cost", 0.0)
+    return f"""
+      <table>
+        <tbody>
+          <tr><th>prompt_tokens</th><td class="numeric">{prompt_tokens}</td></tr>
+          <tr><th>completion_tokens</th><td class="numeric">{completion_tokens}</td></tr>
+          <tr><th>total_tokens</th><td class="numeric">{total_tokens}</td></tr>
+          <tr><th>estimated_total_cost</th><td class="numeric">{float(total_cost):.8f} {html.escape(currency)}</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">Offline runs have zero billable LLM tokens. Live provider cost is estimated from returned usage metadata and configured pricing.</p>
     """
 
 

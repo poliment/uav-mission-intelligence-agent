@@ -3,8 +3,10 @@ from __future__ import annotations
 import json
 import os
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable, Protocol
+
+from .costing import normalize_token_usage
 
 
 class LLMProviderError(RuntimeError):
@@ -41,6 +43,8 @@ class OpenAICompatibleProvider:
     transport: Transport | None = None
 
     provider_name: str = "openai-compatible"
+    last_usage: dict[str, int] = field(default_factory=lambda: normalize_token_usage(None), init=False)
+    last_response_metadata: dict[str, Any] = field(default_factory=dict, init=False)
 
     def generate_plan(
         self,
@@ -72,6 +76,12 @@ class OpenAICompatibleProvider:
             payload=payload,
             timeout=self.timeout,
         )
+        self.last_usage = normalize_token_usage(response.get("usage"))
+        self.last_response_metadata = {
+            "usage": self.last_usage,
+            "model": response.get("model", self.model),
+            "id": response.get("id"),
+        }
         content = _extract_message_content(response)
         return _parse_json_content(content)
 

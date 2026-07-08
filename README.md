@@ -130,6 +130,8 @@ The project is modularized around task parsing, knowledge retrieval, planning ge
 | `scenario_loader.py` | 加载结构化无人机 benchmark 场景。<br>Load structured UAV benchmark scenarios. |
 | `evaluator.py` | 根据场景期望对任务方案进行评分。<br>Score mission plans against scenario expectations. |
 | `benchmark.py` | 在场景集上运行工作流并汇总指标。<br>Run the workflow across a scenario set and summarize metrics. |
+| `benchmark_v2.py` | 运行多 provider 对比，汇总质量、延迟、token usage 和成本指标。<br>Run multi-provider comparison with quality, latency, token usage, and cost metrics. |
+| `costing.py` | 归一化 provider token usage，并根据可配置费率估算成本。<br>Normalize provider token usage and estimate cost from configurable pricing. |
 | `dashboard.py` | 生成本地静态 HTML 可视化页面。<br>Generate a local static HTML visualization page. |
 | `cli.py` | 提供命令行运行入口。<br>Provide a command-line entry point. |
 
@@ -154,7 +156,9 @@ uav-mission-intelligence-agent/
 +-- src/
 |   +-- uav_mission_agent/
 |       +-- benchmark.py
+|       +-- benchmark_v2.py
 |       +-- cli.py
+|       +-- costing.py
 |       +-- dashboard.py
 |       +-- agent_graph.py
 |       +-- evaluator.py
@@ -172,7 +176,9 @@ uav-mission-intelligence-agent/
 +-- tests/
 |   +-- test_agent_graph.py
 |   +-- test_benchmark.py
+|   +-- test_benchmark_v2.py
 |   +-- test_cli.py
+|   +-- test_costing.py
 |   +-- test_dashboard.py
 |   +-- test_evaluator.py
 |   +-- test_scenario_loader.py
@@ -284,13 +290,39 @@ $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli --benchmark data\scenarios
 ```
 
+运行 Benchmark v2，查看 provider 对比、场景难度汇总、延迟、token usage 和成本统计。默认只运行离线 baseline，不需要 API key。
+
+Run Benchmark v2 to inspect provider comparison, difficulty summary, latency, token usage, and cost statistics. The default command runs only the offline baseline and does not require an API key.
+
+```powershell
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --benchmark-v2 data\scenarios
+```
+
+如果需要比较真实 LLM provider，可以设置 API key 后加入 `--benchmark-providers`。成本估算建议通过 `--benchmark-pricing` 显式传入当前 provider/model 的每百万 token 价格。
+
+For real LLM provider comparison, set the API key and add `--benchmark-providers`. Cost estimation should use `--benchmark-pricing` with the current per-1M-token price for the provider/model.
+
+```powershell
+$env:PYTHONPATH="src"
+$env:DEEPSEEK_API_KEY="your-api-key"
+python -m uav_mission_agent.cli `
+  --benchmark-v2 data\scenarios `
+  --benchmark-providers offline,deepseek/deepseek-v4-flash `
+  --benchmark-pricing deepseek/deepseek-v4-flash:0.00:0.00:USD
+```
+
+价格会随 provider 调整而变化，公开报告成本前请确认官方定价页，例如 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing) 和 [OpenAI pricing](https://platform.openai.com/docs/pricing)。
+
+Provider prices may change, so verify the current provider pricing before publishing live cost numbers, for example [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing) and [OpenAI pricing](https://platform.openai.com/docs/pricing).
+
 代表性 benchmark 结果保存在 [`results/example_evaluation.json`](results/example_evaluation.json)。
 
 A representative benchmark result is available at [`results/example_evaluation.json`](results/example_evaluation.json).
 
-生成本地 HTML dashboard，用于本地运行结果检查，集中呈现任务输入、Agent 节点流、规划输出和 benchmark 分数。
+生成本地 HTML dashboard，用于本地运行结果检查，集中呈现任务输入、Agent 节点流、规划输出、Benchmark v2 provider 对比和成本统计。
 
-Generate the local HTML dashboard for local result inspection, presenting the mission input, Agent node flow, planning output, and benchmark scores in one page.
+Generate the local HTML dashboard for local result inspection, presenting the mission input, Agent node flow, planning output, Benchmark v2 provider comparison, and cost statistics in one page.
 
 ```powershell
 $env:PYTHONPATH="src"
@@ -388,11 +420,22 @@ average_score: 1.0
 passed_scenarios: 3
 ```
 
+Benchmark v2 在 v1 场景评分基础上增加 provider comparison、difficulty summary、latency、token usage 和 estimated cost 字段，适合比较离线 baseline 与真实 LLM provider。
+
+Benchmark v2 extends the v1 scenario score with provider comparison, difficulty summary, latency, token usage, and estimated cost fields, making it suitable for comparing the offline baseline with real LLM providers.
+
+```text
+benchmark_version: 2.0
+provider_count: 1
+total_runs: 3
+estimated_total_cost: 0.0
+```
+
 ## Current Test Coverage / 当前测试覆盖
 
-当前测试套件覆盖中文无人机任务字段提取、相关知识检索、端到端输出结构、场景加载、benchmark 评分、CLI benchmark 模式、Agent trace 输出、本地 HTML dashboard 渲染、schema output、LLM provider adapter 和 CLI dashboard 生成模式。
+当前测试套件覆盖中文无人机任务字段提取、相关知识检索、端到端输出结构、场景加载、benchmark 评分、Benchmark v2 provider/cost 统计、CLI benchmark 模式、Agent trace 输出、本地 HTML dashboard 渲染、schema output、LLM provider adapter 和 CLI dashboard 生成模式。
 
-The current test suite validates Chinese UAV mission field extraction, relevant UAV knowledge retrieval, end-to-end workflow output structure, scenario loading, benchmark scoring, CLI benchmark mode, Agent graph trace output, optional LangGraph backend routing, local HTML dashboard rendering, schema output, LLM provider adapter, UAV trajectory summary, trajectory intent recognition, and CLI dashboard generation mode.
+The current test suite validates Chinese UAV mission field extraction, relevant UAV knowledge retrieval, end-to-end workflow output structure, scenario loading, benchmark scoring, Benchmark v2 provider/cost statistics, CLI benchmark mode, Agent graph trace output, optional LangGraph backend routing, local HTML dashboard rendering, schema output, LLM provider adapter, UAV trajectory summary, trajectory intent recognition, and CLI dashboard generation mode.
 
 Run / 运行：
 
@@ -403,7 +446,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 40 tests
+Ran 47 tests
 OK
 ```
 
@@ -413,8 +456,8 @@ OK
   Extend the LangGraph backend with conditional edges, checkpoints, and human review nodes.
 - 用 FAISS 或 Chroma 替换本地轻量检索器。<br>
   Replace the local retriever with FAISS or Chroma.
-- 增加更多 provider 后端，并补充 DeepSeek/provider-level benchmark。<br>
-  Add more provider backends and DeepSeek/provider-level benchmarks.
+- 增加更多 provider 后端，并补充带真实 pricing 校准的公开 cost report。<br>
+  Add more provider backends and publish cost reports calibrated with current provider pricing.
 - 增加面向仿真器的结构化 YAML 输出。<br>
   Add structured YAML output for simulator-style mission configuration.
 - 扩展更多无人机场景，包括区域搜索、目标跟踪、禁飞区规避、弱通信和多无人机任务分配。<br>

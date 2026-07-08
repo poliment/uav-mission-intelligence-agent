@@ -6,6 +6,8 @@ from pathlib import Path
 
 from .agent_graph import run_agent_workflow
 from .benchmark import run_benchmark
+from .benchmark_v2 import provider_configs_from_names, run_benchmark_v2
+from .costing import pricing_from_cli_spec
 from .dashboard import DEFAULT_MISSION_TEXT, DEFAULT_SCENARIO_DIR, write_dashboard
 from .intent_recognition import recognize_intent
 from .langgraph_workflow import LangGraphUnavailableError, run_langgraph_workflow
@@ -20,6 +22,18 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Generate a UAV mission intelligence plan.")
     parser.add_argument("mission", nargs="?", help="Natural language UAV mission request.")
     parser.add_argument("--benchmark", help="Directory containing UAV mission scenario JSON files.")
+    parser.add_argument("--benchmark-v2", help="Run Benchmark v2 over a UAV mission scenario directory.")
+    parser.add_argument(
+        "--benchmark-providers",
+        default="offline",
+        help="Comma-separated Benchmark v2 providers, for example offline,deepseek,openai-compatible.",
+    )
+    parser.add_argument(
+        "--benchmark-pricing",
+        action="append",
+        default=[],
+        help="Optional pricing spec PROVIDER/MODEL:INPUT_PER_1M:OUTPUT_PER_1M:CURRENCY.",
+    )
     parser.add_argument("--dashboard", help="Write a local HTML dashboard to this path.")
     parser.add_argument("--trajectory-intent", help="Read a UAV trajectory JSON file and recognize flight intent.")
     parser.add_argument(
@@ -59,6 +73,8 @@ def main(argv: list[str] | None = None) -> None:
             "mission": mission,
             "scenario_dir": str(scenario_dir),
         }
+    elif args.benchmark_v2:
+        result = _run_benchmark_v2(args, parser)
     elif args.benchmark:
         result = run_benchmark(load_scenarios(args.benchmark))
     elif args.mission:
@@ -83,6 +99,25 @@ def _build_cli_llm_provider(args: argparse.Namespace, parser: argparse.ArgumentP
             base_url=args.llm_base_url,
         )
     except LLMProviderError as exc:
+        parser.error(str(exc))
+
+
+def _run_benchmark_v2(args: argparse.Namespace, parser: argparse.ArgumentParser) -> dict:
+    pricing = []
+    for spec in args.benchmark_pricing:
+        try:
+            pricing.append(pricing_from_cli_spec(spec))
+        except ValueError as exc:
+            parser.error(str(exc))
+
+    provider_configs = provider_configs_from_names(args.benchmark_providers, pricing=pricing)
+    try:
+        return run_benchmark_v2(
+            load_scenarios(args.benchmark_v2),
+            provider_configs=provider_configs,
+            graph_backend=args.graph_backend,
+        )
+    except (LLMProviderError, ValueError) as exc:
         parser.error(str(exc))
 
 

@@ -80,6 +80,9 @@ def _mission_planner_agent(state: AgentState) -> None:
             "provider": provider.provider_name,
             "model": provider.model,
         }
+        usage = getattr(provider, "last_usage", None)
+        if usage:
+            state["llm_metadata"]["usage"] = usage
     state["mission_plan"] = plan
     _record(
         state,

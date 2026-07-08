@@ -60,6 +60,7 @@
       padding: 18px;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
+    .span-3 { grid-column: span 3; }
     .span-4 { grid-column: span 4; }
     .span-6 { grid-column: span 6; }
     .span-8 { grid-column: span 8; }
@@ -150,6 +151,25 @@
       height: 100%;
       background: linear-gradient(90deg, #2563eb, #16a34a);
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .numeric {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
     pre {
       overflow: auto;
       max-height: 420px;
@@ -163,7 +183,7 @@
     @media (max-width: 860px) {
       header { padding: 26px 22px; }
       main { padding: 16px; }
-      .span-4, .span-6, .span-8, .span-12 { grid-column: span 12; }
+      .span-3, .span-4, .span-6, .span-8, .span-12 { grid-column: span 12; }
       .node-flow { grid-template-columns: 1fr; }
     }
   </style>
@@ -176,20 +196,25 @@
   <main>
     <section class="grid">
 
-      <article class="panel span-4 metric">
+      <article class="panel span-3 metric">
         <span class="muted">average_score</span>
         <strong>1.00</strong>
         <span>Mean benchmark scenario score</span>
       </article>
-      <article class="panel span-4 metric">
+      <article class="panel span-3 metric">
         <span class="muted">total_scenarios</span>
         <strong>3</strong>
         <span>UAV mission benchmark cases</span>
       </article>
-      <article class="panel span-4 metric">
-        <span class="muted">passed_scenarios</span>
-        <strong>3</strong>
-        <span>Scenarios scoring at least 0.80</span>
+      <article class="panel span-3 metric">
+        <span class="muted">providers</span>
+        <strong>1</strong>
+        <span>Compared execution providers</span>
+      </article>
+      <article class="panel span-3 metric">
+        <span class="muted">estimated_total_cost</span>
+        <strong>0.000000</strong>
+        <span>USD estimated total cost, passed_runs: 3</span>
       </article>
 
       <article class="panel span-12" id="mission-input">
@@ -280,6 +305,47 @@
               <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
               <p class="muted">Multi-UAV target tracking</p>
             </div>
+
+      </article>
+      <article class="panel span-6" id="provider-comparison">
+        <h2>Provider Comparison</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Model</th>
+            <th class="numeric">Avg Score</th>
+            <th class="numeric">Latency ms</th>
+            <th class="numeric">Estimated Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+              <td>offline</td>
+              <td>rule-based</td>
+              <td class="numeric">1.00</td>
+              <td class="numeric">0.525</td>
+              <td class="numeric">0.00000000 USD</td>
+            </tr>
+
+        </tbody>
+      </table>
+
+      </article>
+      <article class="panel span-6" id="cost-summary">
+        <h2>Cost Summary</h2>
+
+      <table>
+        <tbody>
+          <tr><th>prompt_tokens</th><td class="numeric">0</td></tr>
+          <tr><th>completion_tokens</th><td class="numeric">0</td></tr>
+          <tr><th>total_tokens</th><td class="numeric">0</td></tr>
+          <tr><th>estimated_total_cost</th><td class="numeric">0.00000000 USD</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">Offline runs have zero billable LLM tokens. Live provider cost is estimated from returned usage metadata and configured pricing.</p>
 
       </article>
       <article class="panel span-6">
@@ -434,16 +500,51 @@
 }</pre>
       </article>
       <article class="panel span-6">
-        <h2>Benchmark JSON</h2>
+        <h2>Benchmark v2 JSON</h2>
         <pre>{
   &quot;summary&quot;: {
+    &quot;benchmark_version&quot;: &quot;2.0&quot;,
     &quot;total_scenarios&quot;: 3,
+    &quot;provider_count&quot;: 1,
+    &quot;total_runs&quot;: 3,
     &quot;average_score&quot;: 1.0,
-    &quot;passed_scenarios&quot;: 3
+    &quot;passed_runs&quot;: 3,
+    &quot;average_latency_ms&quot;: 0.525,
+    &quot;estimated_total_cost&quot;: 0.0,
+    &quot;currency&quot;: &quot;USD&quot;
   },
+  &quot;provider_comparison&quot;: [
+    {
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;run_count&quot;: 3,
+      &quot;average_score&quot;: 1.0,
+      &quot;passed_runs&quot;: 3,
+      &quot;average_latency_ms&quot;: 0.525,
+      &quot;estimated_total_cost&quot;: 0.0,
+      &quot;currency&quot;: &quot;USD&quot;
+    }
+  ],
+  &quot;difficulty_summary&quot;: [
+    {
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;run_count&quot;: 3,
+      &quot;average_score&quot;: 1.0,
+      &quot;passed_runs&quot;: 3
+    }
+  ],
   &quot;results&quot;: [
     {
+      &quot;run_id&quot;: &quot;offline:area_search_low_bandwidth&quot;,
       &quot;scenario_id&quot;: &quot;area_search_low_bandwidth&quot;,
+      &quot;name&quot;: &quot;Area search under weak communication&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
       &quot;score&quot;: 1.0,
       &quot;breakdown&quot;: {
         &quot;uav_count&quot;: 1.0,
@@ -454,11 +555,32 @@
         &quot;risk_keywords&quot;: 1.0
       },
       &quot;missing_requirements&quot;: [],
-      &quot;difficulty&quot;: &quot;medium&quot;,
-      &quot;name&quot;: &quot;Area search under weak communication&quot;
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.096,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
     },
     {
+      &quot;run_id&quot;: &quot;offline:no_fly_zone_replan&quot;,
       &quot;scenario_id&quot;: &quot;no_fly_zone_replan&quot;,
+      &quot;name&quot;: &quot;Dynamic no-fly-zone replanning&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
       &quot;score&quot;: 1.0,
       &quot;breakdown&quot;: {
         &quot;uav_count&quot;: 1.0,
@@ -469,11 +591,32 @@
         &quot;risk_keywords&quot;: 1.0
       },
       &quot;missing_requirements&quot;: [],
-      &quot;difficulty&quot;: &quot;medium&quot;,
-      &quot;name&quot;: &quot;Dynamic no-fly-zone replanning&quot;
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.081,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
     },
     {
+      &quot;run_id&quot;: &quot;offline:target_tracking_multi_uav&quot;,
       &quot;scenario_id&quot;: &quot;target_tracking_multi_uav&quot;,
+      &quot;name&quot;: &quot;Multi-UAV target tracking&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
       &quot;score&quot;: 1.0,
       &quot;breakdown&quot;: {
         &quot;uav_count&quot;: 1.0,
@@ -484,8 +627,21 @@
         &quot;risk_keywords&quot;: 1.0
       },
       &quot;missing_requirements&quot;: [],
-      &quot;difficulty&quot;: &quot;medium&quot;,
-      &quot;name&quot;: &quot;Multi-UAV target tracking&quot;
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 1.397,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
     }
   ]
 }</pre>

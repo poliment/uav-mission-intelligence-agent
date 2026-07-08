@@ -26,7 +26,12 @@ class DashboardTests(unittest.TestCase):
         self.assertIn("mission_reviewer_agent", html)
         self.assertIn("coverage_first_with_constraint_avoidance", html)
         self.assertIn("average_score", html)
+        self.assertIn("estimated_total_cost", html)
+        self.assertIn('id="provider-comparison"', html)
+        self.assertIn('id="cost-summary"', html)
         self.assertIn("area_search_low_bandwidth", html)
+        self.assertIn("offline", html)
+        self.assertIn("Benchmark v2 JSON", html)
         self.assertIn("score-bar", html)
 
     def test_write_dashboard_creates_local_html_file(self):

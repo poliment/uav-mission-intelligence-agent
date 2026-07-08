@@ -88,6 +88,11 @@ class LLMProviderTests(unittest.TestCase):
             captured["payload"] = payload
             captured["timeout"] = timeout
             return {
+                "usage": {
+                    "prompt_tokens": 100,
+                    "completion_tokens": 40,
+                    "total_tokens": 140,
+                },
                 "choices": [
                     {
                         "message": {
@@ -124,6 +129,9 @@ class LLMProviderTests(unittest.TestCase):
         self.assertEqual(captured["payload"]["max_tokens"], 1200)
         self.assertEqual(captured["headers"]["Authorization"], "Bearer test-key")
         self.assertEqual(captured["timeout"], 12)
+        self.assertEqual(provider.last_usage["prompt_tokens"], 100)
+        self.assertEqual(provider.last_usage["completion_tokens"], 40)
+        self.assertEqual(provider.last_usage["total_tokens"], 140)
 
     def test_provider_factory_requires_api_key_for_openai_compatible_provider(self):
         with self.assertRaises(LLMProviderError):

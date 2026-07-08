@@ -1,6 +1,7 @@
 import contextlib
 import io
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -28,6 +29,29 @@ class CliTests(unittest.TestCase):
         report = json.loads(output.getvalue())
         self.assertEqual(report["summary"]["total_scenarios"], 1)
         self.assertGreaterEqual(report["summary"]["average_score"], 0.85)
+
+    def test_benchmark_v2_mode_prints_provider_comparison(self):
+        output = io.StringIO()
+
+        with contextlib.redirect_stdout(output):
+            main(["--benchmark-v2", str(FIXTURE_DIR)])
+
+        report = json.loads(output.getvalue())
+        self.assertEqual(report["summary"]["benchmark_version"], "2.0")
+        self.assertEqual(report["summary"]["provider_count"], 1)
+        self.assertEqual(report["provider_comparison"][0]["provider_label"], "offline")
+        self.assertEqual(report["results"][0]["token_usage"]["total_tokens"], 0)
+
+    def test_benchmark_v2_live_provider_reports_missing_api_key(self):
+        error = io.StringIO()
+
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaises(SystemExit) as raised:
+                with contextlib.redirect_stderr(error):
+                    main(["--benchmark-v2", str(FIXTURE_DIR), "--benchmark-providers", "deepseek"])
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("DEEPSEEK_API_KEY", error.getvalue())
 
     def test_trace_flag_prints_agent_trace_for_single_mission(self):
         output = io.StringIO()
