@@ -25,8 +25,8 @@ def parse_task(text: str) -> TaskSpec:
     return TaskSpec(
         raw_request=request,
         drone_count=_extract_drone_count(request),
-        search_areas=_extract_unique(r"(区域[0-9A-Za-z\u4e00-\u9fff_-]*)", request),
-        avoid_zones=_extract_unique(r"(禁飞区[0-9A-Za-z\u4e00-\u9fff_-]*)", request),
+        search_areas=_extract_labeled_regions("区域", request),
+        avoid_zones=_extract_labeled_regions("禁飞区", request),
         objectives=_extract_objectives(request),
         constraints=_extract_constraints(request),
     )
@@ -46,12 +46,16 @@ def _extract_drone_count(text: str) -> int:
 
 def _extract_objectives(text: str) -> list[str]:
     objectives: list[str] = []
-    if "搜索" in text or "搜寻" in text or "侦察" in text:
+    if "搜索" in text or "搜寻" in text or "侦察" in text or "巡检" in text or "巡查" in text:
         objectives.append("area_search")
     if "覆盖" in text:
         objectives.append("coverage")
     if "可疑目标" in text or "目标点" in text:
         objectives.append("suspicious_target_search")
+    if "重新规划" in text or "重规划" in text or "再规划" in text:
+        objectives.append("replanning")
+    if "跟踪" in text or "追踪" in text:
+        objectives.append("target_tracking")
     if not objectives:
         objectives.append("mission_planning")
     return objectives
@@ -80,3 +84,10 @@ def _extract_unique(pattern: str, text: str) -> list[str]:
             values.append(cleaned)
     return values
 
+
+def _extract_labeled_regions(label: str, text: str) -> list[str]:
+    # Capture compact labels such as 区域A or 禁飞区D without swallowing following prose.
+    ascii_values = _extract_unique(rf"({label}[0-9A-Za-z_-]+)", text)
+    if ascii_values:
+        return ascii_values
+    return _extract_unique(rf"({label}[\u4e00-\u9fff])", text)

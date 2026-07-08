@@ -20,7 +20,16 @@ class TaskParserTests(unittest.TestCase):
         self.assertIn("suspicious_target_search", task.objectives)
         self.assertIn("low_bandwidth_coordination", task.constraints)
 
+    def test_extracts_replan_and_target_tracking_intent(self):
+        replan_task = parse_task("使用2架无人机巡检区域C，禁飞区D临时出现，需要重新规划航迹并避障。")
+        tracking_task = parse_task("使用4架无人机持续跟踪目标T1，并保持多机协同。")
+
+        self.assertEqual(replan_task.avoid_zones, ["禁飞区D"])
+        self.assertIn("replanning", replan_task.objectives)
+        self.assertIn("obstacle_avoidance", replan_task.constraints)
+        self.assertIn("target_tracking", tracking_task.objectives)
+        self.assertIn("multi_uav_coordination", tracking_task.constraints)
+
 
 if __name__ == "__main__":
     unittest.main()
-

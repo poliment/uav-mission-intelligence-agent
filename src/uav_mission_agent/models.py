@@ -44,3 +44,25 @@ class MissionPlan:
             "mission_config": self.mission_config,
         }
 
+
+@dataclass
+class MissionScenario:
+    scenario_id: str
+    name: str
+    difficulty: str
+    mission_text: str
+    expected: dict[str, Any]
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class EvaluationResult:
+    scenario_id: str
+    score: float
+    breakdown: dict[str, float]
+    missing_requirements: list[str]
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)

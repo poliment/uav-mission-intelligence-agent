@@ -24,6 +24,7 @@ The first version is intentionally offline and dependency-light, so recruiters a
 - Retrieves UAV planning knowledge from a local knowledge base.
 - Generates planning recommendations for search, coverage, no-fly-zone avoidance, and weak communication.
 - Outputs a structured JSON mission configuration.
+- Runs a mini UAV mission benchmark with scenario-level scoring.
 - Includes unit tests and an example output for quick review.
 
 ## Example Scenario
@@ -70,6 +71,9 @@ Recommendations + Risks + JSON Config
 | `knowledge_base.py` | Retrieve relevant UAV planning snippets with a lightweight RAG-style scorer |
 | `planner.py` | Generate recommendations, risk notes, and mission configuration |
 | `workflow.py` | Orchestrate the end-to-end mission intelligence workflow |
+| `scenario_loader.py` | Load structured UAV benchmark scenarios |
+| `evaluator.py` | Score mission plans against scenario expectations |
+| `benchmark.py` | Run the workflow across a scenario set and summarize metrics |
 | `cli.py` | Provide a command-line demo entry point |
 
 Project layout:
@@ -79,12 +83,22 @@ uav-mission-intelligence-agent/
 +-- examples/
 |   +-- mission_zh.txt
 |   +-- example_output.json
++-- data/
+|   +-- scenarios/
+|       +-- area_search_low_bandwidth.json
+|       +-- no_fly_zone_replan.json
+|       +-- target_tracking_multi_uav.json
++-- results/
+|   +-- example_evaluation.json
 +-- src/
 |   +-- uav_mission_agent/
+|       +-- benchmark.py
 |       +-- cli.py
+|       +-- evaluator.py
 |       +-- knowledge_base.py
 |       +-- models.py
 |       +-- planner.py
+|       +-- scenario_loader.py
 |       +-- task_parser.py
 |       +-- workflow.py
 +-- tests/
@@ -122,6 +136,15 @@ Run the demo on macOS/Linux:
 PYTHONPATH=src python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
 ```
 
+Run the mini benchmark:
+
+```powershell
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --benchmark data\scenarios
+```
+
+The benchmark evaluates task parsing, expected objectives, mission constraints, risk keyword coverage, and structured mission configuration. A representative benchmark result is available at [`results/example_evaluation.json`](results/example_evaluation.json).
+
 Optional editable install:
 
 ```bash
@@ -156,9 +179,37 @@ python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞
 
 - **Domain grounding:** The workflow is built around UAV mission planning rather than generic chatbot behavior.
 - **Structured reasoning:** The pipeline separates parsing, retrieval, planning, and configuration generation.
+- **Benchmark-style evidence:** The project includes structured UAV scenarios and an evaluator instead of only a single demo.
 - **RAG-ready design:** The local knowledge retriever can later be replaced by FAISS, Chroma, or another vector database.
 - **Agent-ready design:** Each module can become a LangGraph node in a future multi-agent workflow.
 - **Testable MVP:** Current behavior is covered by unit tests and runs without network access.
+
+## Mini Benchmark
+
+The current benchmark contains three UAV mission scenarios:
+
+| Scenario | Capability tested |
+|---|---|
+| `area_search_low_bandwidth` | Area search, weak communication, no-fly-zone avoidance |
+| `no_fly_zone_replan` | Dynamic no-fly-zone replanning and obstacle avoidance |
+| `target_tracking_multi_uav` | Multi-UAV target tracking and coordination |
+
+Evaluation dimensions:
+
+- UAV count extraction
+- search area extraction
+- no-fly-zone extraction
+- objective coverage
+- constraint coverage
+- risk keyword coverage
+
+Current sample result:
+
+```text
+total_scenarios: 3
+average_score: 1.0
+passed_scenarios: 3
+```
 
 ## Current Test Coverage
 
@@ -167,6 +218,9 @@ The first test suite validates:
 - Chinese UAV mission field extraction
 - Relevant UAV knowledge retrieval
 - End-to-end workflow output structure
+- scenario loading
+- benchmark scoring
+- CLI benchmark mode
 
 Run:
 
@@ -177,7 +231,7 @@ python -m unittest discover -s tests -v
 Expected result:
 
 ```text
-Ran 3 tests
+Ran 12 tests
 OK
 ```
 
@@ -188,8 +242,9 @@ OK
 - Add an LLM provider adapter for OpenAI-compatible APIs.
 - Add structured YAML output for simulator-style mission configuration.
 - Add more UAV scenarios: area search, target tracking, no-fly-zone avoidance, weak communication, and multi-UAV task allocation.
+- Add harder benchmark cases with ambiguous commands and conflicting constraints.
 - Add a Streamlit or FastAPI demo for visual presentation.
 
 ## Resume Summary
 
-Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining task parsing, RAG-style local knowledge retrieval, planning recommendations, risk explanation, and JSON configuration output.
+Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining task parsing, RAG-style local knowledge retrieval, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.

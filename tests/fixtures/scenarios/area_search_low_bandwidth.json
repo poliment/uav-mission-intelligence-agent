@@ -1,0 +1,15 @@
+{
+  "id": "area_search_low_bandwidth",
+  "name": "Area search under weak communication",
+  "difficulty": "medium",
+  "mission_text": "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。",
+  "expected": {
+    "uav_count": 3,
+    "search_areas": ["区域A"],
+    "avoid_zones": ["禁飞区B"],
+    "objectives": ["area_search", "coverage", "suspicious_target_search"],
+    "constraints": ["low_bandwidth_coordination", "avoid_no_fly_zone", "multi_uav_coordination"],
+    "risk_keywords": ["弱通信", "禁飞区", "多机"]
+  }
+}
+

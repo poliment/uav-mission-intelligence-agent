@@ -1,0 +1,15 @@
+{
+  "id": "target_tracking_multi_uav",
+  "name": "Multi-UAV target tracking",
+  "difficulty": "medium",
+  "mission_text": "使用4架无人机持续跟踪目标T1，并保持多机协同。",
+  "expected": {
+    "uav_count": 4,
+    "search_areas": [],
+    "avoid_zones": [],
+    "objectives": ["target_tracking"],
+    "constraints": ["multi_uav_coordination"],
+    "risk_keywords": ["目标", "多机", "丢失"]
+  }
+}
+

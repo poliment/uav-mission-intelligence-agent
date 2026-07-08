@@ -31,7 +31,13 @@ class WorkflowTests(unittest.TestCase):
         self.assertGreaterEqual(len(result["recommendations"]), 2)
         self.assertGreaterEqual(len(result["risks"]), 1)
 
+    def test_workflow_uses_task_specific_planning_policy(self):
+        tracking = run_mission_workflow("使用4架无人机持续跟踪目标T1，并保持多机协同。")
+        replanning = run_mission_workflow("使用2架无人机巡检区域C，禁飞区D临时出现，需要重新规划航迹并避障。")
+
+        self.assertEqual(tracking["mission_config"]["planning_policy"], "target_tracking_with_distributed_coordination")
+        self.assertEqual(replanning["mission_config"]["planning_policy"], "dynamic_replanning_with_constraint_avoidance")
+
 
 if __name__ == "__main__":
     unittest.main()
-

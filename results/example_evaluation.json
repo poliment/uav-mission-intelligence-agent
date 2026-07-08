@@ -1,0 +1,55 @@
+{
+  "summary": {
+    "total_scenarios": 3,
+    "average_score": 1.0,
+    "passed_scenarios": 3
+  },
+  "results": [
+    {
+      "scenario_id": "area_search_low_bandwidth",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "medium",
+      "name": "Area search under weak communication"
+    },
+    {
+      "scenario_id": "no_fly_zone_replan",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "medium",
+      "name": "Dynamic no-fly-zone replanning"
+    },
+    {
+      "scenario_id": "target_tracking_multi_uav",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "medium",
+      "name": "Multi-UAV target tracking"
+    }
+  ]
+}
+

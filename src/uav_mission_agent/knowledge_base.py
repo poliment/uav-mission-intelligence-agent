@@ -33,6 +33,16 @@ class KnowledgeBase:
                     content="无人机任务风险主要来自通信中断、覆盖不足、机间冲突、目标丢失和能量约束。",
                     tags=["风险", "通信", "覆盖不足", "冲突", "能量"],
                 ),
+                KnowledgeSnippet(
+                    topic="dynamic_replanning",
+                    content="动态禁飞区或突发障碍出现时，需要触发局部重规划，并检查绕飞后的航程、覆盖率和安全间隔。",
+                    tags=["重新规划", "重规划", "动态", "禁飞区", "避障"],
+                ),
+                KnowledgeSnippet(
+                    topic="target_tracking",
+                    content="多无人机目标跟踪任务应保持目标持续观测，并通过分布式协同降低遮挡、丢失和重复跟踪风险。",
+                    tags=["跟踪", "追踪", "目标", "多无人机", "协同"],
+                ),
             ]
         )
 
@@ -55,4 +65,3 @@ class KnowledgeBase:
             if term in snippet.content or term in snippet.topic:
                 score += 1
         return score
-

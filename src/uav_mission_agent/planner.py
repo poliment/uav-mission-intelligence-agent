@@ -14,7 +14,7 @@ def build_mission_plan(task: TaskSpec, snippets: list[KnowledgeSnippet]) -> Miss
         "objectives": task.objectives,
         "constraints": task.constraints,
         "coordination_mode": _coordination_mode(task),
-        "planning_policy": "coverage_first_with_constraint_avoidance",
+        "planning_policy": _planning_policy(task),
     }
 
     return MissionPlan(
@@ -38,6 +38,10 @@ def _build_recommendations(task: TaskSpec) -> list[str]:
         recommendations.append(f"将{zone_text}作为硬约束写入任务配置，规划阶段禁止航迹穿越。")
     if "low_bandwidth_coordination" in task.constraints:
         recommendations.append("采用分布式协同策略，降低全局同步频率，仅在关键事件或区域交接时通信。")
+    if "replanning" in task.objectives:
+        recommendations.append("检测到动态约束变化时触发局部重规划，并重新检查航程、避障和覆盖完整性。")
+    if "target_tracking" in task.objectives:
+        recommendations.append("采用多机接力跟踪策略，保持目标持续观测并降低单机遮挡或目标丢失风险。")
     if not recommendations:
         recommendations.append("先进行任务目标、区域边界和约束条件确认，再生成无人机任务配置。")
     return recommendations
@@ -51,6 +55,8 @@ def _build_risks(task: TaskSpec) -> list[str]:
         risks.append("禁飞区约束会压缩可行航迹空间，需检查绕飞后航程和覆盖率是否满足要求。")
     if task.drone_count > 1:
         risks.append("多机协同需要关注机间冲突、任务重复覆盖和区域交接失败。")
+    if "target_tracking" in task.objectives:
+        risks.append("目标跟踪任务需要关注目标丢失、遮挡和多机重复跟踪。")
     if not risks:
         risks.append("任务约束较少，但仍需补充区域边界、飞行高度和续航限制。")
     return risks
@@ -63,3 +69,12 @@ def _coordination_mode(task: TaskSpec) -> str:
         return "distributed_cooperative"
     return "single_uav"
 
+
+def _planning_policy(task: TaskSpec) -> str:
+    if "target_tracking" in task.objectives:
+        return "target_tracking_with_distributed_coordination"
+    if "replanning" in task.objectives:
+        return "dynamic_replanning_with_constraint_avoidance"
+    if "area_search" in task.objectives or "coverage" in task.objectives:
+        return "coverage_first_with_constraint_avoidance"
+    return "mission_planning_with_constraint_check"
