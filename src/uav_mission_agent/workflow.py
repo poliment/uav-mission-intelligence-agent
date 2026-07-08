@@ -1,14 +1,11 @@
 from __future__ import annotations
 
+from .agent_graph import run_agent_workflow
 from .knowledge_base import KnowledgeBase
-from .planner import build_mission_plan
-from .task_parser import parse_task
 
 
 def run_mission_workflow(text: str, knowledge_base: KnowledgeBase | None = None) -> dict:
-    task = parse_task(text)
-    knowledge = knowledge_base or KnowledgeBase.default()
-    snippets = knowledge.retrieve(text, limit=3)
-    plan = build_mission_plan(task, snippets)
-    return plan.to_dict()
-
+    result = run_agent_workflow(text, knowledge_base=knowledge_base)
+    result.pop("agent_trace", None)
+    result.pop("agent_review", None)
+    return result

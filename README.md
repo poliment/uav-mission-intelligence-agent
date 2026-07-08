@@ -11,7 +11,7 @@ This repository is designed as a job-facing project for roles such as:
 | Target role | What this project demonstrates |
 |---|---|
 | LLM Application Engineer | RAG-style retrieval, structured output, domain-specific reasoning workflow |
-| Agent Engineer | Multi-step agent workflow: parse -> retrieve -> plan -> explain -> configure |
+| Agent Engineer | Traceable multi-node Agent workflow: parse -> retrieve -> plan -> review |
 | UAV / Robotics Algorithm Engineer | UAV mission planning concepts, no-fly-zone constraints, weak-communication coordination |
 | AI Solution Engineer | Turning domain knowledge into a runnable decision-support demo |
 
@@ -25,6 +25,7 @@ The first version is intentionally offline and dependency-light, so recruiters a
 - Generates planning recommendations for search, coverage, no-fly-zone avoidance, and weak communication.
 - Outputs a structured JSON mission configuration.
 - Runs a mini UAV mission benchmark with scenario-level scoring.
+- Provides an Agent-style node trace and review output for explainability.
 - Includes unit tests and an example output for quick review.
 
 ## Example Scenario
@@ -45,29 +46,35 @@ Output includes:
 
 Representative output: [`examples/example_output.json`](examples/example_output.json)
 
-## System Workflow
+## Agent Workflow
 
 ```text
 Natural-language UAV mission
         |
         v
-Task Parser
+task_parser_agent
         |
         v
-Local UAV Knowledge Retriever
+knowledge_retriever_agent
         |
         v
-Mission Planning Agent
+mission_planner_agent
         |
         v
-Recommendations + Risks + JSON Config
+mission_reviewer_agent
+        |
+        v
+Recommendations + Risks + JSON Config + Agent Trace
 ```
+
+The current implementation is a dependency-free Agent graph. Each node reads and writes an explicit shared state, and the final output can include an `agent_trace` array that explains which nodes ran, what they consumed, and what they produced. This keeps the MVP easy to run while preserving a clean path toward LangGraph.
 
 ## Architecture
 
 | Module | Responsibility |
 |---|---|
 | `task_parser.py` | Extract structured mission fields from natural-language input |
+| `agent_graph.py` | Run parser, retriever, planner, and reviewer as traceable Agent nodes |
 | `knowledge_base.py` | Retrieve relevant UAV planning snippets with a lightweight RAG-style scorer |
 | `planner.py` | Generate recommendations, risk notes, and mission configuration |
 | `workflow.py` | Orchestrate the end-to-end mission intelligence workflow |
@@ -94,6 +101,7 @@ uav-mission-intelligence-agent/
 |   +-- uav_mission_agent/
 |       +-- benchmark.py
 |       +-- cli.py
+|       +-- agent_graph.py
 |       +-- evaluator.py
 |       +-- knowledge_base.py
 |       +-- models.py
@@ -128,6 +136,13 @@ Run the demo on Windows PowerShell:
 ```powershell
 $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
+```
+
+Show Agent trace:
+
+```powershell
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --trace "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
 ```
 
 Run the demo on macOS/Linux:
@@ -171,6 +186,10 @@ python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞
     "uav_count": 3,
     "coordination_mode": "distributed_low_bandwidth",
     "planning_policy": "coverage_first_with_constraint_avoidance"
+  },
+  "agent_review": {
+    "ready": true,
+    "warning_count": 0
   }
 }
 ```
@@ -179,6 +198,7 @@ python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞
 
 - **Domain grounding:** The workflow is built around UAV mission planning rather than generic chatbot behavior.
 - **Structured reasoning:** The pipeline separates parsing, retrieval, planning, and configuration generation.
+- **Agent traceability:** The Agent graph records node order, input keys, output keys, and review status.
 - **Benchmark-style evidence:** The project includes structured UAV scenarios and an evaluator instead of only a single demo.
 - **RAG-ready design:** The local knowledge retriever can later be replaced by FAISS, Chroma, or another vector database.
 - **Agent-ready design:** Each module can become a LangGraph node in a future multi-agent workflow.
@@ -221,6 +241,7 @@ The first test suite validates:
 - scenario loading
 - benchmark scoring
 - CLI benchmark mode
+- Agent graph trace output
 
 Run:
 
@@ -231,13 +252,13 @@ python -m unittest discover -s tests -v
 Expected result:
 
 ```text
-Ran 12 tests
+Ran 16 tests
 OK
 ```
 
 ## Roadmap
 
-- Add a LangGraph implementation of the current workflow nodes.
+- Replace the dependency-free Agent graph with a LangGraph implementation of the current nodes.
 - Replace the local retriever with FAISS or Chroma.
 - Add an LLM provider adapter for OpenAI-compatible APIs.
 - Add structured YAML output for simulator-style mission configuration.
@@ -247,4 +268,4 @@ OK
 
 ## Resume Summary
 
-Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining task parsing, RAG-style local knowledge retrieval, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.
+Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, task parsing, RAG-style local knowledge retrieval, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.

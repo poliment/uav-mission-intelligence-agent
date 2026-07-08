@@ -86,5 +86,40 @@
     ],
     "coordination_mode": "distributed_low_bandwidth",
     "planning_policy": "coverage_first_with_constraint_avoidance"
+  },
+  "agent_trace": [
+    {
+      "node": "task_parser_agent",
+      "status": "ok",
+      "input_keys": ["raw_request"],
+      "output_keys": ["task"],
+      "message": "Parsed mission text into UAV task fields."
+    },
+    {
+      "node": "knowledge_retriever_agent",
+      "status": "ok",
+      "input_keys": ["raw_request", "knowledge_base"],
+      "output_keys": ["retrieved_knowledge"],
+      "message": "Retrieved 3 UAV planning knowledge snippets."
+    },
+    {
+      "node": "mission_planner_agent",
+      "status": "ok",
+      "input_keys": ["task", "retrieved_knowledge"],
+      "output_keys": ["mission_plan"],
+      "message": "Generated recommendations, risks, and structured mission configuration."
+    },
+    {
+      "node": "mission_reviewer_agent",
+      "status": "ok",
+      "input_keys": ["mission_plan"],
+      "output_keys": ["agent_review"],
+      "message": "Reviewed mission plan completeness and consistency."
+    }
+  ],
+  "agent_review": {
+    "ready": true,
+    "warning_count": 0,
+    "warnings": []
   }
 }

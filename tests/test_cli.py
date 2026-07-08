@@ -26,7 +26,26 @@ class CliTests(unittest.TestCase):
         self.assertEqual(report["summary"]["total_scenarios"], 1)
         self.assertGreaterEqual(report["summary"]["average_score"], 0.85)
 
+    def test_trace_flag_prints_agent_trace_for_single_mission(self):
+        output = io.StringIO()
+
+        with contextlib.redirect_stdout(output):
+            main(["--trace", "使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"])
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(result["agent_trace"][0]["node"], "task_parser_agent")
+        self.assertTrue(result["agent_review"]["ready"])
+
+    def test_single_mission_hides_trace_by_default(self):
+        output = io.StringIO()
+
+        with contextlib.redirect_stdout(output):
+            main(["使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"])
+
+        result = json.loads(output.getvalue())
+        self.assertNotIn("agent_trace", result)
+        self.assertNotIn("agent_review", result)
+
 
 if __name__ == "__main__":
     unittest.main()
-

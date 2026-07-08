@@ -66,3 +66,15 @@ class EvaluationResult:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+@dataclass
+class AgentNodeTrace:
+    node: str
+    status: str
+    input_keys: list[str]
+    output_keys: list[str]
+    message: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
