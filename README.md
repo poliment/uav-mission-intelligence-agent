@@ -4,6 +4,8 @@
 
 ![UAV Mission Intelligence Agent demo](docs/assets/uav-mission-demo.png)
 
+![Expanded UAV benchmark coverage](docs/assets/benchmark-coverage.svg)
+
 > 这是一个面向无人机任务理解、规划辅助、知识检索和结构化任务配置的 LLM/Agent 项目。
 >
 > This is a UAV-domain LLM/Agent project for mission understanding, planning assistance, knowledge retrieval, and structured mission configuration.
@@ -396,17 +398,22 @@ The following fragment shows the core JSON output structure, including the parse
 - 当前原型可测试、可离线运行，当前行为由单元测试覆盖，不依赖网络访问。<br>
   The current prototype is testable and offline; current behavior is covered by unit tests and runs without network access.
 
-## Mini Benchmark / 小型 Benchmark
+## Expanded Benchmark / 扩展 Benchmark
 
-当前 benchmark 包含三个无人机任务场景，覆盖区域搜索、动态禁飞区重规划、多无人机目标跟踪和弱通信协同等能力。
+当前 benchmark 包含 31 个无人机任务场景，其中 22 个为 hard 场景、9 个为 medium 场景。数据集覆盖区域搜索、动态禁飞区重规划、多无人机目标跟踪、弱通信协同、模糊指令、冲突约束、缺少无人机数量、区域边界不完整、禁飞区与目标区重叠、中英文混合任务和噪声表达。
 
-The current benchmark contains three UAV mission scenarios covering area search, dynamic no-fly-zone replanning, multi-UAV target tracking, and weak-communication coordination.
+The current benchmark contains 31 UAV mission scenarios: 22 hard scenarios and 9 medium scenarios. The dataset covers area search, dynamic no-fly-zone replanning, multi-UAV target tracking, weak-communication coordination, ambiguous instructions, conflicting constraints, missing UAV counts, incomplete area boundaries, overlapping no-fly and target areas, mixed Chinese-English tasks, and noisy expressions.
 
-| Scenario / 场景 | Capability tested / 测试能力 |
+| Challenge type / 挑战类型 | Scenario count / 场景数 |
 |---|---|
-| `area_search_low_bandwidth` | 区域搜索、弱通信协同、禁飞区规避。<br>Area search, weak communication, and no-fly-zone avoidance. |
-| `no_fly_zone_replan` | 动态禁飞区重规划和障碍规避。<br>Dynamic no-fly-zone replanning and obstacle avoidance. |
-| `target_tracking_multi_uav` | 多无人机目标跟踪和协同。<br>Multi-UAV target tracking and coordination. |
+| `weak_comm_tracking_replan_combo` | 10 |
+| `noisy_expression` | 6 |
+| `conflicting_constraints` | 5 |
+| `overlapping_no_fly_and_target_area` | 5 |
+| `mixed_zh_en` | 5 |
+| `ambiguous_instruction` | 4 |
+| `missing_uav_count` | 4 |
+| `incomplete_area_boundary` | 4 |
 
 评估维度包括无人机数量提取、搜索区域提取、禁飞区提取、目标覆盖、约束覆盖和风险关键词覆盖。
 
@@ -415,9 +422,10 @@ Evaluation dimensions include UAV count extraction, search area extraction, no-f
 Current sample result / 当前示例结果：
 
 ```text
-total_scenarios: 3
-average_score: 1.0
-passed_scenarios: 3
+total_scenarios: 31
+average_score: 0.964
+passed_runs: 29
+hard_scenarios: 22
 ```
 
 Benchmark v2 在 v1 场景评分基础上增加 provider comparison、difficulty summary、latency、token usage 和 estimated cost 字段，适合比较离线 baseline 与真实 LLM provider。
@@ -427,15 +435,15 @@ Benchmark v2 extends the v1 scenario score with provider comparison, difficulty 
 ```text
 benchmark_version: 2.0
 provider_count: 1
-total_runs: 3
+total_runs: 31
 estimated_total_cost: 0.0
 ```
 
 ## Live DeepSeek Provider Run / DeepSeek 真实 Provider 实验
 
-2026-07-08 进行了一次真实 DeepSeek provider 对比实验，比较默认离线 baseline 与 `deepseek-v4-flash`。实验使用同一组 3 个无人机 benchmark 场景，并通过 Benchmark v2 记录 score、latency、token usage 和 estimated cost。
+2026-07-08 进行了一次真实 DeepSeek provider 对比实验，比较默认离线 baseline 与 `deepseek-v4-flash`。这次历史实验使用当时的 3 个无人机 benchmark 场景，并通过 Benchmark v2 记录 score、latency、token usage 和 estimated cost。当前公开 benchmark 已扩展为 31 个场景。
 
-On 2026-07-08, a live DeepSeek provider comparison run was executed against the offline baseline and `deepseek-v4-flash`. The run used the same three UAV benchmark scenarios and recorded score, latency, token usage, and estimated cost through Benchmark v2.
+On 2026-07-08, a live DeepSeek provider comparison run was executed against the offline baseline and `deepseek-v4-flash`. This historical run used the then-current three UAV benchmark scenarios and recorded score, latency, token usage, and estimated cost through Benchmark v2. The public benchmark has since been expanded to 31 scenarios.
 
 | Provider | Runs | Avg Score | Passed | Avg Latency | Estimated Cost |
 |---|---:|---:|---:|---:|---:|
@@ -482,7 +490,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 48 tests
+Ran 53 tests
 OK
 ```
 

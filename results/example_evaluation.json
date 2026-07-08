@@ -1,8 +1,8 @@
 {
   "summary": {
-    "total_scenarios": 3,
-    "average_score": 1.0,
-    "passed_scenarios": 3
+    "total_scenarios": 31,
+    "average_score": 0.964,
+    "passed_scenarios": 29
   },
   "results": [
     {
@@ -19,6 +19,455 @@
       "missing_requirements": [],
       "difficulty": "medium",
       "name": "Area search under weak communication"
+    },
+    {
+      "scenario_id": "ambiguous_quick_scan_no_count",
+      "score": 0.778,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 0.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "area_search",
+        "边界"
+      ],
+      "difficulty": "hard",
+      "name": "Ambiguous quick scan without UAV count"
+    },
+    {
+      "scenario_id": "ambiguous_patrol_unclear_priority",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Ambiguous patrol with unclear priority"
+    },
+    {
+      "scenario_id": "ambiguous_scout_then_track",
+      "score": 0.778,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 0.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "low_bandwidth_coordination",
+        "弱通信"
+      ],
+      "difficulty": "hard",
+      "name": "Ambiguous scout then track"
+    },
+    {
+      "scenario_id": "ambiguous_noise_words",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Ambiguous request with filler words"
+    },
+    {
+      "scenario_id": "conflict_cross_and_avoid_same_nfz",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Conflict between crossing and avoiding no-fly zone"
+    },
+    {
+      "scenario_id": "conflict_low_altitude_and_obstacle",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "障碍"
+      ],
+      "difficulty": "hard",
+      "name": "Conflict between low altitude and obstacle avoidance"
+    },
+    {
+      "scenario_id": "conflict_track_target_inside_nfz",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Conflict when tracked target is inside no-fly zone"
+    },
+    {
+      "scenario_id": "missing_count_area_search",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "medium",
+      "name": "Missing UAV count for area search"
+    },
+    {
+      "scenario_id": "missing_count_tracking",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "medium",
+      "name": "Missing UAV count for tracking"
+    },
+    {
+      "scenario_id": "missing_count_replan",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "障碍"
+      ],
+      "difficulty": "medium",
+      "name": "Missing UAV count for replanning"
+    },
+    {
+      "scenario_id": "incomplete_boundary_area_u",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "边界"
+      ],
+      "difficulty": "hard",
+      "name": "Incomplete boundary for search area"
+    },
+    {
+      "scenario_id": "incomplete_boundary_with_nfz",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "边界"
+      ],
+      "difficulty": "hard",
+      "name": "Incomplete boundary with no-fly zone"
+    },
+    {
+      "scenario_id": "incomplete_boundary_low_bandwidth",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "边界"
+      ],
+      "difficulty": "hard",
+      "name": "Incomplete boundary under weak communication"
+    },
+    {
+      "scenario_id": "overlap_search_area_and_nfz",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "重叠"
+      ],
+      "difficulty": "hard",
+      "name": "No-fly zone overlaps search area"
+    },
+    {
+      "scenario_id": "overlap_target_points_and_nfz",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "边界"
+      ],
+      "difficulty": "hard",
+      "name": "Suspicious target points overlap no-fly zone"
+    },
+    {
+      "scenario_id": "overlap_tracking_target_near_nfz",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "重叠"
+      ],
+      "difficulty": "hard",
+      "name": "Tracking target near no-fly overlap"
+    },
+    {
+      "scenario_id": "combo_weak_comm_tracking_replan",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Weak communication target tracking with replanning"
+    },
+    {
+      "scenario_id": "combo_swarm_tracking_obstacle",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Swarm tracking with obstacle replanning"
+    },
+    {
+      "scenario_id": "combo_search_track_low_bandwidth",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Search then track under weak communication"
+    },
+    {
+      "scenario_id": "mixed_english_area_nfz",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "medium",
+      "name": "Mixed English area and NFZ labels"
+    },
+    {
+      "scenario_id": "mixed_zh_en_tracking",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "medium",
+      "name": "Mixed Chinese and English tracking task"
+    },
+    {
+      "scenario_id": "mixed_replan_obstacle",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "障碍"
+      ],
+      "difficulty": "medium",
+      "name": "Mixed-language replanning and obstacle task"
+    },
+    {
+      "scenario_id": "noisy_symbols_area_search",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Noisy symbols in area search request"
+    },
+    {
+      "scenario_id": "noisy_parentheses_tracking",
+      "score": 0.945,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.667
+      },
+      "missing_requirements": [
+        "障碍"
+      ],
+      "difficulty": "hard",
+      "name": "Noisy parentheses in tracking request"
+    },
+    {
+      "scenario_id": "noisy_chatty_mixed",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Chatty mixed-language noisy request"
+    },
+    {
+      "scenario_id": "noisy_conflicting_mixed",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Noisy mixed request with conflict"
+    },
+    {
+      "scenario_id": "complex_missing_boundary_overlap",
+      "score": 0.889,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 0.333
+      },
+      "missing_requirements": [
+        "边界",
+        "重叠"
+      ],
+      "difficulty": "hard",
+      "name": "Complex missing boundary and overlapping no-fly zone"
+    },
+    {
+      "scenario_id": "complex_full_stack_stress",
+      "score": 1.0,
+      "breakdown": {
+        "uav_count": 1.0,
+        "search_areas": 1.0,
+        "avoid_zones": 1.0,
+        "objectives": 1.0,
+        "constraints": 1.0,
+        "risk_keywords": 1.0
+      },
+      "missing_requirements": [],
+      "difficulty": "hard",
+      "name": "Full-stack stress case with mixed constraints"
     },
     {
       "scenario_id": "no_fly_zone_replan",
@@ -52,4 +501,3 @@
     }
   ]
 }
-

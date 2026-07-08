@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="640" viewBox="0 0 1180 640" role="img" aria-labelledby="title desc">
+  <title id="title">UAV benchmark coverage overview</title>
+  <desc id="desc">Overview chart showing 31 UAV benchmark scenarios, difficulty mix, and challenge type coverage.</desc>
+  <rect width="1180" height="640" fill="#f7fafc"/>
+  <rect x="34" y="34" width="1112" height="572" rx="18" fill="#ffffff" stroke="#d8e2ee"/>
+  <text x="72" y="88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#14213d">Expanded UAV Mission Benchmark</text>
+  <text x="72" y="122" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" fill="#5b6472">31 scenarios covering ambiguous, noisy, mixed-language, conflicting, and compound UAV mission requests.</text>
+
+  <g transform="translate(72,164)">
+    <rect width="300" height="150" rx="14" fill="#eaf4ff" stroke="#bfd8f5"/>
+    <text x="24" y="46" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" fill="#41617d">total_scenarios</text>
+    <text x="24" y="105" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="58" font-weight="700" fill="#195b99">31</text>
+  </g>
+
+  <g transform="translate(402,164)">
+    <rect width="300" height="150" rx="14" fill="#eef8ef" stroke="#cde7cf"/>
+    <text x="24" y="46" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" fill="#486a4f">hard_scenarios</text>
+    <text x="24" y="105" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="58" font-weight="700" fill="#1c7a36">22</text>
+  </g>
+
+  <g transform="translate(732,164)">
+    <rect width="300" height="150" rx="14" fill="#fff4e2" stroke="#efd8ac"/>
+    <text x="24" y="46" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" fill="#7c5a1f">offline_baseline_score</text>
+    <text x="24" y="105" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="58" font-weight="700" fill="#a86405">0.964</text>
+  </g>
+
+  <g transform="translate(72,360)">
+    <text x="0" y="0" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#14213d">Challenge Type Coverage</text>
+    <text x="0" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#697386">Each scenario can carry multiple challenge labels.</text>
+
+    <g transform="translate(0,62)" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#263442">
+      <text x="0" y="16">weak_comm_tracking_replan_combo</text>
+      <rect x="300" y="2" width="520" height="22" rx="6" fill="#2563eb"/>
+      <text x="836" y="18" font-weight="700">10</text>
+
+      <text x="0" y="54">noisy_expression</text>
+      <rect x="300" y="40" width="312" height="22" rx="6" fill="#16a34a"/>
+      <text x="628" y="56" font-weight="700">6</text>
+
+      <text x="0" y="92">conflicting_constraints</text>
+      <rect x="300" y="78" width="260" height="22" rx="6" fill="#ea580c"/>
+      <text x="576" y="94" font-weight="700">5</text>
+
+      <text x="0" y="130">overlapping_no_fly_and_target_area</text>
+      <rect x="300" y="116" width="260" height="22" rx="6" fill="#dc2626"/>
+      <text x="576" y="132" font-weight="700">5</text>
+
+      <text x="0" y="168">mixed_zh_en</text>
+      <rect x="300" y="154" width="260" height="22" rx="6" fill="#7c3aed"/>
+      <text x="576" y="170" font-weight="700">5</text>
+
+      <text x="0" y="206">ambiguous_instruction</text>
+      <rect x="300" y="192" width="208" height="22" rx="6" fill="#0891b2"/>
+      <text x="524" y="208" font-weight="700">4</text>
+
+      <text x="0" y="244">missing_uav_count</text>
+      <rect x="300" y="230" width="208" height="22" rx="6" fill="#4f46e5"/>
+      <text x="524" y="246" font-weight="700">4</text>
+
+      <text x="0" y="282">incomplete_area_boundary</text>
+      <rect x="300" y="268" width="208" height="22" rx="6" fill="#9333ea"/>
+      <text x="524" y="284" font-weight="700">4</text>
+    </g>
+  </g>
+</svg>

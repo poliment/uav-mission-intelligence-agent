@@ -1,0 +1,422 @@
+[
+  {
+    "id": "ambiguous_quick_scan_no_count",
+    "name": "Ambiguous quick scan without UAV count",
+    "difficulty": "hard",
+    "challenge_types": ["ambiguous_instruction", "missing_uav_count"],
+    "mission_text": "先派无人机搜一下区域E附近情况，别靠近禁飞区F，数量你看着办。",
+    "expected": {
+      "uav_count": 1,
+      "search_areas": ["区域E"],
+      "avoid_zones": ["禁飞区F"],
+      "objectives": ["area_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["禁飞区", "边界", "约束"]
+    }
+  },
+  {
+    "id": "ambiguous_patrol_unclear_priority",
+    "name": "Ambiguous patrol with unclear priority",
+    "difficulty": "hard",
+    "challenge_types": ["ambiguous_instruction"],
+    "mission_text": "使用2架无人机巡查区域G，目标点先看一下，但如果禁飞区H挡路就自己调整。",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["区域G"],
+      "avoid_zones": ["禁飞区H"],
+      "objectives": ["area_search", "suspicious_target_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["禁飞区", "航程", "目标"]
+    }
+  },
+  {
+    "id": "ambiguous_scout_then_track",
+    "name": "Ambiguous scout then track",
+    "difficulty": "hard",
+    "challenge_types": ["ambiguous_instruction", "weak_comm_tracking_replan_combo"],
+    "mission_text": "用3架无人机先搜索区域I，发现目标T3就跟踪，通信不稳时尽量少同步。",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["区域I"],
+      "avoid_zones": [],
+      "objectives": ["area_search", "target_tracking"],
+      "constraints": ["low_bandwidth_coordination"],
+      "risk_keywords": ["弱通信", "目标", "多机"]
+    }
+  },
+  {
+    "id": "ambiguous_noise_words",
+    "name": "Ambiguous request with filler words",
+    "difficulty": "hard",
+    "challenge_types": ["ambiguous_instruction", "noisy_expression"],
+    "mission_text": "嗯，区域J那边好像有点异常，先用两架无人机搜寻一下吧，禁飞区K别碰。",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["区域J"],
+      "avoid_zones": ["禁飞区K"],
+      "objectives": ["area_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["禁飞区", "航程", "覆盖"]
+    }
+  },
+  {
+    "id": "conflict_cross_and_avoid_same_nfz",
+    "name": "Conflict between crossing and avoiding no-fly zone",
+    "difficulty": "hard",
+    "challenge_types": ["conflicting_constraints"],
+    "mission_text": "使用2架无人机搜索区域L，同时要求为了最短路径穿越禁飞区M，但又必须避开禁飞区M。",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["区域L"],
+      "avoid_zones": ["禁飞区M"],
+      "objectives": ["area_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["禁飞区", "冲突", "约束"]
+    }
+  },
+  {
+    "id": "conflict_low_altitude_and_obstacle",
+    "name": "Conflict between low altitude and obstacle avoidance",
+    "difficulty": "hard",
+    "challenge_types": ["conflicting_constraints"],
+    "mission_text": "使用3架无人机巡检区域N，要求贴地低空飞行，同时区域内障碍密集，需要避障。",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["区域N"],
+      "avoid_zones": [],
+      "objectives": ["area_search"],
+      "constraints": ["obstacle_avoidance"],
+      "risk_keywords": ["障碍", "冲突", "机间"]
+    }
+  },
+  {
+    "id": "conflict_track_target_inside_nfz",
+    "name": "Conflict when tracked target is inside no-fly zone",
+    "difficulty": "hard",
+    "challenge_types": ["conflicting_constraints", "overlapping_no_fly_and_target_area"],
+    "mission_text": "使用4架无人机跟踪目标T4，目标当前在禁飞区O边缘移动，任务要求不能进入禁飞区O。",
+    "expected": {
+      "uav_count": 4,
+      "search_areas": [],
+      "avoid_zones": ["禁飞区O"],
+      "objectives": ["target_tracking"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["目标", "禁飞区", "冲突"]
+    }
+  },
+  {
+    "id": "missing_count_area_search",
+    "name": "Missing UAV count for area search",
+    "difficulty": "medium",
+    "challenge_types": ["missing_uav_count"],
+    "mission_text": "搜索区域P，避开禁飞区Q，优先覆盖可疑目标点。",
+    "expected": {
+      "uav_count": 1,
+      "search_areas": ["区域P"],
+      "avoid_zones": ["禁飞区Q"],
+      "objectives": ["area_search", "coverage", "suspicious_target_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["禁飞区", "覆盖", "区域"]
+    }
+  },
+  {
+    "id": "missing_count_tracking",
+    "name": "Missing UAV count for tracking",
+    "difficulty": "medium",
+    "challenge_types": ["missing_uav_count"],
+    "mission_text": "持续跟踪目标T5，如果目标绕到区域R附近就继续保持观察。",
+    "expected": {
+      "uav_count": 1,
+      "search_areas": ["区域R"],
+      "avoid_zones": [],
+      "objectives": ["target_tracking"],
+      "constraints": [],
+      "risk_keywords": ["目标", "丢失", "遮挡"]
+    }
+  },
+  {
+    "id": "missing_count_replan",
+    "name": "Missing UAV count for replanning",
+    "difficulty": "medium",
+    "challenge_types": ["missing_uav_count"],
+    "mission_text": "禁飞区S临时出现，重新规划区域T的巡检航迹并避障。",
+    "expected": {
+      "uav_count": 1,
+      "search_areas": ["区域T"],
+      "avoid_zones": ["禁飞区S"],
+      "objectives": ["area_search", "replanning"],
+      "constraints": ["avoid_no_fly_zone", "obstacle_avoidance"],
+      "risk_keywords": ["禁飞区", "航程", "障碍"]
+    }
+  },
+  {
+    "id": "incomplete_boundary_area_u",
+    "name": "Incomplete boundary for search area",
+    "difficulty": "hard",
+    "challenge_types": ["incomplete_area_boundary"],
+    "mission_text": "使用2架无人机搜索区域U，但区域边界只给了北侧和东侧，先给出保守规划。",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["区域U"],
+      "avoid_zones": [],
+      "objectives": ["area_search"],
+      "constraints": [],
+      "risk_keywords": ["边界", "覆盖", "多机"]
+    }
+  },
+  {
+    "id": "incomplete_boundary_with_nfz",
+    "name": "Incomplete boundary with no-fly zone",
+    "difficulty": "hard",
+    "challenge_types": ["incomplete_area_boundary"],
+    "mission_text": "使用3架无人机巡查区域V，南侧边界未知，还要避开禁飞区W。",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["区域V"],
+      "avoid_zones": ["禁飞区W"],
+      "objectives": ["area_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["边界", "禁飞区", "航程"]
+    }
+  },
+  {
+    "id": "incomplete_boundary_low_bandwidth",
+    "name": "Incomplete boundary under weak communication",
+    "difficulty": "hard",
+    "challenge_types": ["incomplete_area_boundary", "weak_comm_tracking_replan_combo"],
+    "mission_text": "使用4架无人机搜索区域X，边界数据不完整，并保持弱通信条件下协同。",
+    "expected": {
+      "uav_count": 4,
+      "search_areas": ["区域X"],
+      "avoid_zones": [],
+      "objectives": ["area_search"],
+      "constraints": ["low_bandwidth_coordination", "multi_uav_coordination"],
+      "risk_keywords": ["弱通信", "边界", "多机"]
+    }
+  },
+  {
+    "id": "overlap_search_area_and_nfz",
+    "name": "No-fly zone overlaps search area",
+    "difficulty": "hard",
+    "challenge_types": ["overlapping_no_fly_and_target_area"],
+    "mission_text": "使用3架无人机覆盖区域Y，其中禁飞区Z与目标搜索区部分重叠。",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["区域Y"],
+      "avoid_zones": ["禁飞区Z"],
+      "objectives": ["coverage"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["重叠", "禁飞区", "覆盖"]
+    }
+  },
+  {
+    "id": "overlap_target_points_and_nfz",
+    "name": "Suspicious target points overlap no-fly zone",
+    "difficulty": "hard",
+    "challenge_types": ["overlapping_no_fly_and_target_area"],
+    "mission_text": "使用2架无人机搜索区域AA，可疑目标点靠近禁飞区AB边界，不能越界。",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["区域AA"],
+      "avoid_zones": ["禁飞区AB"],
+      "objectives": ["area_search", "suspicious_target_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["目标", "禁飞区", "边界"]
+    }
+  },
+  {
+    "id": "overlap_tracking_target_near_nfz",
+    "name": "Tracking target near no-fly overlap",
+    "difficulty": "hard",
+    "challenge_types": ["overlapping_no_fly_and_target_area", "weak_comm_tracking_replan_combo"],
+    "mission_text": "使用3架无人机跟踪目标T6，目标在区域AC与禁飞区AD重叠边缘活动，需要重规划。",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["区域AC"],
+      "avoid_zones": ["禁飞区AD"],
+      "objectives": ["target_tracking", "replanning"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["目标", "禁飞区", "重叠"]
+    }
+  },
+  {
+    "id": "combo_weak_comm_tracking_replan",
+    "name": "Weak communication target tracking with replanning",
+    "difficulty": "hard",
+    "challenge_types": ["weak_comm_tracking_replan_combo"],
+    "mission_text": "使用5架无人机在弱通信条件下跟踪目标T7，禁飞区AE变化时立即重新规划。",
+    "expected": {
+      "uav_count": 5,
+      "search_areas": [],
+      "avoid_zones": ["禁飞区AE"],
+      "objectives": ["target_tracking", "replanning"],
+      "constraints": ["low_bandwidth_coordination", "avoid_no_fly_zone"],
+      "risk_keywords": ["弱通信", "目标", "禁飞区"]
+    }
+  },
+  {
+    "id": "combo_swarm_tracking_obstacle",
+    "name": "Swarm tracking with obstacle replanning",
+    "difficulty": "hard",
+    "challenge_types": ["weak_comm_tracking_replan_combo"],
+    "mission_text": "使用6架无人机集群追踪目标T8，通信受限，区域AF出现障碍后需要再规划。",
+    "expected": {
+      "uav_count": 6,
+      "search_areas": ["区域AF"],
+      "avoid_zones": [],
+      "objectives": ["target_tracking", "replanning"],
+      "constraints": ["low_bandwidth_coordination", "multi_uav_coordination", "obstacle_avoidance"],
+      "risk_keywords": ["弱通信", "目标", "多机"]
+    }
+  },
+  {
+    "id": "combo_search_track_low_bandwidth",
+    "name": "Search then track under weak communication",
+    "difficulty": "hard",
+    "challenge_types": ["weak_comm_tracking_replan_combo"],
+    "mission_text": "使用4架无人机搜索区域AG，发现目标T9后接力跟踪，弱通信时只同步关键事件。",
+    "expected": {
+      "uav_count": 4,
+      "search_areas": ["区域AG"],
+      "avoid_zones": [],
+      "objectives": ["area_search", "target_tracking"],
+      "constraints": ["low_bandwidth_coordination"],
+      "risk_keywords": ["弱通信", "目标", "多机"]
+    }
+  },
+  {
+    "id": "mixed_english_area_nfz",
+    "name": "Mixed English area and NFZ labels",
+    "difficulty": "medium",
+    "challenge_types": ["mixed_zh_en"],
+    "mission_text": "Use 2 UAVs to search area_AH, avoid NFZ_AI, keep weak comm.",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["area_AH"],
+      "avoid_zones": ["NFZ_AI"],
+      "objectives": ["area_search"],
+      "constraints": ["low_bandwidth_coordination", "avoid_no_fly_zone"],
+      "risk_keywords": ["弱通信", "禁飞区", "多机"]
+    }
+  },
+  {
+    "id": "mixed_zh_en_tracking",
+    "name": "Mixed Chinese and English tracking task",
+    "difficulty": "medium",
+    "challenge_types": ["mixed_zh_en"],
+    "mission_text": "使用3架UAV search 区域AJ, track target T10, avoid 禁飞区AK.",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["区域AJ"],
+      "avoid_zones": ["禁飞区AK"],
+      "objectives": ["area_search", "target_tracking"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["目标", "禁飞区", "多机"]
+    }
+  },
+  {
+    "id": "mixed_replan_obstacle",
+    "name": "Mixed-language replanning and obstacle task",
+    "difficulty": "medium",
+    "challenge_types": ["mixed_zh_en"],
+    "mission_text": "3 UAVs inspect area_AL, obstacle detected, replan route and avoid NFZ_AM.",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["area_AL"],
+      "avoid_zones": ["NFZ_AM"],
+      "objectives": ["area_search", "replanning"],
+      "constraints": ["avoid_no_fly_zone", "obstacle_avoidance"],
+      "risk_keywords": ["禁飞区", "航程", "障碍"]
+    }
+  },
+  {
+    "id": "noisy_symbols_area_search",
+    "name": "Noisy symbols in area search request",
+    "difficulty": "hard",
+    "challenge_types": ["noisy_expression"],
+    "mission_text": "任务: 使用2架无人机!!! 搜索区域AN；避开禁飞区AO；弱通信，别频繁同步。",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["区域AN"],
+      "avoid_zones": ["禁飞区AO"],
+      "objectives": ["area_search"],
+      "constraints": ["low_bandwidth_coordination", "avoid_no_fly_zone"],
+      "risk_keywords": ["弱通信", "禁飞区", "多机"]
+    }
+  },
+  {
+    "id": "noisy_parentheses_tracking",
+    "name": "Noisy parentheses in tracking request",
+    "difficulty": "hard",
+    "challenge_types": ["noisy_expression"],
+    "mission_text": "【临时】用4架无人机(如果可行)跟踪目标T11，并在区域AP出现障碍时重规划。",
+    "expected": {
+      "uav_count": 4,
+      "search_areas": ["区域AP"],
+      "avoid_zones": [],
+      "objectives": ["target_tracking", "replanning"],
+      "constraints": ["obstacle_avoidance"],
+      "risk_keywords": ["目标", "障碍", "多机"]
+    }
+  },
+  {
+    "id": "noisy_chatty_mixed",
+    "name": "Chatty mixed-language noisy request",
+    "difficulty": "hard",
+    "challenge_types": ["noisy_expression", "mixed_zh_en"],
+    "mission_text": "pls 2 UAVs, quick scan area_AQ, no drama, avoid NFZ_AR, maybe track target T12 if seen.",
+    "expected": {
+      "uav_count": 2,
+      "search_areas": ["area_AQ"],
+      "avoid_zones": ["NFZ_AR"],
+      "objectives": ["area_search", "target_tracking"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["目标", "禁飞区", "多机"]
+    }
+  },
+  {
+    "id": "noisy_conflicting_mixed",
+    "name": "Noisy mixed request with conflict",
+    "difficulty": "hard",
+    "challenge_types": ["noisy_expression", "conflicting_constraints", "mixed_zh_en"],
+    "mission_text": "Use 3 UAVs search area_AS ASAP; shortcut through NFZ_AT but also avoid NFZ_AT, ok?",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["area_AS"],
+      "avoid_zones": ["NFZ_AT"],
+      "objectives": ["area_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["禁飞区", "冲突", "多机"]
+    }
+  },
+  {
+    "id": "complex_missing_boundary_overlap",
+    "name": "Complex missing boundary and overlapping no-fly zone",
+    "difficulty": "hard",
+    "challenge_types": ["incomplete_area_boundary", "overlapping_no_fly_and_target_area"],
+    "mission_text": "使用3架无人机搜索区域AU，西侧边界缺失，禁飞区AV与可疑目标点部分重叠。",
+    "expected": {
+      "uav_count": 3,
+      "search_areas": ["区域AU"],
+      "avoid_zones": ["禁飞区AV"],
+      "objectives": ["area_search", "suspicious_target_search"],
+      "constraints": ["avoid_no_fly_zone"],
+      "risk_keywords": ["边界", "重叠", "目标"]
+    }
+  },
+  {
+    "id": "complex_full_stack_stress",
+    "name": "Full-stack stress case with mixed constraints",
+    "difficulty": "hard",
+    "challenge_types": ["weak_comm_tracking_replan_combo", "conflicting_constraints", "noisy_expression"],
+    "mission_text": "紧急：5架无人机搜索区域AW，弱通信，跟踪目标T13；禁飞区AX移动后重规划，但不要牺牲覆盖率。",
+    "expected": {
+      "uav_count": 5,
+      "search_areas": ["区域AW"],
+      "avoid_zones": ["禁飞区AX"],
+      "objectives": ["area_search", "coverage", "target_tracking", "replanning"],
+      "constraints": ["low_bandwidth_coordination", "avoid_no_fly_zone"],
+      "risk_keywords": ["弱通信", "目标", "禁飞区"]
+    }
+  }
+]

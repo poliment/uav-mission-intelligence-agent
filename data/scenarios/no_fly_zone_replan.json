@@ -2,6 +2,7 @@
   "id": "no_fly_zone_replan",
   "name": "Dynamic no-fly-zone replanning",
   "difficulty": "medium",
+  "challenge_types": ["weak_comm_tracking_replan_combo"],
   "mission_text": "使用2架无人机巡检区域C，禁飞区D临时出现，需要重新规划航迹并避障。",
   "expected": {
     "uav_count": 2,
@@ -12,4 +13,3 @@
     "risk_keywords": ["禁飞区", "航程", "机间"]
   }
 }
-

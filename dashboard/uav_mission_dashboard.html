@@ -198,12 +198,12 @@
 
       <article class="panel span-3 metric">
         <span class="muted">average_score</span>
-        <strong>1.00</strong>
+        <strong>0.96</strong>
         <span>Mean benchmark scenario score</span>
       </article>
       <article class="panel span-3 metric">
         <span class="muted">total_scenarios</span>
-        <strong>3</strong>
+        <strong>31</strong>
         <span>UAV mission benchmark cases</span>
       </article>
       <article class="panel span-3 metric">
@@ -214,7 +214,7 @@
       <article class="panel span-3 metric">
         <span class="muted">estimated_total_cost</span>
         <strong>0.000000</strong>
-        <span>USD estimated total cost, passed_runs: 3</span>
+        <span>USD estimated total cost, passed_runs: 29</span>
       </article>
 
       <article class="panel span-12" id="mission-input">
@@ -289,6 +289,286 @@
 
             <div class="score-card">
               <div class="score-head">
+                <strong>ambiguous_quick_scan_no_count</strong>
+                <span>0.78</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 77%"></div></div>
+              <p class="muted">Ambiguous quick scan without UAV count</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>ambiguous_patrol_unclear_priority</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Ambiguous patrol with unclear priority</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>ambiguous_scout_then_track</strong>
+                <span>0.78</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 77%"></div></div>
+              <p class="muted">Ambiguous scout then track</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>ambiguous_noise_words</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Ambiguous request with filler words</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>conflict_cross_and_avoid_same_nfz</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Conflict between crossing and avoiding no-fly zone</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>conflict_low_altitude_and_obstacle</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Conflict between low altitude and obstacle avoidance</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>conflict_track_target_inside_nfz</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Conflict when tracked target is inside no-fly zone</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>missing_count_area_search</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Missing UAV count for area search</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>missing_count_tracking</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Missing UAV count for tracking</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>missing_count_replan</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Missing UAV count for replanning</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>incomplete_boundary_area_u</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Incomplete boundary for search area</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>incomplete_boundary_with_nfz</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Incomplete boundary with no-fly zone</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>incomplete_boundary_low_bandwidth</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Incomplete boundary under weak communication</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>overlap_search_area_and_nfz</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">No-fly zone overlaps search area</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>overlap_target_points_and_nfz</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Suspicious target points overlap no-fly zone</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>overlap_tracking_target_near_nfz</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Tracking target near no-fly overlap</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>combo_weak_comm_tracking_replan</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Weak communication target tracking with replanning</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>combo_swarm_tracking_obstacle</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Swarm tracking with obstacle replanning</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>combo_search_track_low_bandwidth</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Search then track under weak communication</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>mixed_english_area_nfz</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Mixed English area and NFZ labels</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>mixed_zh_en_tracking</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Mixed Chinese and English tracking task</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>mixed_replan_obstacle</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Mixed-language replanning and obstacle task</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>noisy_symbols_area_search</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Noisy symbols in area search request</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>noisy_parentheses_tracking</strong>
+                <span>0.94</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 94%"></div></div>
+              <p class="muted">Noisy parentheses in tracking request</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>noisy_chatty_mixed</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Chatty mixed-language noisy request</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>noisy_conflicting_mixed</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Noisy mixed request with conflict</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>complex_missing_boundary_overlap</strong>
+                <span>0.89</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 88%"></div></div>
+              <p class="muted">Complex missing boundary and overlapping no-fly zone</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>complex_full_stack_stress</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Full-stack stress case with mixed constraints</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
                 <strong>no_fly_zone_replan</strong>
                 <span>1.00</span>
               </div>
@@ -325,8 +605,8 @@
             <tr>
               <td>offline</td>
               <td>rule-based</td>
-              <td class="numeric">1.00</td>
-              <td class="numeric">0.525</td>
+              <td class="numeric">0.96</td>
+              <td class="numeric">0.146</td>
               <td class="numeric">0.00000000 USD</td>
             </tr>
 
@@ -504,12 +784,12 @@
         <pre>{
   &quot;summary&quot;: {
     &quot;benchmark_version&quot;: &quot;2.0&quot;,
-    &quot;total_scenarios&quot;: 3,
+    &quot;total_scenarios&quot;: 31,
     &quot;provider_count&quot;: 1,
-    &quot;total_runs&quot;: 3,
-    &quot;average_score&quot;: 1.0,
-    &quot;passed_runs&quot;: 3,
-    &quot;average_latency_ms&quot;: 0.525,
+    &quot;total_runs&quot;: 31,
+    &quot;average_score&quot;: 0.964,
+    &quot;passed_runs&quot;: 29,
+    &quot;average_latency_ms&quot;: 0.146,
     &quot;estimated_total_cost&quot;: 0.0,
     &quot;currency&quot;: &quot;USD&quot;
   },
@@ -518,20 +798,26 @@
       &quot;provider_label&quot;: &quot;offline&quot;,
       &quot;provider_name&quot;: &quot;offline&quot;,
       &quot;model&quot;: &quot;rule-based&quot;,
-      &quot;run_count&quot;: 3,
-      &quot;average_score&quot;: 1.0,
-      &quot;passed_runs&quot;: 3,
-      &quot;average_latency_ms&quot;: 0.525,
+      &quot;run_count&quot;: 31,
+      &quot;average_score&quot;: 0.964,
+      &quot;passed_runs&quot;: 29,
+      &quot;average_latency_ms&quot;: 0.146,
       &quot;estimated_total_cost&quot;: 0.0,
       &quot;currency&quot;: &quot;USD&quot;
     }
   ],
   &quot;difficulty_summary&quot;: [
     {
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;run_count&quot;: 22,
+      &quot;average_score&quot;: 0.955,
+      &quot;passed_runs&quot;: 20
+    },
+    {
       &quot;difficulty&quot;: &quot;medium&quot;,
-      &quot;run_count&quot;: 3,
-      &quot;average_score&quot;: 1.0,
-      &quot;passed_runs&quot;: 3
+      &quot;run_count&quot;: 9,
+      &quot;average_score&quot;: 0.988,
+      &quot;passed_runs&quot;: 9
     }
   ],
   &quot;results&quot;: [
@@ -556,7 +842,1044 @@
       },
       &quot;missing_requirements&quot;: [],
       &quot;schema_valid&quot;: true,
-      &quot;latency_ms&quot;: 0.096,
+      &quot;latency_ms&quot;: 0.114,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:ambiguous_quick_scan_no_count&quot;,
+      &quot;scenario_id&quot;: &quot;ambiguous_quick_scan_no_count&quot;,
+      &quot;name&quot;: &quot;Ambiguous quick scan without UAV count&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.778,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 0.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;area_search&quot;,
+        &quot;边界&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.375,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:ambiguous_patrol_unclear_priority&quot;,
+      &quot;scenario_id&quot;: &quot;ambiguous_patrol_unclear_priority&quot;,
+      &quot;name&quot;: &quot;Ambiguous patrol with unclear priority&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.078,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:ambiguous_scout_then_track&quot;,
+      &quot;scenario_id&quot;: &quot;ambiguous_scout_then_track&quot;,
+      &quot;name&quot;: &quot;Ambiguous scout then track&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.778,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 0.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;low_bandwidth_coordination&quot;,
+        &quot;弱通信&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.792,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:ambiguous_noise_words&quot;,
+      &quot;scenario_id&quot;: &quot;ambiguous_noise_words&quot;,
+      &quot;name&quot;: &quot;Ambiguous request with filler words&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.075,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:conflict_cross_and_avoid_same_nfz&quot;,
+      &quot;scenario_id&quot;: &quot;conflict_cross_and_avoid_same_nfz&quot;,
+      &quot;name&quot;: &quot;Conflict between crossing and avoiding no-fly zone&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.07,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:conflict_low_altitude_and_obstacle&quot;,
+      &quot;scenario_id&quot;: &quot;conflict_low_altitude_and_obstacle&quot;,
+      &quot;name&quot;: &quot;Conflict between low altitude and obstacle avoidance&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;障碍&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.065,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:conflict_track_target_inside_nfz&quot;,
+      &quot;scenario_id&quot;: &quot;conflict_track_target_inside_nfz&quot;,
+      &quot;name&quot;: &quot;Conflict when tracked target is inside no-fly zone&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.772,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:missing_count_area_search&quot;,
+      &quot;scenario_id&quot;: &quot;missing_count_area_search&quot;,
+      &quot;name&quot;: &quot;Missing UAV count for area search&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.071,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:missing_count_tracking&quot;,
+      &quot;scenario_id&quot;: &quot;missing_count_tracking&quot;,
+      &quot;name&quot;: &quot;Missing UAV count for tracking&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.065,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:missing_count_replan&quot;,
+      &quot;scenario_id&quot;: &quot;missing_count_replan&quot;,
+      &quot;name&quot;: &quot;Missing UAV count for replanning&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;障碍&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.067,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:incomplete_boundary_area_u&quot;,
+      &quot;scenario_id&quot;: &quot;incomplete_boundary_area_u&quot;,
+      &quot;name&quot;: &quot;Incomplete boundary for search area&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;边界&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.059,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:incomplete_boundary_with_nfz&quot;,
+      &quot;scenario_id&quot;: &quot;incomplete_boundary_with_nfz&quot;,
+      &quot;name&quot;: &quot;Incomplete boundary with no-fly zone&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;边界&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.066,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:incomplete_boundary_low_bandwidth&quot;,
+      &quot;scenario_id&quot;: &quot;incomplete_boundary_low_bandwidth&quot;,
+      &quot;name&quot;: &quot;Incomplete boundary under weak communication&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;边界&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.069,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:overlap_search_area_and_nfz&quot;,
+      &quot;scenario_id&quot;: &quot;overlap_search_area_and_nfz&quot;,
+      &quot;name&quot;: &quot;No-fly zone overlaps search area&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;重叠&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.065,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:overlap_target_points_and_nfz&quot;,
+      &quot;scenario_id&quot;: &quot;overlap_target_points_and_nfz&quot;,
+      &quot;name&quot;: &quot;Suspicious target points overlap no-fly zone&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;边界&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.074,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:overlap_tracking_target_near_nfz&quot;,
+      &quot;scenario_id&quot;: &quot;overlap_tracking_target_near_nfz&quot;,
+      &quot;name&quot;: &quot;Tracking target near no-fly overlap&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;重叠&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.556,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:combo_weak_comm_tracking_replan&quot;,
+      &quot;scenario_id&quot;: &quot;combo_weak_comm_tracking_replan&quot;,
+      &quot;name&quot;: &quot;Weak communication target tracking with replanning&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.085,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:combo_swarm_tracking_obstacle&quot;,
+      &quot;scenario_id&quot;: &quot;combo_swarm_tracking_obstacle&quot;,
+      &quot;name&quot;: &quot;Swarm tracking with obstacle replanning&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.074,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:combo_search_track_low_bandwidth&quot;,
+      &quot;scenario_id&quot;: &quot;combo_search_track_low_bandwidth&quot;,
+      &quot;name&quot;: &quot;Search then track under weak communication&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.072,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:mixed_english_area_nfz&quot;,
+      &quot;scenario_id&quot;: &quot;mixed_english_area_nfz&quot;,
+      &quot;name&quot;: &quot;Mixed English area and NFZ labels&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.085,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:mixed_zh_en_tracking&quot;,
+      &quot;scenario_id&quot;: &quot;mixed_zh_en_tracking&quot;,
+      &quot;name&quot;: &quot;Mixed Chinese and English tracking task&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.087,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:mixed_replan_obstacle&quot;,
+      &quot;scenario_id&quot;: &quot;mixed_replan_obstacle&quot;,
+      &quot;name&quot;: &quot;Mixed-language replanning and obstacle task&quot;,
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;障碍&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.089,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:noisy_symbols_area_search&quot;,
+      &quot;scenario_id&quot;: &quot;noisy_symbols_area_search&quot;,
+      &quot;name&quot;: &quot;Noisy symbols in area search request&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.075,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:noisy_parentheses_tracking&quot;,
+      &quot;scenario_id&quot;: &quot;noisy_parentheses_tracking&quot;,
+      &quot;name&quot;: &quot;Noisy parentheses in tracking request&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.945,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.667
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;障碍&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.068,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:noisy_chatty_mixed&quot;,
+      &quot;scenario_id&quot;: &quot;noisy_chatty_mixed&quot;,
+      &quot;name&quot;: &quot;Chatty mixed-language noisy request&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.089,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:noisy_conflicting_mixed&quot;,
+      &quot;scenario_id&quot;: &quot;noisy_conflicting_mixed&quot;,
+      &quot;name&quot;: &quot;Noisy mixed request with conflict&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.084,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:complex_missing_boundary_overlap&quot;,
+      &quot;scenario_id&quot;: &quot;complex_missing_boundary_overlap&quot;,
+      &quot;name&quot;: &quot;Complex missing boundary and overlapping no-fly zone&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 0.889,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 0.333
+      },
+      &quot;missing_requirements&quot;: [
+        &quot;边界&quot;,
+        &quot;重叠&quot;
+      ],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.07,
+      &quot;token_usage&quot;: {
+        &quot;prompt_tokens&quot;: 0,
+        &quot;completion_tokens&quot;: 0,
+        &quot;total_tokens&quot;: 0
+      },
+      &quot;estimated_cost&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;input_cost&quot;: 0.0,
+        &quot;output_cost&quot;: 0.0,
+        &quot;total_cost&quot;: 0.0,
+        &quot;pricing_source&quot;: &quot;configured&quot;,
+        &quot;pricing_note&quot;: &quot;Offline rule-based execution does not use billable LLM tokens.&quot;
+      }
+    },
+    {
+      &quot;run_id&quot;: &quot;offline:complex_full_stack_stress&quot;,
+      &quot;scenario_id&quot;: &quot;complex_full_stack_stress&quot;,
+      &quot;name&quot;: &quot;Full-stack stress case with mixed constraints&quot;,
+      &quot;difficulty&quot;: &quot;hard&quot;,
+      &quot;provider_label&quot;: &quot;offline&quot;,
+      &quot;provider_name&quot;: &quot;offline&quot;,
+      &quot;model&quot;: &quot;rule-based&quot;,
+      &quot;graph_backend&quot;: &quot;rule-based&quot;,
+      &quot;status&quot;: &quot;completed&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;schema_valid&quot;: true,
+      &quot;latency_ms&quot;: 0.073,
       &quot;token_usage&quot;: {
         &quot;prompt_tokens&quot;: 0,
         &quot;completion_tokens&quot;: 0,
@@ -592,7 +1915,7 @@
       },
       &quot;missing_requirements&quot;: [],
       &quot;schema_valid&quot;: true,
-      &quot;latency_ms&quot;: 0.081,
+      &quot;latency_ms&quot;: 0.067,
       &quot;token_usage&quot;: {
         &quot;prompt_tokens&quot;: 0,
         &quot;completion_tokens&quot;: 0,
@@ -628,7 +1951,7 @@
       },
       &quot;missing_requirements&quot;: [],
       &quot;schema_valid&quot;: true,
-      &quot;latency_ms&quot;: 1.397,
+      &quot;latency_ms&quot;: 0.06,
       &quot;token_usage&quot;: {
         &quot;prompt_tokens&quot;: 0,
         &quot;completion_tokens&quot;: 0,

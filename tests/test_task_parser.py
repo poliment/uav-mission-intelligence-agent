@@ -30,6 +30,18 @@ class TaskParserTests(unittest.TestCase):
         self.assertIn("target_tracking", tracking_task.objectives)
         self.assertIn("multi_uav_coordination", tracking_task.constraints)
 
+    def test_extracts_mixed_zh_en_uav_mission_fields(self):
+        task = parse_task("Use 2 UAVs to search area_R, avoid NFZ_S, track target T2, weak comm, replan if blocked.")
+
+        self.assertEqual(task.drone_count, 2)
+        self.assertIn("area_R", task.search_areas)
+        self.assertIn("NFZ_S", task.avoid_zones)
+        self.assertIn("area_search", task.objectives)
+        self.assertIn("target_tracking", task.objectives)
+        self.assertIn("replanning", task.objectives)
+        self.assertIn("low_bandwidth_coordination", task.constraints)
+        self.assertIn("avoid_no_fly_zone", task.constraints)
+
 
 if __name__ == "__main__":
     unittest.main()
