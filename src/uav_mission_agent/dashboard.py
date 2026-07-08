@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .agent_graph import run_agent_workflow
 from .benchmark_v2 import run_benchmark_v2
+from .mission_visualization import render_mission_execution_svg
 from .scenario_loader import load_scenarios
 
 
@@ -38,6 +39,7 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
     summary = benchmark["summary"]
     json_plan = json.dumps(plan, ensure_ascii=False, indent=2)
     json_benchmark = json.dumps(benchmark, ensure_ascii=False, indent=2)
+    mission_svg = render_mission_execution_svg(plan)
     rendered = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -126,6 +128,19 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
       border-radius: 8px;
       background: #fbfdff;
       font-size: 15px;
+    }}
+    .mission-map {{
+      width: 100%;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }}
+    .mission-map svg {{
+      display: block;
+      width: 100%;
+      min-width: 860px;
+      height: auto;
     }}
     .node-flow {{
       display: grid;
@@ -239,6 +254,10 @@ def _render_dashboard(plan: dict, benchmark: dict) -> str:
       <article class="panel span-12" id="mission-input">
         <h2>Mission Input</h2>
         <div class="mission-text">{html.escape(mission)}</div>
+      </article>
+      <article class="panel span-12" id="mission-execution-visualization">
+        <h2>Mission Execution Visualization</h2>
+        <div class="mission-map">{mission_svg}</div>
       </article>
       <article class="panel span-12" id="agent-flow">
         <h2>Agent Node Flow</h2>

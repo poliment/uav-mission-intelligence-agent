@@ -20,6 +20,10 @@ class DashboardTests(unittest.TestCase):
 
         self.assertIn("UAV Mission Intelligence Dashboard", html)
         self.assertIn('id="mission-input"', html)
+        self.assertIn('id="mission-execution-visualization"', html)
+        self.assertIn("Mission Execution Visualization", html)
+        self.assertIn("No-Fly Zone", html)
+        self.assertIn("Replanned Route", html)
         self.assertIn("task_parser_agent", html)
         self.assertIn("knowledge_retriever_agent", html)
         self.assertIn("mission_planner_agent", html)
