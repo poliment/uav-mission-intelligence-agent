@@ -1,6 +1,7 @@
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -132,6 +133,49 @@ class LLMProviderTests(unittest.TestCase):
         self.assertEqual(provider.last_usage["prompt_tokens"], 100)
         self.assertEqual(provider.last_usage["completion_tokens"], 40)
         self.assertEqual(provider.last_usage["total_tokens"], 140)
+
+    def test_openai_compatible_provider_falls_back_to_curl_transport(self):
+        def failing_urllib_transport(*, url, headers, payload, timeout):
+            raise LLMProviderError("LLM provider request failed: SSL EOF")
+
+        def fake_curl_transport(*, url, headers, payload, timeout):
+            return {
+                "usage": {
+                    "prompt_tokens": 80,
+                    "completion_tokens": 20,
+                    "total_tokens": 100,
+                },
+                "choices": [
+                    {
+                        "message": {
+                            "content": (
+                                '{"recommendations":["Fallback transport plan"],'
+                                '"risks":["Fallback transport risk"],'
+                                '"mission_config":{"uav_count":1,"planning_policy":"fallback_policy"}}'
+                            )
+                        }
+                    }
+                ],
+            }
+
+        provider = OpenAICompatibleProvider(
+            api_key="test-key",
+            model="test-model",
+            base_url="https://example.test/v1",
+        )
+
+        with patch("uav_mission_agent.llm_provider._urllib_transport", side_effect=failing_urllib_transport):
+            with patch("uav_mission_agent.llm_provider._curl_transport", side_effect=fake_curl_transport):
+                result = provider.generate_plan(
+                    task={"raw_request": "use 1 UAV", "drone_count": 1},
+                    retrieved_knowledge=[],
+                    baseline_plan={"mission_config": {"uav_count": 1}},
+                    output_schema={"schema_name": "uav_mission_plan"},
+                )
+
+        self.assertEqual(result["recommendations"], ["Fallback transport plan"])
+        self.assertEqual(provider.last_usage["total_tokens"], 100)
+        self.assertEqual(provider.last_response_metadata["transport"], "curl")
 
     def test_provider_factory_requires_api_key_for_openai_compatible_provider(self):
         with self.assertRaises(LLMProviderError):

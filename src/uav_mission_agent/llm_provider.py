@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import subprocess
 import urllib.request
 from dataclasses import dataclass, field
 from typing import Any, Callable, Protocol
@@ -45,6 +47,7 @@ class OpenAICompatibleProvider:
     provider_name: str = "openai-compatible"
     last_usage: dict[str, int] = field(default_factory=lambda: normalize_token_usage(None), init=False)
     last_response_metadata: dict[str, Any] = field(default_factory=dict, init=False)
+    _last_transport_name: str = field(default="urllib", init=False)
 
     def generate_plan(
         self,
@@ -81,6 +84,7 @@ class OpenAICompatibleProvider:
             "usage": self.last_usage,
             "model": response.get("model", self.model),
             "id": response.get("id"),
+            "transport": self._last_transport_name,
         }
         content = _extract_message_content(response)
         return _parse_json_content(content)
@@ -94,8 +98,20 @@ class OpenAICompatibleProvider:
         timeout: int,
     ) -> dict[str, Any]:
         if self.transport:
+            self._last_transport_name = "custom"
             return self.transport(url=url, headers=headers, payload=payload, timeout=timeout)
-        return _urllib_transport(url=url, headers=headers, payload=payload, timeout=timeout)
+        try:
+            self._last_transport_name = "urllib"
+            return _urllib_transport(url=url, headers=headers, payload=payload, timeout=timeout)
+        except LLMProviderError as primary_error:
+            try:
+                self._last_transport_name = "curl"
+                return _curl_transport(url=url, headers=headers, payload=payload, timeout=timeout)
+            except LLMProviderError as fallback_error:
+                self._last_transport_name = "urllib"
+                raise LLMProviderError(
+                    f"{primary_error}; curl fallback failed: {fallback_error}"
+                ) from fallback_error
 
 
 def build_llm_provider(
@@ -193,6 +209,66 @@ def _urllib_transport(
         raise LLMProviderError(f"LLM provider request failed: {exc}") from exc
     except json.JSONDecodeError as exc:
         raise LLMProviderError("LLM provider returned invalid JSON response") from exc
+
+
+def _curl_transport(
+    *,
+    url: str,
+    headers: dict[str, str],
+    payload: dict[str, Any],
+    timeout: int,
+) -> dict[str, Any]:
+    curl_path = shutil.which("curl.exe") or shutil.which("curl")
+    if not curl_path:
+        raise LLMProviderError("curl executable is not available")
+
+    command = [
+        curl_path,
+        "-sS",
+        "--fail-with-body",
+        "--max-time",
+        str(timeout),
+        "-X",
+        "POST",
+        url,
+    ]
+    for key, value in headers.items():
+        command.extend(["-H", f"{key}: {value}"])
+    command.extend(["--data-binary", "@-"])
+
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    try:
+        completed = subprocess.run(
+            command,
+            input=body,
+            capture_output=True,
+            timeout=timeout + 5,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise LLMProviderError("curl request timed out") from exc
+    except OSError as exc:
+        raise LLMProviderError(f"curl request failed to start: {exc}") from exc
+
+    stdout = completed.stdout.decode("utf-8", errors="replace")
+    stderr = completed.stderr.decode("utf-8", errors="replace")
+    if completed.returncode != 0:
+        details = _redact_header_values((stderr or stdout).strip(), headers)
+        raise LLMProviderError(f"curl request failed with exit code {completed.returncode}: {details[:500]}")
+
+    try:
+        return json.loads(stdout)
+    except json.JSONDecodeError as exc:
+        details = _redact_header_values(stdout.strip(), headers)
+        raise LLMProviderError(f"curl returned invalid JSON response: {details[:500]}") from exc
+
+
+def _redact_header_values(text: str, headers: dict[str, str]) -> str:
+    redacted = text
+    for value in headers.values():
+        if value and len(value) > 8:
+            redacted = redacted.replace(value, "[redacted]")
+    return redacted
 
 
 def _extract_message_content(response: dict[str, Any]) -> str:

@@ -431,6 +431,42 @@ total_runs: 3
 estimated_total_cost: 0.0
 ```
 
+## Live DeepSeek Provider Run / DeepSeek 真实 Provider 实验
+
+2026-07-08 进行了一次真实 DeepSeek provider 对比实验，比较默认离线 baseline 与 `deepseek-v4-flash`。实验使用同一组 3 个无人机 benchmark 场景，并通过 Benchmark v2 记录 score、latency、token usage 和 estimated cost。
+
+On 2026-07-08, a live DeepSeek provider comparison run was executed against the offline baseline and `deepseek-v4-flash`. The run used the same three UAV benchmark scenarios and recorded score, latency, token usage, and estimated cost through Benchmark v2.
+
+| Provider | Runs | Avg Score | Passed | Avg Latency | Estimated Cost |
+|---|---:|---:|---:|---:|---:|
+| `offline` | 3 | 1.00 | 3/3 | 0.633 ms | `$0.00000000` |
+| `deepseek-v4-flash` | 3 | 1.00 | 3/3 | 9373.597 ms | `$0.00118972` |
+
+DeepSeek token usage for the three scenarios:
+
+```text
+prompt_tokens: 3790
+completion_tokens: 2354
+total_tokens: 6144
+estimated_total_cost: $0.00118972
+```
+
+Per-scenario DeepSeek results:
+
+| Scenario | Score | Latency | Estimated Cost |
+|---|---:|---:|---:|
+| `area_search_low_bandwidth` | 1.00 | 10038.593 ms | `$0.00044870` |
+| `no_fly_zone_replan` | 1.00 | 10709.325 ms | `$0.00046522` |
+| `target_tracking_multi_uav` | 1.00 | 7372.873 ms | `$0.00027580` |
+
+成本估算使用 2026-07-08 查询到的 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing) 中 `deepseek-v4-flash` 价格：cache-miss input `$0.14 / 1M tokens`，output `$0.28 / 1M tokens`。实际成本会随 provider 价格、缓存命中和模型策略变化。
+
+Cost was estimated using the `deepseek-v4-flash` pricing checked on 2026-07-08 from [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing): cache-miss input `$0.14 / 1M tokens` and output `$0.28 / 1M tokens`. Actual cost can change with provider pricing, cache hits, and model policy.
+
+本次实验还暴露出一个工程问题：当前 Windows/Codex 环境下 Python `urllib` 访问 DeepSeek 时可能出现 TLS EOF，而 `curl.exe` 可以正常访问同一 API。因此 provider adapter 保留 `urllib` 默认路径，并在网络/TLS 类请求失败时自动 fallback 到 `curl` transport。
+
+This run also exposed an engineering issue: in the current Windows/Codex environment, Python `urllib` may hit a TLS EOF when calling DeepSeek, while `curl.exe` can call the same API successfully. The provider adapter therefore keeps `urllib` as the default path and automatically falls back to a `curl` transport for network/TLS request failures.
+
 ## Current Test Coverage / 当前测试覆盖
 
 当前测试套件覆盖中文无人机任务字段提取、相关知识检索、端到端输出结构、场景加载、benchmark 评分、Benchmark v2 provider/cost 统计、CLI benchmark 模式、Agent trace 输出、本地 HTML dashboard 渲染、schema output、LLM provider adapter 和 CLI dashboard 生成模式。
@@ -446,7 +482,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 47 tests
+Ran 48 tests
 OK
 ```
 
