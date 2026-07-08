@@ -1,0 +1,17 @@
+[project]
+name = "uav-mission-intelligence-agent"
+version = "0.1.0"
+description = "Offline MVP for a UAV mission planning LLM/Agent project."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+uav-mission-agent = "uav_mission_agent.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
