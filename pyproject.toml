@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
+[project.optional-dependencies]
+langgraph = ["langgraph>=0.2"]
+
 [project.scripts]
 uav-mission-agent = "uav_mission_agent.cli:main"
 

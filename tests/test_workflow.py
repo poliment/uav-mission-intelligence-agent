@@ -38,6 +38,31 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(tracking["mission_config"]["planning_policy"], "target_tracking_with_distributed_coordination")
         self.assertEqual(replanning["mission_config"]["planning_policy"], "dynamic_replanning_with_constraint_avoidance")
 
+    def test_workflow_can_route_to_langgraph_backend(self):
+        calls = {}
+
+        def fake_langgraph_runner(text, knowledge_base=None, llm_provider=None):
+            calls["text"] = text
+            calls["knowledge_base"] = knowledge_base
+            calls["llm_provider"] = llm_provider
+            return {
+                "mission_config": {"uav_count": 1},
+                "agent_trace": [{"node": "task_parser_agent"}],
+                "agent_review": {"ready": True},
+                "graph_backend": "langgraph",
+            }
+
+        result = run_mission_workflow(
+            "use 1 UAV to inspect area A",
+            graph_backend="langgraph",
+            langgraph_runner=fake_langgraph_runner,
+        )
+
+        self.assertEqual(calls["text"], "use 1 UAV to inspect area A")
+        self.assertEqual(result["graph_backend"], "langgraph")
+        self.assertNotIn("agent_trace", result)
+        self.assertNotIn("agent_review", result)
+
 
 if __name__ == "__main__":
     unittest.main()

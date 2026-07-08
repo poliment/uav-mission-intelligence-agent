@@ -1,0 +1,35 @@
+[
+  {
+    "timestamp": 0,
+    "latitude": 30.0,
+    "longitude": 120.0,
+    "altitude": 100,
+    "speed": 4,
+    "heading": 0,
+    "roll": 10,
+    "pitch": 0,
+    "yaw": 0
+  },
+  {
+    "timestamp": 10,
+    "latitude": 30.0001,
+    "longitude": 120.0001,
+    "altitude": 101,
+    "speed": 4,
+    "heading": 160,
+    "roll": -10,
+    "pitch": 0,
+    "yaw": 160
+  },
+  {
+    "timestamp": 20,
+    "latitude": 30.0002,
+    "longitude": 120.0001,
+    "altitude": 101,
+    "speed": 4,
+    "heading": 320,
+    "roll": 12,
+    "pitch": 0,
+    "yaw": 320
+  }
+]

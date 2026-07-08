@@ -4,9 +4,9 @@
 >
 > This is a UAV-domain LLM/Agent project for mission understanding, planning assistance, knowledge retrieval, and structured mission configuration.
 
-UAV Mission Intelligence Agent 是一个面向无人机任务理解与任务规划辅助的公开原型项目。项目接收自然语言无人机任务请求，提取任务目标、区域、约束和协同条件，检索本地无人机规划知识，并生成包含规划建议、风险说明和 JSON 配置的结构化任务方案。当前版本默认离线运行，也支持通过 DeepSeek 或 OpenAI-compatible provider 对规划结果进行可选增强。
+UAV Mission Intelligence Agent 是一个面向无人机任务理解与任务规划辅助的公开原型项目。项目接收自然语言无人机任务请求，提取任务目标、区域、约束和协同条件，检索本地无人机规划知识，并生成包含规划建议、风险说明和 JSON 配置的结构化任务方案。当前版本默认离线运行，也支持通过 LangGraph backend、DeepSeek 或 OpenAI-compatible provider 对规划结果进行可选增强，并提供轻量 UAV trajectory intent recognition 模块。
 
-UAV Mission Intelligence Agent is a public prototype for UAV mission understanding and planning assistance. It takes a natural-language UAV mission request, extracts mission goals, areas, constraints, and coordination conditions, retrieves local UAV planning knowledge, and generates a structured mission plan with recommendations, risks, and JSON configuration. The current version runs offline by default and can optionally refine planning results through DeepSeek or an OpenAI-compatible provider.
+UAV Mission Intelligence Agent is a public prototype for UAV mission understanding and planning assistance. It takes a natural-language UAV mission request, extracts mission goals, areas, constraints, and coordination conditions, retrieves local UAV planning knowledge, and generates a structured mission plan with recommendations, risks, and JSON configuration. The current version runs offline by default and can optionally refine planning results through a LangGraph backend, DeepSeek, or an OpenAI-compatible provider, and includes a lightweight UAV trajectory intent recognition module.
 
 ## Project Overview / 项目概述
 
@@ -18,8 +18,10 @@ This project focuses on UAV mission intelligence, converting natural-language mi
 |---|---|
 | Mission input / 任务输入 | 接收中文自然语言无人机任务描述，例如区域搜索、禁飞区规避、多机协同和弱通信约束。<br>Accepts Chinese natural-language UAV mission requests, such as area search, no-fly-zone avoidance, multi-UAV coordination, and weak-communication constraints. |
 | Agent workflow / Agent 工作流 | 通过 `task_parser_agent -> knowledge_retriever_agent -> mission_planner_agent -> mission_reviewer_agent` 完成解析、检索、规划和复核。<br>Uses `task_parser_agent -> knowledge_retriever_agent -> mission_planner_agent -> mission_reviewer_agent` to parse, retrieve, plan, and review. |
+| LangGraph backend / LangGraph 后端 | 保留默认无依赖 workflow，同时提供可选 LangGraph `StateGraph` backend。<br>Keeps the default dependency-free workflow while adding an optional LangGraph `StateGraph` backend. |
 | Structured output / 结构化输出 | 输出任务字段、规划建议、风险说明、JSON mission configuration 和可选 schema envelope。<br>Outputs task fields, planning recommendations, risk notes, JSON mission configuration, and an optional schema envelope. |
 | LLM provider / LLM 适配器 | 默认离线运行，也可以通过 DeepSeek 或 OpenAI-compatible API 对规划结果进行可选增强。<br>Runs offline by default, with optional planning refinement through DeepSeek or an OpenAI-compatible API. |
+| Trajectory intent / 轨迹意图识别 | 从经纬高、速度、航向和姿态角轨迹点中提取摘要并识别飞行意图。<br>Extracts trajectory summaries from latitude, longitude, altitude, speed, heading, and attitude angles, then recognizes flight intent. |
 | Benchmark / 场景评估 | 使用多场景 benchmark 评估任务解析、目标覆盖、约束覆盖和风险关键词覆盖。<br>Uses a multi-scenario benchmark to evaluate task parsing, objective coverage, constraint coverage, and risk keyword coverage. |
 | Dashboard / 可视化页面 | 生成本地 HTML 页面，集中展示任务输入、Agent 节点流、规划结果和 benchmark 分数。<br>Generates a local HTML page that presents mission input, Agent node flow, planning results, and benchmark scores. |
 
@@ -43,6 +45,10 @@ The first version is intentionally offline and dependency-light, so it can run q
   Supports schema envelope output with schema name, version, JSON schema, validation result, and data payload.
 - 支持 DeepSeek 和 OpenAI-compatible LLM provider adapter，并保留默认离线 fallback。<br>
   Supports DeepSeek and OpenAI-compatible LLM provider adapters while keeping the default offline fallback.
+- 支持可选 LangGraph backend，安装 `langgraph` 后可通过 CLI 切换。<br>
+  Supports an optional LangGraph backend that can be selected from the CLI after installing `langgraph`.
+- 支持 UAV trajectory intent recognition，根据轨迹摘要识别 `area_search`、`target_tracking`、`return_to_base`、`loitering` 或 `transit`。<br>
+  Supports UAV trajectory intent recognition for `area_search`, `target_tracking`, `return_to_base`, `loitering`, or `transit`.
 - 运行小型无人机任务 benchmark，并给出场景级评分。<br>
   Runs a mini UAV mission benchmark with scenario-level scoring.
 - 提供 Agent 节点追踪和复核输出，增强可解释性。<br>
@@ -109,8 +115,11 @@ The project is modularized around task parsing, knowledge retrieval, planning ge
 |---|---|
 | `task_parser.py` | 从自然语言输入中提取结构化任务字段。<br>Extract structured mission fields from natural-language input. |
 | `agent_graph.py` | 以可追踪 Agent 节点方式运行解析、检索、规划和复核流程。<br>Run parser, retriever, planner, and reviewer as traceable Agent nodes. |
+| `langgraph_workflow.py` | 使用可选 LangGraph `StateGraph` 运行同一组任务节点。<br>Run the same mission nodes through an optional LangGraph `StateGraph`. |
 | `knowledge_base.py` | 使用轻量 RAG 风格评分器检索相关无人机规划片段。<br>Retrieve relevant UAV planning snippets with a lightweight RAG-style scorer. |
 | `llm_provider.py` | 提供 DeepSeek/OpenAI-compatible provider adapter 和 provider factory。<br>Provide the DeepSeek/OpenAI-compatible provider adapter and provider factory. |
+| `trajectory.py` | 解析 UAV 轨迹点并计算高度、速度、航向和位移摘要。<br>Parse UAV trajectory points and compute altitude, speed, heading, and displacement summaries. |
+| `intent_recognition.py` | 基于轨迹摘要识别轻量飞行意图。<br>Recognize lightweight flight intents from trajectory summaries. |
 | `planner.py` | 生成规划建议、风险说明和任务配置。<br>Generate recommendations, risk notes, and mission configuration. |
 | `schemas.py` | 定义标准输出 schema，并对任务方案进行轻量校验。<br>Define the public output schema and validate mission plans. |
 | `workflow.py` | 编排端到端任务智能流程。<br>Orchestrate the end-to-end mission intelligence workflow. |
@@ -145,13 +154,16 @@ uav-mission-intelligence-agent/
 |       +-- dashboard.py
 |       +-- agent_graph.py
 |       +-- evaluator.py
+|       +-- intent_recognition.py
 |       +-- knowledge_base.py
+|       +-- langgraph_workflow.py
 |       +-- llm_provider.py
 |       +-- models.py
 |       +-- planner.py
 |       +-- schemas.py
 |       +-- scenario_loader.py
 |       +-- task_parser.py
+|       +-- trajectory.py
 |       +-- workflow.py
 +-- tests/
 |   +-- test_agent_graph.py
@@ -230,6 +242,25 @@ A generic OpenAI-compatible API can also be used.
 $env:PYTHONPATH="src"
 $env:OPENAI_API_KEY="your-api-key"
 python -m uav_mission_agent.cli --llm-provider openai-compatible --llm-model gpt-4o-mini --llm-base-url https://api.example.com/v1 "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
+```
+
+如果需要使用 LangGraph backend，可以安装可选依赖，并通过 `--graph-backend langgraph` 切换。未安装 LangGraph 时，默认 `rule-based` backend 仍可正常运行。
+
+Use the optional LangGraph backend by installing the extra dependency and selecting `--graph-backend langgraph`. Without LangGraph installed, the default `rule-based` backend continues to run normally.
+
+```powershell
+python -m pip install -e ".[langgraph]"
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --graph-backend langgraph "使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"
+```
+
+也可以直接运行 UAV trajectory intent recognition 示例。输入文件是轨迹点 JSON 数组，字段包含 `timestamp`、`latitude`、`longitude`、`altitude`、`speed`、`heading`、`roll`、`pitch` 和 `yaw`。
+
+The UAV trajectory intent recognition example can also be run directly. The input file is a JSON array of trajectory points with `timestamp`, `latitude`, `longitude`, `altitude`, `speed`, `heading`, `roll`, `pitch`, and `yaw`.
+
+```powershell
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --trajectory-intent examples\trajectory_intent_example.json
 ```
 
 在 macOS 或 Linux 上运行单条任务示例。
@@ -357,7 +388,7 @@ passed_scenarios: 3
 
 当前测试套件覆盖中文无人机任务字段提取、相关知识检索、端到端输出结构、场景加载、benchmark 评分、CLI benchmark 模式、Agent trace 输出、本地 HTML dashboard 渲染、schema output、LLM provider adapter 和 CLI dashboard 生成模式。
 
-The current test suite validates Chinese UAV mission field extraction, relevant UAV knowledge retrieval, end-to-end workflow output structure, scenario loading, benchmark scoring, CLI benchmark mode, Agent graph trace output, local HTML dashboard rendering, schema output, LLM provider adapter, and CLI dashboard generation mode.
+The current test suite validates Chinese UAV mission field extraction, relevant UAV knowledge retrieval, end-to-end workflow output structure, scenario loading, benchmark scoring, CLI benchmark mode, Agent graph trace output, optional LangGraph backend routing, local HTML dashboard rendering, schema output, LLM provider adapter, UAV trajectory summary, trajectory intent recognition, and CLI dashboard generation mode.
 
 Run / 运行：
 
@@ -368,14 +399,14 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 28 tests
+Ran 40 tests
 OK
 ```
 
 ## Roadmap / 路线图
 
-- 用 LangGraph 实现当前的无依赖 Agent 图。<br>
-  Replace the dependency-free Agent graph with a LangGraph implementation of the current nodes.
+- 扩展 LangGraph backend，增加条件边、检查点和人工复核节点。<br>
+  Extend the LangGraph backend with conditional edges, checkpoints, and human review nodes.
 - 用 FAISS 或 Chroma 替换本地轻量检索器。<br>
   Replace the local retriever with FAISS or Chroma.
 - 增加更多 provider 后端，并补充 DeepSeek/provider-level benchmark。<br>
@@ -393,4 +424,4 @@ OK
 
 构建了一个无人机领域 LLM/Agent 原型，能够将自然语言无人机任务请求转化为结构化任务方案，并结合可追踪 Agent 节点、任务解析、RAG 风格本地知识检索、可插拔 LLM provider、schema 输出、规划建议、风险解释、JSON 配置输出和 benchmark 场景评估。
 
-Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, task parsing, RAG-style local knowledge retrieval, a pluggable LLM provider, schema output, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.
+Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, an optional LangGraph backend, task parsing, RAG-style local knowledge retrieval, a pluggable LLM provider, schema output, UAV trajectory intent recognition, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.
