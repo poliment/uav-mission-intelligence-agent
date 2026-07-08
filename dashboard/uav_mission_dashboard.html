@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UAV Mission Intelligence Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #152033;
+      --muted: #667085;
+      --line: #d9e2ef;
+      --blue: #1d4ed8;
+      --green: #16803c;
+      --amber: #b7791f;
+      --soft-blue: #e8f1ff;
+      --soft-green: #eaf7ef;
+      --soft-amber: #fff6df;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    header {
+      padding: 32px 40px 24px;
+      background: #0f172a;
+      color: #fff;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+    header p {
+      max-width: 920px;
+      margin: 0;
+      color: #cbd5e1;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 90px;
+    }
+    .metric strong {
+      font-size: 32px;
+    }
+    .muted { color: var(--muted); }
+    .mission-text {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      font-size: 15px;
+    }
+    .node-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .node {
+      border: 1px solid #bfd2ef;
+      background: var(--soft-blue);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 132px;
+    }
+    .node-name {
+      font-weight: 700;
+      color: var(--blue);
+      word-break: break-word;
+    }
+    .node small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: var(--soft-green);
+      border: 1px solid #bfe7cc;
+      color: var(--green);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .list {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .list li + li { margin-top: 8px; }
+    .score-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .score-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .score-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #16a34a);
+    }
+    pre {
+      overflow: auto;
+      max-height: 420px;
+      padding: 14px;
+      background: #0b1020;
+      color: #dbeafe;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    @media (max-width: 860px) {
+      header { padding: 26px 22px; }
+      main { padding: 16px; }
+      .span-4, .span-6, .span-8, .span-12 { grid-column: span 12; }
+      .node-flow { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>UAV Mission Intelligence Dashboard</h1>
+    <p>A local visualization page for mission input, traceable Agent nodes, planning output, and benchmark scores.</p>
+  </header>
+  <main>
+    <section class="grid">
+
+      <article class="panel span-4 metric">
+        <span class="muted">average_score</span>
+        <strong>1.00</strong>
+        <span>Mean benchmark scenario score</span>
+      </article>
+      <article class="panel span-4 metric">
+        <span class="muted">total_scenarios</span>
+        <strong>3</strong>
+        <span>UAV mission benchmark cases</span>
+      </article>
+      <article class="panel span-4 metric">
+        <span class="muted">passed_scenarios</span>
+        <strong>3</strong>
+        <span>Scenarios scoring at least 0.80</span>
+      </article>
+
+      <article class="panel span-12" id="mission-input">
+        <h2>Mission Input</h2>
+        <div class="mission-text">使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。</div>
+      </article>
+      <article class="panel span-12" id="agent-flow">
+        <h2>Agent Node Flow</h2>
+        <div class="node-flow">
+
+          <div class="node">
+            <div class="node-name">task_parser_agent</div>
+            <small>Status: ok</small>
+            <small>Inputs: raw_request</small>
+            <small>Outputs: task</small>
+            <small>Parsed mission text into UAV task fields.</small>
+          </div>
+
+
+          <div class="node">
+            <div class="node-name">knowledge_retriever_agent</div>
+            <small>Status: ok</small>
+            <small>Inputs: raw_request, knowledge_base</small>
+            <small>Outputs: retrieved_knowledge</small>
+            <small>Retrieved 3 UAV planning knowledge snippets.</small>
+          </div>
+
+
+          <div class="node">
+            <div class="node-name">mission_planner_agent</div>
+            <small>Status: ok</small>
+            <small>Inputs: task, retrieved_knowledge</small>
+            <small>Outputs: mission_plan</small>
+            <small>Generated recommendations, risks, and structured mission configuration.</small>
+          </div>
+
+
+          <div class="node">
+            <div class="node-name">mission_reviewer_agent</div>
+            <small>Status: ok</small>
+            <small>Inputs: mission_plan</small>
+            <small>Outputs: agent_review</small>
+            <small>Reviewed mission plan completeness and consistency.</small>
+          </div>
+
+        </div>
+      </article>
+      <article class="panel span-6" id="planning-output">
+        <h2>Planning Recommendations</h2>
+        <ul class="list"><li>将区域A划分为若干子区域，并按无人机数量进行覆盖搜索任务分配。</li><li>对可疑目标点设置更高搜索优先级，并在目标附近保留重访或盘旋观察策略。</li><li>将禁飞区B作为硬约束写入任务配置，规划阶段禁止航迹穿越。</li><li>采用分布式协同策略，降低全局同步频率，仅在关键事件或区域交接时通信。</li></ul>
+      </article>
+      <article class="panel span-6" id="risk-output">
+        <h2>Risk Explanation</h2>
+        <ul class="list"><li>弱通信可能导致任务状态不同步，需要设计局部决策和失联降级策略。</li><li>禁飞区约束会压缩可行航迹空间，需检查绕飞后航程和覆盖率是否满足要求。</li><li>多机协同需要关注机间冲突、任务重复覆盖和区域交接失败。</li></ul>
+      </article>
+      <article class="panel span-6" id="mission-config">
+        <h2>Mission Config</h2>
+        <div class="pill-row"><span class="pill">uav_count: 3</span><span class="pill">coordination_mode: distributed_low_bandwidth</span><span class="pill">planning_policy: coverage_first_with_constraint_avoidance</span><span class="pill">search_areas: 区域A</span><span class="pill">avoid_zones: 禁飞区B</span></div>
+      </article>
+      <article class="panel span-6" id="benchmark-scores">
+        <h2>Benchmark Scores</h2>
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>area_search_low_bandwidth</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Area search under weak communication</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>no_fly_zone_replan</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Dynamic no-fly-zone replanning</p>
+            </div>
+
+
+            <div class="score-card">
+              <div class="score-head">
+                <strong>target_tracking_multi_uav</strong>
+                <span>1.00</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 100%"></div></div>
+              <p class="muted">Multi-UAV target tracking</p>
+            </div>
+
+      </article>
+      <article class="panel span-6">
+        <h2>Agent JSON</h2>
+        <pre>{
+  &quot;task&quot;: {
+    &quot;raw_request&quot;: &quot;使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。&quot;,
+    &quot;drone_count&quot;: 3,
+    &quot;search_areas&quot;: [
+      &quot;区域A&quot;
+    ],
+    &quot;avoid_zones&quot;: [
+      &quot;禁飞区B&quot;
+    ],
+    &quot;objectives&quot;: [
+      &quot;area_search&quot;,
+      &quot;coverage&quot;,
+      &quot;suspicious_target_search&quot;
+    ],
+    &quot;constraints&quot;: [
+      &quot;low_bandwidth_coordination&quot;,
+      &quot;avoid_no_fly_zone&quot;,
+      &quot;multi_uav_coordination&quot;
+    ]
+  },
+  &quot;retrieved_knowledge&quot;: [
+    {
+      &quot;topic&quot;: &quot;coverage_search&quot;,
+      &quot;content&quot;: &quot;多无人机搜索任务通常先进行区域分解，再按照覆盖率、航程约束和目标优先级分配航迹。&quot;,
+      &quot;tags&quot;: [
+        &quot;多无人机&quot;,
+        &quot;搜索&quot;,
+        &quot;覆盖&quot;,
+        &quot;区域&quot;,
+        &quot;area_search&quot;
+      ]
+    },
+    {
+      &quot;topic&quot;: &quot;low_bandwidth_coordination&quot;,
+      &quot;content&quot;: &quot;弱通信条件下应减少全局同步依赖，优先采用局部感知、事件触发通信和分布式协同策略。&quot;,
+      &quot;tags&quot;: [
+        &quot;弱通信&quot;,
+        &quot;通信&quot;,
+        &quot;低通量&quot;,
+        &quot;协同&quot;,
+        &quot;distributed&quot;
+      ]
+    },
+    {
+      &quot;topic&quot;: &quot;no_fly_zone_avoidance&quot;,
+      &quot;content&quot;: &quot;存在禁飞区时，任务配置应显式保留避让区域，并在航迹规划阶段加入硬约束或高惩罚代价。&quot;,
+      &quot;tags&quot;: [
+        &quot;禁飞区&quot;,
+        &quot;避开&quot;,
+        &quot;约束&quot;,
+        &quot;航迹规划&quot;,
+        &quot;avoid&quot;
+      ]
+    }
+  ],
+  &quot;recommendations&quot;: [
+    &quot;将区域A划分为若干子区域，并按无人机数量进行覆盖搜索任务分配。&quot;,
+    &quot;对可疑目标点设置更高搜索优先级，并在目标附近保留重访或盘旋观察策略。&quot;,
+    &quot;将禁飞区B作为硬约束写入任务配置，规划阶段禁止航迹穿越。&quot;,
+    &quot;采用分布式协同策略，降低全局同步频率，仅在关键事件或区域交接时通信。&quot;
+  ],
+  &quot;risks&quot;: [
+    &quot;弱通信可能导致任务状态不同步，需要设计局部决策和失联降级策略。&quot;,
+    &quot;禁飞区约束会压缩可行航迹空间，需检查绕飞后航程和覆盖率是否满足要求。&quot;,
+    &quot;多机协同需要关注机间冲突、任务重复覆盖和区域交接失败。&quot;
+  ],
+  &quot;mission_config&quot;: {
+    &quot;version&quot;: &quot;0.1&quot;,
+    &quot;uav_count&quot;: 3,
+    &quot;search_areas&quot;: [
+      &quot;区域A&quot;
+    ],
+    &quot;avoid_zones&quot;: [
+      &quot;禁飞区B&quot;
+    ],
+    &quot;objectives&quot;: [
+      &quot;area_search&quot;,
+      &quot;coverage&quot;,
+      &quot;suspicious_target_search&quot;
+    ],
+    &quot;constraints&quot;: [
+      &quot;low_bandwidth_coordination&quot;,
+      &quot;avoid_no_fly_zone&quot;,
+      &quot;multi_uav_coordination&quot;
+    ],
+    &quot;coordination_mode&quot;: &quot;distributed_low_bandwidth&quot;,
+    &quot;planning_policy&quot;: &quot;coverage_first_with_constraint_avoidance&quot;
+  },
+  &quot;agent_trace&quot;: [
+    {
+      &quot;node&quot;: &quot;task_parser_agent&quot;,
+      &quot;status&quot;: &quot;ok&quot;,
+      &quot;input_keys&quot;: [
+        &quot;raw_request&quot;
+      ],
+      &quot;output_keys&quot;: [
+        &quot;task&quot;
+      ],
+      &quot;message&quot;: &quot;Parsed mission text into UAV task fields.&quot;
+    },
+    {
+      &quot;node&quot;: &quot;knowledge_retriever_agent&quot;,
+      &quot;status&quot;: &quot;ok&quot;,
+      &quot;input_keys&quot;: [
+        &quot;raw_request&quot;,
+        &quot;knowledge_base&quot;
+      ],
+      &quot;output_keys&quot;: [
+        &quot;retrieved_knowledge&quot;
+      ],
+      &quot;message&quot;: &quot;Retrieved 3 UAV planning knowledge snippets.&quot;
+    },
+    {
+      &quot;node&quot;: &quot;mission_planner_agent&quot;,
+      &quot;status&quot;: &quot;ok&quot;,
+      &quot;input_keys&quot;: [
+        &quot;task&quot;,
+        &quot;retrieved_knowledge&quot;
+      ],
+      &quot;output_keys&quot;: [
+        &quot;mission_plan&quot;
+      ],
+      &quot;message&quot;: &quot;Generated recommendations, risks, and structured mission configuration.&quot;
+    },
+    {
+      &quot;node&quot;: &quot;mission_reviewer_agent&quot;,
+      &quot;status&quot;: &quot;ok&quot;,
+      &quot;input_keys&quot;: [
+        &quot;mission_plan&quot;
+      ],
+      &quot;output_keys&quot;: [
+        &quot;agent_review&quot;
+      ],
+      &quot;message&quot;: &quot;Reviewed mission plan completeness and consistency.&quot;
+    }
+  ],
+  &quot;agent_review&quot;: {
+    &quot;ready&quot;: true,
+    &quot;warning_count&quot;: 0,
+    &quot;warnings&quot;: []
+  }
+}</pre>
+      </article>
+      <article class="panel span-6">
+        <h2>Benchmark JSON</h2>
+        <pre>{
+  &quot;summary&quot;: {
+    &quot;total_scenarios&quot;: 3,
+    &quot;average_score&quot;: 1.0,
+    &quot;passed_scenarios&quot;: 3
+  },
+  &quot;results&quot;: [
+    {
+      &quot;scenario_id&quot;: &quot;area_search_low_bandwidth&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;name&quot;: &quot;Area search under weak communication&quot;
+    },
+    {
+      &quot;scenario_id&quot;: &quot;no_fly_zone_replan&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;name&quot;: &quot;Dynamic no-fly-zone replanning&quot;
+    },
+    {
+      &quot;scenario_id&quot;: &quot;target_tracking_multi_uav&quot;,
+      &quot;score&quot;: 1.0,
+      &quot;breakdown&quot;: {
+        &quot;uav_count&quot;: 1.0,
+        &quot;search_areas&quot;: 1.0,
+        &quot;avoid_zones&quot;: 1.0,
+        &quot;objectives&quot;: 1.0,
+        &quot;constraints&quot;: 1.0,
+        &quot;risk_keywords&quot;: 1.0
+      },
+      &quot;missing_requirements&quot;: [],
+      &quot;difficulty&quot;: &quot;medium&quot;,
+      &quot;name&quot;: &quot;Multi-UAV target tracking&quot;
+    }
+  ]
+}</pre>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

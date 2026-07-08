@@ -26,6 +26,7 @@ The first version is intentionally offline and dependency-light, so recruiters a
 - Outputs a structured JSON mission configuration.
 - Runs a mini UAV mission benchmark with scenario-level scoring.
 - Provides an Agent-style node trace and review output for explainability.
+- Generates a local HTML dashboard for mission input, Agent node flow, planning output, and benchmark scores.
 - Includes unit tests and an example output for quick review.
 
 ## Example Scenario
@@ -81,6 +82,7 @@ The current implementation is a dependency-free Agent graph. Each node reads and
 | `scenario_loader.py` | Load structured UAV benchmark scenarios |
 | `evaluator.py` | Score mission plans against scenario expectations |
 | `benchmark.py` | Run the workflow across a scenario set and summarize metrics |
+| `dashboard.py` | Generate a local static HTML visualization page |
 | `cli.py` | Provide a command-line demo entry point |
 
 Project layout:
@@ -97,10 +99,13 @@ uav-mission-intelligence-agent/
 |       +-- target_tracking_multi_uav.json
 +-- results/
 |   +-- example_evaluation.json
++-- dashboard/
+|   +-- uav_mission_dashboard.html
 +-- src/
 |   +-- uav_mission_agent/
 |       +-- benchmark.py
 |       +-- cli.py
+|       +-- dashboard.py
 |       +-- agent_graph.py
 |       +-- evaluator.py
 |       +-- knowledge_base.py
@@ -110,6 +115,12 @@ uav-mission-intelligence-agent/
 |       +-- task_parser.py
 |       +-- workflow.py
 +-- tests/
+|   +-- test_agent_graph.py
+|   +-- test_benchmark.py
+|   +-- test_cli.py
+|   +-- test_dashboard.py
+|   +-- test_evaluator.py
+|   +-- test_scenario_loader.py
 |   +-- test_task_parser.py
 |   +-- test_workflow.py
 +-- pyproject.toml
@@ -160,6 +171,15 @@ python -m uav_mission_agent.cli --benchmark data\scenarios
 
 The benchmark evaluates task parsing, expected objectives, mission constraints, risk keyword coverage, and structured mission configuration. A representative benchmark result is available at [`results/example_evaluation.json`](results/example_evaluation.json).
 
+Generate the local HTML dashboard:
+
+```powershell
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --dashboard dashboard\uav_mission_dashboard.html
+```
+
+Then open [`dashboard/uav_mission_dashboard.html`](dashboard/uav_mission_dashboard.html) in a browser. The page shows the mission input, traceable Agent node flow, planning recommendations, risk notes, mission configuration, and benchmark score bars in one job-facing view.
+
 Optional editable install:
 
 ```bash
@@ -200,6 +220,7 @@ python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞
 - **Structured reasoning:** The pipeline separates parsing, retrieval, planning, and configuration generation.
 - **Agent traceability:** The Agent graph records node order, input keys, output keys, and review status.
 - **Benchmark-style evidence:** The project includes structured UAV scenarios and an evaluator instead of only a single demo.
+- **Presentation-ready dashboard:** The CLI can generate a static HTML page for local demos and GitHub evidence.
 - **RAG-ready design:** The local knowledge retriever can later be replaced by FAISS, Chroma, or another vector database.
 - **Agent-ready design:** Each module can become a LangGraph node in a future multi-agent workflow.
 - **Testable MVP:** Current behavior is covered by unit tests and runs without network access.
@@ -242,6 +263,8 @@ The first test suite validates:
 - benchmark scoring
 - CLI benchmark mode
 - Agent graph trace output
+- local HTML dashboard rendering
+- CLI dashboard generation mode
 
 Run:
 
@@ -252,7 +275,7 @@ python -m unittest discover -s tests -v
 Expected result:
 
 ```text
-Ran 16 tests
+Ran 19 tests
 OK
 ```
 
@@ -264,7 +287,7 @@ OK
 - Add structured YAML output for simulator-style mission configuration.
 - Add more UAV scenarios: area search, target tracking, no-fly-zone avoidance, weak communication, and multi-UAV task allocation.
 - Add harder benchmark cases with ambiguous commands and conflicting constraints.
-- Add a Streamlit or FastAPI demo for visual presentation.
+- Add an interactive Streamlit or FastAPI demo after the static dashboard baseline.
 
 ## Resume Summary
 

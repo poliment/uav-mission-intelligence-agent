@@ -2,6 +2,7 @@ import contextlib
 import io
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -45,6 +46,19 @@ class CliTests(unittest.TestCase):
         result = json.loads(output.getvalue())
         self.assertNotIn("agent_trace", result)
         self.assertNotIn("agent_review", result)
+
+    def test_dashboard_mode_writes_html_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "dashboard.html"
+            output = io.StringIO()
+
+            with contextlib.redirect_stdout(output):
+                main(["--dashboard", str(output_path)])
+
+            result = json.loads(output.getvalue())
+            self.assertEqual(result["dashboard"], str(output_path))
+            self.assertTrue(output_path.exists())
+            self.assertIn("UAV Mission Intelligence Dashboard", output_path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
