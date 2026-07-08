@@ -4,27 +4,28 @@
 >
 > This is a UAV-domain LLM/Agent project for mission understanding, planning assistance, knowledge retrieval, and structured mission configuration.
 
-UAV Mission Intelligence Agent 是一个面向无人机任务理解与任务规划辅助的公开原型项目。项目接收自然语言无人机任务请求，提取任务目标、区域、约束和协同条件，检索本地无人机规划知识，并生成包含规划建议、风险说明和 JSON 配置的结构化任务方案。
+UAV Mission Intelligence Agent 是一个面向无人机任务理解与任务规划辅助的公开原型项目。项目接收自然语言无人机任务请求，提取任务目标、区域、约束和协同条件，检索本地无人机规划知识，并生成包含规划建议、风险说明和 JSON 配置的结构化任务方案。当前版本默认离线运行，也支持通过 DeepSeek 或 OpenAI-compatible provider 对规划结果进行可选增强。
 
-UAV Mission Intelligence Agent is a public prototype for UAV mission understanding and planning assistance. It takes a natural-language UAV mission request, extracts mission goals, areas, constraints, and coordination conditions, retrieves local UAV planning knowledge, and generates a structured mission plan with recommendations, risks, and JSON configuration.
+UAV Mission Intelligence Agent is a public prototype for UAV mission understanding and planning assistance. It takes a natural-language UAV mission request, extracts mission goals, areas, constraints, and coordination conditions, retrieves local UAV planning knowledge, and generates a structured mission plan with recommendations, risks, and JSON configuration. The current version runs offline by default and can optionally refine planning results through DeepSeek or an OpenAI-compatible provider.
 
 ## Project Overview / 项目概述
 
-本项目围绕无人机任务智能展开，重点是把自然语言任务描述转化为可解释、可评估的结构化任务方案。当前版本使用离线规则和轻量 Agent 工作流实现核心流程，后续可以替换为真实 LLM、LangGraph 和向量数据库。
+本项目围绕无人机任务智能展开，重点是把自然语言任务描述转化为可解释、可评估的结构化任务方案。当前版本使用离线规则和轻量 Agent 工作流实现核心流程，并提供标准 schema 输出和可插拔 LLM provider adapter。
 
-This project focuses on UAV mission intelligence, converting natural-language mission requests into explainable and evaluable structured mission plans. The current version uses offline rules and a lightweight Agent workflow for the core pipeline, with a clear path toward real LLM calls, LangGraph, and vector databases.
+This project focuses on UAV mission intelligence, converting natural-language mission requests into explainable and evaluable structured mission plans. The current version uses offline rules and a lightweight Agent workflow for the core pipeline, with standard schema output and a pluggable LLM provider adapter.
 
 | Project part / 项目部分 | Description / 内容说明 |
 |---|---|
 | Mission input / 任务输入 | 接收中文自然语言无人机任务描述，例如区域搜索、禁飞区规避、多机协同和弱通信约束。<br>Accepts Chinese natural-language UAV mission requests, such as area search, no-fly-zone avoidance, multi-UAV coordination, and weak-communication constraints. |
 | Agent workflow / Agent 工作流 | 通过 `task_parser_agent -> knowledge_retriever_agent -> mission_planner_agent -> mission_reviewer_agent` 完成解析、检索、规划和复核。<br>Uses `task_parser_agent -> knowledge_retriever_agent -> mission_planner_agent -> mission_reviewer_agent` to parse, retrieve, plan, and review. |
-| Structured output / 结构化输出 | 输出任务字段、规划建议、风险说明和 JSON mission configuration。<br>Outputs task fields, planning recommendations, risk notes, and JSON mission configuration. |
+| Structured output / 结构化输出 | 输出任务字段、规划建议、风险说明、JSON mission configuration 和可选 schema envelope。<br>Outputs task fields, planning recommendations, risk notes, JSON mission configuration, and an optional schema envelope. |
+| LLM provider / LLM 适配器 | 默认离线运行，也可以通过 DeepSeek 或 OpenAI-compatible API 对规划结果进行可选增强。<br>Runs offline by default, with optional planning refinement through DeepSeek or an OpenAI-compatible API. |
 | Benchmark / 场景评估 | 使用多场景 benchmark 评估任务解析、目标覆盖、约束覆盖和风险关键词覆盖。<br>Uses a multi-scenario benchmark to evaluate task parsing, objective coverage, constraint coverage, and risk keyword coverage. |
 | Dashboard / 可视化页面 | 生成本地 HTML 页面，集中展示任务输入、Agent 节点流、规划结果和 benchmark 分数。<br>Generates a local HTML page that presents mission input, Agent node flow, planning results, and benchmark scores. |
 
-当前版本保持离线、轻依赖，因此无需 API Key 就能快速运行。项目结构也为后续接入 LangGraph、向量数据库和真实 LLM 调用预留了扩展路径。
+当前版本保持离线、轻依赖，因此无需 API Key 就能快速运行。需要接入外部模型时，可以通过命令行参数启用 DeepSeek 或 OpenAI-compatible provider。
 
-The first version is intentionally offline and dependency-light, so it can run quickly without API keys. The architecture is prepared for later LangGraph, vector database, and real LLM integration.
+The first version is intentionally offline and dependency-light, so it can run quickly without API keys. When external model calls are needed, DeepSeek or an OpenAI-compatible provider can be enabled through CLI options.
 
 ## Key Features / 核心功能
 
@@ -38,6 +39,10 @@ The first version is intentionally offline and dependency-light, so it can run q
   Generates planning recommendations for search, coverage, no-fly-zone avoidance, and weak communication.
 - 输出结构化 JSON 任务配置。<br>
   Outputs a structured JSON mission configuration.
+- 支持 schema envelope 输出，包含 schema 名称、版本、JSON schema、校验结果和数据主体。<br>
+  Supports schema envelope output with schema name, version, JSON schema, validation result, and data payload.
+- 支持 DeepSeek 和 OpenAI-compatible LLM provider adapter，并保留默认离线 fallback。<br>
+  Supports DeepSeek and OpenAI-compatible LLM provider adapters while keeping the default offline fallback.
 - 运行小型无人机任务 benchmark，并给出场景级评分。<br>
   Runs a mini UAV mission benchmark with scenario-level scoring.
 - 提供 Agent 节点追踪和复核输出，增强可解释性。<br>
@@ -105,7 +110,9 @@ The project is modularized around task parsing, knowledge retrieval, planning ge
 | `task_parser.py` | 从自然语言输入中提取结构化任务字段。<br>Extract structured mission fields from natural-language input. |
 | `agent_graph.py` | 以可追踪 Agent 节点方式运行解析、检索、规划和复核流程。<br>Run parser, retriever, planner, and reviewer as traceable Agent nodes. |
 | `knowledge_base.py` | 使用轻量 RAG 风格评分器检索相关无人机规划片段。<br>Retrieve relevant UAV planning snippets with a lightweight RAG-style scorer. |
+| `llm_provider.py` | 提供 DeepSeek/OpenAI-compatible provider adapter 和 provider factory。<br>Provide the DeepSeek/OpenAI-compatible provider adapter and provider factory. |
 | `planner.py` | 生成规划建议、风险说明和任务配置。<br>Generate recommendations, risk notes, and mission configuration. |
+| `schemas.py` | 定义标准输出 schema，并对任务方案进行轻量校验。<br>Define the public output schema and validate mission plans. |
 | `workflow.py` | 编排端到端任务智能流程。<br>Orchestrate the end-to-end mission intelligence workflow. |
 | `scenario_loader.py` | 加载结构化无人机 benchmark 场景。<br>Load structured UAV benchmark scenarios. |
 | `evaluator.py` | 根据场景期望对任务方案进行评分。<br>Score mission plans against scenario expectations. |
@@ -139,8 +146,10 @@ uav-mission-intelligence-agent/
 |       +-- agent_graph.py
 |       +-- evaluator.py
 |       +-- knowledge_base.py
+|       +-- llm_provider.py
 |       +-- models.py
 |       +-- planner.py
+|       +-- schemas.py
 |       +-- scenario_loader.py
 |       +-- task_parser.py
 |       +-- workflow.py
@@ -192,6 +201,35 @@ Use the `--trace` flag if you want to inspect the Agent node execution trace.
 ```powershell
 $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli --trace "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
+```
+
+如果需要标准 schema envelope 输出，可以使用 `--schema-output` 参数。
+
+Use `--schema-output` when a standard schema envelope is needed.
+
+```powershell
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --schema-output "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
+```
+
+如果需要调用 DeepSeek API 对规划结果进行增强，可以设置 `DEEPSEEK_API_KEY`，并使用 `--llm-provider deepseek`。默认模型为 `deepseek-v4-flash`。
+
+Use `DEEPSEEK_API_KEY` and `--llm-provider deepseek` to refine planning results through the DeepSeek API. The default model is `deepseek-v4-flash`.
+
+```powershell
+$env:PYTHONPATH="src"
+$env:DEEPSEEK_API_KEY="your-api-key"
+python -m uav_mission_agent.cli --llm-provider deepseek "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
+```
+
+也可以使用通用 OpenAI-compatible API。
+
+A generic OpenAI-compatible API can also be used.
+
+```powershell
+$env:PYTHONPATH="src"
+$env:OPENAI_API_KEY="your-api-key"
+python -m uav_mission_agent.cli --llm-provider openai-compatible --llm-model gpt-4o-mini --llm-base-url https://api.example.com/v1 "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
 ```
 
 在 macOS 或 Linux 上运行单条任务示例。
@@ -276,6 +314,10 @@ The following fragment shows the core JSON output structure, including the parse
   Structured reasoning is clear; the pipeline separates parsing, retrieval, planning, and configuration generation.
 - Agent 可追踪，每个节点记录执行顺序、输入键、输出键和复核状态。<br>
   The Agent graph is traceable, recording node order, input keys, output keys, and review status.
+- LLM provider 可插拔，内置 DeepSeek alias，默认离线路径不依赖外部 API。<br>
+  The LLM provider is pluggable, includes a DeepSeek alias, and keeps the default offline path independent from external APIs.
+- schema 输出可校验，便于下游系统稳定读取任务方案。<br>
+  Schema output is validated so downstream systems can consume mission plans consistently.
 - 包含 benchmark 评估，不只停留在单条示例，而是包含结构化无人机场景和评估器。<br>
   Benchmark evaluation is included through structured UAV scenarios and an evaluator, instead of only a single example.
 - dashboard 用于结果检查，CLI 可以生成静态 HTML 页面，展示本地运行结果。<br>
@@ -313,9 +355,9 @@ passed_scenarios: 3
 
 ## Current Test Coverage / 当前测试覆盖
 
-当前测试套件覆盖中文无人机任务字段提取、相关知识检索、端到端输出结构、场景加载、benchmark 评分、CLI benchmark 模式、Agent trace 输出、本地 HTML dashboard 渲染和 CLI dashboard 生成模式。
+当前测试套件覆盖中文无人机任务字段提取、相关知识检索、端到端输出结构、场景加载、benchmark 评分、CLI benchmark 模式、Agent trace 输出、本地 HTML dashboard 渲染、schema output、LLM provider adapter 和 CLI dashboard 生成模式。
 
-The current test suite validates Chinese UAV mission field extraction, relevant UAV knowledge retrieval, end-to-end workflow output structure, scenario loading, benchmark scoring, CLI benchmark mode, Agent graph trace output, local HTML dashboard rendering, and CLI dashboard generation mode.
+The current test suite validates Chinese UAV mission field extraction, relevant UAV knowledge retrieval, end-to-end workflow output structure, scenario loading, benchmark scoring, CLI benchmark mode, Agent graph trace output, local HTML dashboard rendering, schema output, LLM provider adapter, and CLI dashboard generation mode.
 
 Run / 运行：
 
@@ -326,7 +368,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 19 tests
+Ran 28 tests
 OK
 ```
 
@@ -336,8 +378,8 @@ OK
   Replace the dependency-free Agent graph with a LangGraph implementation of the current nodes.
 - 用 FAISS 或 Chroma 替换本地轻量检索器。<br>
   Replace the local retriever with FAISS or Chroma.
-- 增加 OpenAI-compatible API 的 LLM provider adapter。<br>
-  Add an LLM provider adapter for OpenAI-compatible APIs.
+- 增加更多 provider 后端，并补充 DeepSeek/provider-level benchmark。<br>
+  Add more provider backends and DeepSeek/provider-level benchmarks.
 - 增加面向仿真器的结构化 YAML 输出。<br>
   Add structured YAML output for simulator-style mission configuration.
 - 扩展更多无人机场景，包括区域搜索、目标跟踪、禁飞区规避、弱通信和多无人机任务分配。<br>
@@ -349,6 +391,6 @@ OK
 
 ## Project Summary / 项目总结
 
-构建了一个无人机领域 LLM/Agent 原型，能够将自然语言无人机任务请求转化为结构化任务方案，并结合可追踪 Agent 节点、任务解析、RAG 风格本地知识检索、规划建议、风险解释、JSON 配置输出和 benchmark 场景评估。
+构建了一个无人机领域 LLM/Agent 原型，能够将自然语言无人机任务请求转化为结构化任务方案，并结合可追踪 Agent 节点、任务解析、RAG 风格本地知识检索、可插拔 LLM provider、schema 输出、规划建议、风险解释、JSON 配置输出和 benchmark 场景评估。
 
-Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, task parsing, RAG-style local knowledge retrieval, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.
+Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, task parsing, RAG-style local knowledge retrieval, a pluggable LLM provider, schema output, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.

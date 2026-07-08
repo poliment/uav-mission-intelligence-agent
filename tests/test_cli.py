@@ -60,6 +60,17 @@ class CliTests(unittest.TestCase):
             self.assertTrue(output_path.exists())
             self.assertIn("UAV Mission Intelligence Dashboard", output_path.read_text(encoding="utf-8"))
 
+    def test_schema_output_wraps_single_mission_result(self):
+        output = io.StringIO()
+
+        with contextlib.redirect_stdout(output):
+            main(["--schema-output", "使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"])
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(result["schema_name"], "uav_mission_plan")
+        self.assertTrue(result["validation"]["valid"])
+        self.assertEqual(result["data"]["mission_config"]["uav_count"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()

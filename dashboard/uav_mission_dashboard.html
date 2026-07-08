@@ -221,7 +221,7 @@
           <div class="node">
             <div class="node-name">mission_planner_agent</div>
             <small>Status: ok</small>
-            <small>Inputs: task, retrieved_knowledge</small>
+            <small>Inputs: task, retrieved_knowledge, llm_provider</small>
             <small>Outputs: mission_plan</small>
             <small>Generated recommendations, risks, and structured mission configuration.</small>
           </div>
@@ -373,6 +373,10 @@
     &quot;coordination_mode&quot;: &quot;distributed_low_bandwidth&quot;,
     &quot;planning_policy&quot;: &quot;coverage_first_with_constraint_avoidance&quot;
   },
+  &quot;schema_validation&quot;: {
+    &quot;valid&quot;: true,
+    &quot;errors&quot;: []
+  },
   &quot;agent_trace&quot;: [
     {
       &quot;node&quot;: &quot;task_parser_agent&quot;,
@@ -402,7 +406,8 @@
       &quot;status&quot;: &quot;ok&quot;,
       &quot;input_keys&quot;: [
         &quot;task&quot;,
-        &quot;retrieved_knowledge&quot;
+        &quot;retrieved_knowledge&quot;,
+        &quot;llm_provider&quot;
       ],
       &quot;output_keys&quot;: [
         &quot;mission_plan&quot;

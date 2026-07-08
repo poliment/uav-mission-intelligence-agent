@@ -1,125 +1,155 @@
 {
-  "task": {
-    "raw_request": "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。",
-    "drone_count": 3,
-    "search_areas": [
-      "区域A"
+  "schema_name": "uav_mission_plan",
+  "schema_version": "1.0",
+  "schema": {
+    "schema_name": "uav_mission_plan",
+    "schema_version": "1.0",
+    "type": "object",
+    "required": [
+      "task",
+      "retrieved_knowledge",
+      "recommendations",
+      "risks",
+      "mission_config"
     ],
-    "avoid_zones": [
-      "禁飞区B"
-    ],
-    "objectives": [
-      "area_search",
-      "coverage",
-      "suspicious_target_search"
-    ],
-    "constraints": [
-      "low_bandwidth_coordination",
-      "avoid_no_fly_zone",
-      "multi_uav_coordination"
-    ]
-  },
-  "retrieved_knowledge": [
-    {
-      "topic": "coverage_search",
-      "content": "多无人机搜索任务通常先进行区域分解，再按照覆盖率、航程约束和目标优先级分配航迹。",
-      "tags": [
-        "多无人机",
-        "搜索",
-        "覆盖",
-        "区域",
-        "area_search"
-      ]
-    },
-    {
-      "topic": "low_bandwidth_coordination",
-      "content": "弱通信条件下应减少全局同步依赖，优先采用局部感知、事件触发通信和分布式协同策略。",
-      "tags": [
-        "弱通信",
-        "通信",
-        "低通量",
-        "协同",
-        "distributed"
-      ]
-    },
-    {
-      "topic": "no_fly_zone_avoidance",
-      "content": "存在禁飞区时，任务配置应显式保留避让区域，并在航迹规划阶段加入硬约束或高惩罚代价。",
-      "tags": [
-        "禁飞区",
-        "避开",
-        "约束",
-        "航迹规划",
-        "avoid"
-      ]
+    "properties": {
+      "task": {
+        "type": "object",
+        "required": [
+          "raw_request",
+          "drone_count",
+          "search_areas",
+          "avoid_zones",
+          "objectives",
+          "constraints"
+        ]
+      },
+      "retrieved_knowledge": {
+        "type": "array"
+      },
+      "recommendations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "risks": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "mission_config": {
+        "type": "object",
+        "required": [
+          "version",
+          "uav_count",
+          "search_areas",
+          "avoid_zones",
+          "objectives",
+          "constraints",
+          "coordination_mode",
+          "planning_policy"
+        ]
+      }
     }
-  ],
-  "recommendations": [
-    "将区域A划分为若干子区域，并按无人机数量进行覆盖搜索任务分配。",
-    "对可疑目标点设置更高搜索优先级，并在目标附近保留重访或盘旋观察策略。",
-    "将禁飞区B作为硬约束写入任务配置，规划阶段禁止航迹穿越。",
-    "采用分布式协同策略，降低全局同步频率，仅在关键事件或区域交接时通信。"
-  ],
-  "risks": [
-    "弱通信可能导致任务状态不同步，需要设计局部决策和失联降级策略。",
-    "禁飞区约束会压缩可行航迹空间，需检查绕飞后航程和覆盖率是否满足要求。",
-    "多机协同需要关注机间冲突、任务重复覆盖和区域交接失败。"
-  ],
-  "mission_config": {
-    "version": "0.1",
-    "uav_count": 3,
-    "search_areas": [
-      "区域A"
-    ],
-    "avoid_zones": [
-      "禁飞区B"
-    ],
-    "objectives": [
-      "area_search",
-      "coverage",
-      "suspicious_target_search"
-    ],
-    "constraints": [
-      "low_bandwidth_coordination",
-      "avoid_no_fly_zone",
-      "multi_uav_coordination"
-    ],
-    "coordination_mode": "distributed_low_bandwidth",
-    "planning_policy": "coverage_first_with_constraint_avoidance"
   },
-  "agent_trace": [
-    {
-      "node": "task_parser_agent",
-      "status": "ok",
-      "input_keys": ["raw_request"],
-      "output_keys": ["task"],
-      "message": "Parsed mission text into UAV task fields."
+  "validation": {
+    "valid": true,
+    "errors": []
+  },
+  "data": {
+    "task": {
+      "raw_request": "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。",
+      "drone_count": 3,
+      "search_areas": [
+        "区域A"
+      ],
+      "avoid_zones": [
+        "禁飞区B"
+      ],
+      "objectives": [
+        "area_search",
+        "coverage",
+        "suspicious_target_search"
+      ],
+      "constraints": [
+        "low_bandwidth_coordination",
+        "avoid_no_fly_zone",
+        "multi_uav_coordination"
+      ]
     },
-    {
-      "node": "knowledge_retriever_agent",
-      "status": "ok",
-      "input_keys": ["raw_request", "knowledge_base"],
-      "output_keys": ["retrieved_knowledge"],
-      "message": "Retrieved 3 UAV planning knowledge snippets."
+    "retrieved_knowledge": [
+      {
+        "topic": "coverage_search",
+        "content": "多无人机搜索任务通常先进行区域分解，再按照覆盖率、航程约束和目标优先级分配航迹。",
+        "tags": [
+          "多无人机",
+          "搜索",
+          "覆盖",
+          "区域",
+          "area_search"
+        ]
+      },
+      {
+        "topic": "low_bandwidth_coordination",
+        "content": "弱通信条件下应减少全局同步依赖，优先采用局部感知、事件触发通信和分布式协同策略。",
+        "tags": [
+          "弱通信",
+          "通信",
+          "低通量",
+          "协同",
+          "distributed"
+        ]
+      },
+      {
+        "topic": "no_fly_zone_avoidance",
+        "content": "存在禁飞区时，任务配置应显式保留避让区域，并在航迹规划阶段加入硬约束或高惩罚代价。",
+        "tags": [
+          "禁飞区",
+          "避开",
+          "约束",
+          "航迹规划",
+          "avoid"
+        ]
+      }
+    ],
+    "recommendations": [
+      "将区域A划分为若干子区域，并按无人机数量进行覆盖搜索任务分配。",
+      "对可疑目标点设置更高搜索优先级，并在目标附近保留重访或盘旋观察策略。",
+      "将禁飞区B作为硬约束写入任务配置，规划阶段禁止航迹穿越。",
+      "采用分布式协同策略，降低全局同步频率，仅在关键事件或区域交接时通信。"
+    ],
+    "risks": [
+      "弱通信可能导致任务状态不同步，需要设计局部决策和失联降级策略。",
+      "禁飞区约束会压缩可行航迹空间，需检查绕飞后航程和覆盖率是否满足要求。",
+      "多机协同需要关注机间冲突、任务重复覆盖和区域交接失败。"
+    ],
+    "mission_config": {
+      "version": "0.1",
+      "uav_count": 3,
+      "search_areas": [
+        "区域A"
+      ],
+      "avoid_zones": [
+        "禁飞区B"
+      ],
+      "objectives": [
+        "area_search",
+        "coverage",
+        "suspicious_target_search"
+      ],
+      "constraints": [
+        "low_bandwidth_coordination",
+        "avoid_no_fly_zone",
+        "multi_uav_coordination"
+      ],
+      "coordination_mode": "distributed_low_bandwidth",
+      "planning_policy": "coverage_first_with_constraint_avoidance"
     },
-    {
-      "node": "mission_planner_agent",
-      "status": "ok",
-      "input_keys": ["task", "retrieved_knowledge"],
-      "output_keys": ["mission_plan"],
-      "message": "Generated recommendations, risks, and structured mission configuration."
-    },
-    {
-      "node": "mission_reviewer_agent",
-      "status": "ok",
-      "input_keys": ["mission_plan"],
-      "output_keys": ["agent_review"],
-      "message": "Reviewed mission plan completeness and consistency."
+    "schema_validation": {
+      "valid": true,
+      "errors": []
     }
-  ],
-  "agent_review": {
-    "ready": true,
-    "warning_count": 0,
-    "warnings": []
   }
 }

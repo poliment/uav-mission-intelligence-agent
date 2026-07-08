@@ -1,0 +1,210 @@
+from __future__ import annotations
+
+import json
+import os
+import urllib.request
+from dataclasses import dataclass
+from typing import Any, Callable, Protocol
+
+
+class LLMProviderError(RuntimeError):
+    pass
+
+
+class LLMProvider(Protocol):
+    provider_name: str
+    model: str | None
+
+    def generate_plan(
+        self,
+        *,
+        task: dict[str, Any],
+        retrieved_knowledge: list[dict[str, Any]],
+        baseline_plan: dict[str, Any],
+        output_schema: dict[str, Any],
+    ) -> dict[str, Any]:
+        ...
+
+
+Transport = Callable[..., dict[str, Any]]
+DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+DEEPSEEK_DEFAULT_MODEL = "deepseek-v4-flash"
+
+
+@dataclass
+class OpenAICompatibleProvider:
+    api_key: str
+    model: str
+    base_url: str = "https://api.openai.com/v1"
+    timeout: int = 60
+    max_tokens: int = 1200
+    transport: Transport | None = None
+
+    provider_name: str = "openai-compatible"
+
+    def generate_plan(
+        self,
+        *,
+        task: dict[str, Any],
+        retrieved_knowledge: list[dict[str, Any]],
+        baseline_plan: dict[str, Any],
+        output_schema: dict[str, Any],
+    ) -> dict[str, Any]:
+        payload = {
+            "model": self.model,
+            "temperature": 0,
+            "max_tokens": self.max_tokens,
+            "response_format": {"type": "json_object"},
+            "messages": _build_messages(
+                task=task,
+                retrieved_knowledge=retrieved_knowledge,
+                baseline_plan=baseline_plan,
+                output_schema=output_schema,
+            ),
+        }
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        response = self._send_json(
+            url=f"{self.base_url.rstrip('/')}/chat/completions",
+            headers=headers,
+            payload=payload,
+            timeout=self.timeout,
+        )
+        content = _extract_message_content(response)
+        return _parse_json_content(content)
+
+    def _send_json(
+        self,
+        *,
+        url: str,
+        headers: dict[str, str],
+        payload: dict[str, Any],
+        timeout: int,
+    ) -> dict[str, Any]:
+        if self.transport:
+            return self.transport(url=url, headers=headers, payload=payload, timeout=timeout)
+        return _urllib_transport(url=url, headers=headers, payload=payload, timeout=timeout)
+
+
+def build_llm_provider(
+    provider_name: str | None,
+    *,
+    api_key: str | None = None,
+    api_key_env: str | None = None,
+    model: str | None = None,
+    base_url: str | None = None,
+) -> LLMProvider | None:
+    normalized = (provider_name or "none").strip().lower()
+    if normalized in {"none", "offline", "rule-based"}:
+        return None
+    if normalized in {"deepseek", "deepseek-chat"}:
+        return _build_openai_compatible_provider(
+            provider_name="deepseek",
+            api_key=api_key,
+            api_key_env=api_key_env or "DEEPSEEK_API_KEY",
+            model=model or os.getenv("DEEPSEEK_MODEL") or DEEPSEEK_DEFAULT_MODEL,
+            base_url=base_url or os.getenv("DEEPSEEK_BASE_URL") or DEEPSEEK_BASE_URL,
+        )
+    if normalized not in {"openai-compatible", "openai"}:
+        raise LLMProviderError(f"unsupported LLM provider: {provider_name}")
+
+    return _build_openai_compatible_provider(
+        provider_name="openai-compatible",
+        api_key=api_key,
+        api_key_env=api_key_env or "OPENAI_API_KEY",
+        model=model or os.getenv("OPENAI_MODEL") or "gpt-4o-mini",
+        base_url=base_url or os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1",
+    )
+
+
+def _build_openai_compatible_provider(
+    *,
+    provider_name: str,
+    api_key: str | None,
+    api_key_env: str,
+    model: str,
+    base_url: str,
+) -> OpenAICompatibleProvider:
+    resolved_api_key = api_key or os.getenv(api_key_env)
+    if not resolved_api_key:
+        raise LLMProviderError(f"missing API key: set {api_key_env} or pass api_key")
+
+    return OpenAICompatibleProvider(
+        api_key=resolved_api_key,
+        model=model,
+        base_url=base_url,
+        provider_name=provider_name,
+    )
+
+
+def _build_messages(
+    *,
+    task: dict[str, Any],
+    retrieved_knowledge: list[dict[str, Any]],
+    baseline_plan: dict[str, Any],
+    output_schema: dict[str, Any],
+) -> list[dict[str, str]]:
+    system_prompt = (
+        "You are a UAV mission planning assistant. "
+        "Return JSON only, using recommendations, risks, and mission_config fields. "
+        "Preserve concrete mission constraints from the parsed task."
+    )
+    user_payload = {
+        "task": task,
+        "retrieved_knowledge": retrieved_knowledge,
+        "baseline_plan": baseline_plan,
+        "output_schema": output_schema,
+    }
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False, indent=2)},
+    ]
+
+
+def _urllib_transport(
+    *,
+    url: str,
+    headers: dict[str, str],
+    payload: dict[str, Any],
+    timeout: int,
+) -> dict[str, Any]:
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        headers=headers,
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except OSError as exc:
+        raise LLMProviderError(f"LLM provider request failed: {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise LLMProviderError("LLM provider returned invalid JSON response") from exc
+
+
+def _extract_message_content(response: dict[str, Any]) -> str:
+    try:
+        return response["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError) as exc:
+        raise LLMProviderError("LLM provider response does not contain choices[0].message.content") from exc
+
+
+def _parse_json_content(content: str) -> dict[str, Any]:
+    cleaned = content.strip()
+    if cleaned.startswith("```"):
+        lines = cleaned.splitlines()
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].startswith("```"):
+            lines = lines[:-1]
+        cleaned = "\n".join(lines).strip()
+    try:
+        parsed = json.loads(cleaned)
+    except json.JSONDecodeError as exc:
+        raise LLMProviderError("LLM provider message content is not valid JSON") from exc
+    if not isinstance(parsed, dict):
+        raise LLMProviderError("LLM provider message content must be a JSON object")
+    return parsed
