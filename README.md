@@ -4,6 +4,8 @@
 
 ![UAV Mission Intelligence Agent demo](docs/assets/uav-mission-demo.png)
 
+![UAV mission execution visualization](docs/assets/mission-execution-visualization.svg)
+
 ![Expanded UAV benchmark coverage](docs/assets/benchmark-coverage.svg)
 
 > 这是一个面向无人机任务理解、规划辅助、知识检索和结构化任务配置的 LLM/Agent 项目。

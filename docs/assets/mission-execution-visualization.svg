@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" role="img" aria-labelledby="mission-map-title mission-map-desc">
+  <title id="mission-map-title">Mission Execution Visualization</title>
+  <desc id="mission-map-desc">UAV mission map showing search area, no-fly zone, target point, planned route, replanned route, coverage path, and communication condition.</desc>
+  <rect width="1180" height="520" rx="8" fill="#f8fafc"/>
+  <rect x="36" y="38" width="760" height="430" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="58" y="70" fill="#334155" font-family="Arial, sans-serif" font-size="18" font-weight="700">Operating Boundary</text>
+  <line x1="96" y1="92" x2="96" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="172" y1="92" x2="172" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="248" y1="92" x2="248" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="324" y1="92" x2="324" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="400" y1="92" x2="400" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="476" y1="92" x2="476" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="552" y1="92" x2="552" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="628" y1="92" x2="628" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="704" y1="92" x2="704" y2="452" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="58" y1="100" x2="770" y2="100" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="58" y1="158" x2="770" y2="158" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="58" y1="216" x2="770" y2="216" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="58" y1="274" x2="770" y2="274" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="58" y1="332" x2="770" y2="332" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="58" y1="390" x2="770" y2="390" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="58" y1="448" x2="770" y2="448" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="112" y="116" width="392" height="250" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2" opacity="0.78"/>
+  <text x="132" y="145" fill="#1d4ed8" font-family="Arial, sans-serif" font-size="16" font-weight="700">Search Area: area_A</text>
+  <rect x="430" y="168" width="170" height="120" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="2" opacity="0.9"/>
+  <text x="448" y="196" fill="#991b1b" font-family="Arial, sans-serif" font-size="15" font-weight="700">No-Fly Zone: NFZ_B</text>
+  <circle cx="642" cy="330" r="16" fill="#f59e0b" stroke="#92400e" stroke-width="3"/>
+  <path d="M642 314 L647 328 L662 328 L650 337 L655 352 L642 343 L629 352 L634 337 L622 328 L637 328 Z" fill="#fff7ed"/>
+  <text x="610" y="370" fill="#92400e" font-family="Arial, sans-serif" font-size="15" font-weight="700">Target Point</text>
+  <polyline points="82,410 184,330 292,250 414,226 560,228 700,276" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 8"/>
+  <text x="86" y="438" fill="#0f172a" font-family="Arial, sans-serif" font-size="14">Planned Route</text>
+  <polyline points="82,410 176,350 284,310 408,316 520,360 700,276" fill="none" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+  <text x="315" y="405" fill="#166534" font-family="Arial, sans-serif" font-size="14" font-weight="700">Replanned Route</text>
+  <path d="M145 170 C210 130, 275 130, 340 172 S456 212, 492 156" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+  <path d="M152 236 C224 196, 310 196, 382 236 S468 284, 506 235" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+  <text x="150" y="104" fill="#1d4ed8" font-family="Arial, sans-serif" font-size="14">Coverage Path</text>
+  <g aria-label="UAV-1">
+    <circle cx="86" cy="410" r="18" fill="#0f766e" stroke="#042f2e" stroke-width="3"/>
+    <path d="M68 410 H104 M86 392 V428" stroke="#ccfbf1" stroke-width="3" stroke-linecap="round"/>
+    <text x="64" y="382" fill="#134e4a" font-family="Arial, sans-serif" font-size="13" font-weight="700">UAV-1</text>
+  </g>
+  <g aria-label="UAV-2">
+    <circle cx="176" cy="350" r="18" fill="#0f766e" stroke="#042f2e" stroke-width="3"/>
+    <path d="M158 350 H194 M176 332 V368" stroke="#ccfbf1" stroke-width="3" stroke-linecap="round"/>
+    <text x="154" y="322" fill="#134e4a" font-family="Arial, sans-serif" font-size="13" font-weight="700">UAV-2</text>
+  </g>
+  <g aria-label="UAV-3">
+    <circle cx="284" cy="310" r="18" fill="#0f766e" stroke="#042f2e" stroke-width="3"/>
+    <path d="M266 310 H302 M284 292 V328" stroke="#ccfbf1" stroke-width="3" stroke-linecap="round"/>
+    <text x="262" y="282" fill="#134e4a" font-family="Arial, sans-serif" font-size="13" font-weight="700">UAV-3</text>
+  </g>
+  <rect x="830" y="48" width="306" height="410" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="858" y="86" fill="#0f172a" font-family="Arial, sans-serif" font-size="20" font-weight="700">Mission Status</text>
+  <rect x="858" y="112" width="238" height="46" rx="6" fill="#ecfdf5" stroke="#86efac"/>
+  <text x="876" y="141" fill="#166534" font-family="Arial, sans-serif" font-size="15" font-weight="700">Task Progress: 72%</text>
+  <rect x="858" y="178" width="238" height="46" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="876" y="207" fill="#1d4ed8" font-family="Arial, sans-serif" font-size="15" font-weight="700">Active UAVs: 3</text>
+  <rect x="858" y="244" width="238" height="46" rx="6" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="876" y="273" fill="#9a3412" font-family="Arial, sans-serif" font-size="15" font-weight="700">Weak Communication</text>
+  <path d="M890 332 C924 300, 972 300, 1006 332" fill="none" stroke="#f97316" stroke-width="4"/>
+  <path d="M912 356 C934 336, 962 336, 984 356" fill="none" stroke="#f97316" stroke-width="4"/>
+  <circle cx="948" cy="382" r="8" fill="#f97316"/>
+  <text x="858" y="426" fill="#475569" font-family="Arial, sans-serif" font-size="14">Status labels are derived from the agent plan and mission constraints.</text>
+</svg>
