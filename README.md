@@ -1,5 +1,9 @@
 # UAV Mission Intelligence Agent
 
+[![Tests](https://github.com/poliment/uav-mission-intelligence-agent/actions/workflows/test.yml/badge.svg)](https://github.com/poliment/uav-mission-intelligence-agent/actions/workflows/test.yml)
+
+![UAV Mission Intelligence Agent demo](docs/assets/uav-mission-demo.png)
+
 > 这是一个面向无人机任务理解、规划辅助、知识检索和结构化任务配置的 LLM/Agent 项目。
 >
 > This is a UAV-domain LLM/Agent project for mission understanding, planning assistance, knowledge retrieval, and structured mission configuration.
