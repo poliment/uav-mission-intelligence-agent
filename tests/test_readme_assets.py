@@ -28,6 +28,16 @@ class ReadmeAssetsTests(unittest.TestCase):
         self.assertIn("rag-chroma", readme)
         self.assertNotIn("RAG-ready; the local knowledge retriever can later be replaced", readme)
 
+    def test_readme_documents_interactive_demo(self):
+        readme = README.read_text(encoding="utf-8")
+
+        self.assertIn("Interactive Demo / 交互式 Demo", readme)
+        self.assertIn('pip install -e ".[demo]"', readme)
+        self.assertIn("uav-mission-agent-demo --host 127.0.0.1 --port 8000", readme)
+        self.assertIn("uav-mission-agent-demo --env-file D:\\epacode\\working\\.secrets\\deepseek.env", readme)
+        self.assertIn("Agent trace", readme)
+        self.assertIn("provider comparison", readme)
+
 
 if __name__ == "__main__":
     unittest.main()

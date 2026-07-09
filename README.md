@@ -32,6 +32,7 @@ This project focuses on UAV mission intelligence, converting natural-language mi
 | Trajectory intent / 轨迹意图识别 | 从经纬高、速度、航向和姿态角轨迹点中提取摘要并识别飞行意图。<br>Extracts trajectory summaries from latitude, longitude, altitude, speed, heading, and attitude angles, then recognizes flight intent. |
 | Benchmark / 场景评估 | 使用多场景 benchmark 评估任务解析、目标覆盖、约束覆盖和风险关键词覆盖。<br>Uses a multi-scenario benchmark to evaluate task parsing, objective coverage, constraint coverage, and risk keyword coverage. |
 | Dashboard / 可视化页面 | 生成本地 HTML 页面，集中展示任务输入、Agent 节点流、规划结果和 benchmark 分数。<br>Generates a local HTML page that presents mission input, Agent node flow, planning results, and benchmark scores. |
+| Interactive demo / 交互式 Demo | 提供本地 FastAPI + HTML 控制台，支持任务输入、provider 选择、Agent trace、JSON 输出、provider comparison 和任务态势图。<br>Provides a local FastAPI + HTML console for mission input, provider selection, Agent trace, JSON output, provider comparison, and the mission situation map. |
 
 当前版本保持离线、轻依赖，因此无需 API Key 就能快速运行。需要接入外部模型时，可以通过命令行参数启用 DeepSeek 或 OpenAI-compatible provider。
 
@@ -63,6 +64,8 @@ The first version is intentionally offline and dependency-light, so it can run q
   Provides an Agent-style node trace and review output for explainability.
 - 生成本地 HTML 可视化页面，展示任务输入、Agent 节点流、规划输出、任务执行可视化、Benchmark v2 provider 对比和成本统计。<br>
   Generates a local HTML dashboard for mission input, Agent node flow, planning output, mission execution visualization, Benchmark v2 provider comparison, and cost statistics.
+- 提供 FastAPI + HTML 交互式 demo，支持输入 UAV 任务、选择 provider、查看 Agent trace、JSON 输出、provider comparison 和任务态势图。<br>
+  Provides a FastAPI + HTML interactive demo for entering UAV missions, selecting a provider, and viewing Agent trace, JSON output, provider comparison, and the mission situation map.
 - 包含单元测试和示例输出，便于复现实验结果。<br>
   Includes unit tests and example output for reproducible checks.
 
@@ -141,6 +144,9 @@ The project is modularized around task parsing, knowledge retrieval, planning ge
 | `costing.py` | 归一化 provider token usage，并根据可配置费率估算成本。<br>Normalize provider token usage and estimate cost from configurable pricing. |
 | `mission_visualization.py` | 根据任务方案渲染离线 UAV 任务执行 SVG 场景。<br>Render an offline UAV mission execution SVG scene from a mission plan. |
 | `dashboard.py` | 生成本地静态 HTML dashboard，展示 Agent 流、规划结果、任务执行可视化和 Benchmark v2 指标。<br>Generate a local static HTML dashboard for the Agent flow, planning output, mission execution visualization, and Benchmark v2 metrics. |
+| `demo_service.py` | 为交互 demo 构建任务 payload、benchmark payload、HTML 页面和 env-file 加载。<br>Build mission payloads, benchmark payloads, HTML, and env-file loading for the interactive demo. |
+| `demo_app.py` | 暴露可选 FastAPI demo app 和 JSON API。<br>Expose the optional FastAPI demo app and JSON API. |
+| `demo_cli.py` | 提供 `uav-mission-agent-demo` 本地服务启动入口。<br>Provide the local `uav-mission-agent-demo` server launcher. |
 | `cli.py` | 提供命令行运行入口。<br>Provide a command-line entry point. |
 
 项目目录结构如下，核心代码位于 `src/uav_mission_agent/`，示例、benchmark 数据、评估结果、dashboard 和 README 可视化资产分别放在独立目录中。
@@ -176,6 +182,9 @@ uav-mission-intelligence-agent/
 |       +-- cli.py
 |       +-- costing.py
 |       +-- dashboard.py
+|       +-- demo_app.py
+|       +-- demo_cli.py
+|       +-- demo_service.py
 |       +-- embeddings.py
 |       +-- evaluator.py
 |       +-- intent_recognition.py
@@ -199,6 +208,9 @@ uav-mission-intelligence-agent/
 |   +-- test_cli.py
 |   +-- test_costing.py
 |   +-- test_dashboard.py
+|   +-- test_demo_app.py
+|   +-- test_demo_cli.py
+|   +-- test_demo_service.py
 |   +-- test_embeddings.py
 |   +-- test_evaluator.py
 |   +-- test_intent_recognition.py
@@ -386,6 +398,32 @@ python -m uav_mission_agent.cli --dashboard dashboard\uav_mission_dashboard.html
 
 After generation, open [`dashboard/uav_mission_dashboard.html`](dashboard/uav_mission_dashboard.html) directly in a browser.
 
+## Interactive Demo / 交互式 Demo
+
+交互式 demo 提供一个本地 FastAPI + HTML 控制台，可以输入 UAV 任务、选择 provider、查看 Agent trace、结构化 JSON 输出、Benchmark v2/provider comparison 和任务态势图。
+
+The interactive demo provides a local FastAPI + HTML console for entering UAV missions, selecting a provider, and inspecting Agent trace, structured JSON output, Benchmark v2/provider comparison, and the mission situation map.
+
+Install the optional demo dependencies:
+
+```powershell
+pip install -e ".[demo]"
+```
+
+Run the offline demo:
+
+```powershell
+uav-mission-agent-demo --host 127.0.0.1 --port 8000
+```
+
+Run with the existing DeepSeek env file:
+
+```powershell
+uav-mission-agent-demo --env-file D:\epacode\working\.secrets\deepseek.env
+```
+
+Open `http://127.0.0.1:8000` after the server starts. The default `offline` provider requires no API key. Selecting `deepseek` uses `DEEPSEEK_API_KEY` from the environment or env file.
+
 也可以选择 editable install，之后直接通过模块方式运行 CLI。
 
 You can also use an editable install and then run the CLI as a module.
@@ -558,9 +596,9 @@ The provider adapter uses Python `urllib` by default and automatically falls bac
 
 ## Test Coverage / 测试覆盖
 
-测试覆盖任务解析、知识检索、端到端 workflow、场景加载、benchmark 评分、Benchmark v2 provider/cost 统计、CLI 模式、Agent trace、本地 dashboard、任务执行可视化、schema output、LLM provider adapter、轨迹摘要和轨迹意图识别。
+测试覆盖任务解析、知识检索、端到端 workflow、场景加载、benchmark 评分、Benchmark v2 provider/cost 统计、CLI 模式、Agent trace、本地 dashboard、交互 demo service/API/CLI、任务执行可视化、schema output、LLM provider adapter、轨迹摘要和轨迹意图识别。
 
-The test suite covers task parsing, knowledge retrieval, end-to-end workflow output, scenario loading, benchmark scoring, Benchmark v2 provider/cost statistics, CLI modes, Agent trace, local dashboard rendering, mission execution visualization, schema output, LLM provider adapters, trajectory summary, and trajectory intent recognition.
+The test suite covers task parsing, knowledge retrieval, end-to-end workflow output, scenario loading, benchmark scoring, Benchmark v2 provider/cost statistics, CLI modes, Agent trace, local dashboard rendering, interactive demo service/API/CLI behavior, mission execution visualization, schema output, LLM provider adapters, trajectory summary, and trajectory intent recognition.
 
 Run / 运行：
 
@@ -571,7 +609,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 68 tests
+Ran 86 tests
 OK
 ```
 
@@ -589,11 +627,11 @@ OK
   Integrate more realistic UAV trajectory samples and add a trajectory prediction module based on longitude, latitude, altitude, and attitude-angle features.
 - 将任务执行可视化升级为交互式地图或仿真回放，用于展示路线重规划、目标跟踪和环境约束变化。<br>
   Upgrade mission execution visualization into an interactive map or simulation replay for route replanning, target tracking, and changing environmental constraints.
-- 在静态 dashboard 基线之后，增加交互式 Streamlit 页面或 FastAPI 服务。<br>
-  Add an interactive Streamlit page or FastAPI service after the static dashboard baseline.
+- 交互式 FastAPI + HTML demo 已提供，后续可扩展为多任务会话和更丰富的态势回放。<br>
+  The interactive FastAPI + HTML demo is available; future work can expand it into multi-mission sessions and richer situation replay.
 
 ## Project Summary / 项目总结
 
 构建了一个无人机领域 LLM/Agent 原型，能够将自然语言无人机任务请求转化为结构化任务方案，并结合可追踪 Agent 节点、任务解析、local vector RAG 知识检索、可插拔 LLM provider、schema 输出、规划建议、风险解释、JSON 配置输出和 benchmark 场景评估。
 
-Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, an optional LangGraph backend, task parsing, local vector RAG knowledge retrieval, a pluggable LLM provider, schema output, UAV trajectory intent recognition, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.
+Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, an optional LangGraph backend, task parsing, local vector RAG knowledge retrieval, a pluggable LLM provider, schema output, UAV trajectory intent recognition, planning recommendations, risk explanation, JSON configuration output, benchmark-style scenario evaluation, and an interactive FastAPI + HTML demo.

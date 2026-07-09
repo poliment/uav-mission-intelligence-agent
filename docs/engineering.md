@@ -29,6 +29,9 @@ Key modules:
 | `benchmark.py` | Stable v1 benchmark summary. |
 | `benchmark_v2.py` | Provider comparison, latency, token usage, cost, and difficulty summaries. |
 | `dashboard.py` | Static local HTML dashboard with Agent flow and Benchmark v2 sections. |
+| `demo_service.py` | Dependency-free payload, benchmark, env-file, and HTML helpers for the interactive demo. |
+| `demo_app.py` | Optional FastAPI app for the interactive demo. |
+| `demo_cli.py` | Local Uvicorn launcher for the interactive demo. |
 
 ## RAG Retrieval
 
@@ -152,6 +155,31 @@ The dashboard shows:
 - provider comparison
 - token and estimated cost summary
 - raw Agent JSON and Benchmark v2 JSON
+
+## Interactive Demo
+
+The interactive demo is a thin service/UI layer over the existing offline-first Agent workflow.
+
+Run it with optional dependencies:
+
+```powershell
+python -m pip install -e ".[demo]"
+uav-mission-agent-demo --host 127.0.0.1 --port 8000
+```
+
+Use the DeepSeek env file without printing secrets:
+
+```powershell
+uav-mission-agent-demo --env-file D:\epacode\working\.secrets\deepseek.env
+```
+
+Demo responsibilities:
+
+- `demo_service.py`: validates mission input, builds offline or live-provider mission payloads, renders the mission SVG, loads saved provider comparison reports, and falls back to offline Benchmark v2.
+- `demo_app.py`: exposes `GET /`, `GET /api/health`, `GET /api/benchmark`, and `POST /api/mission`.
+- `demo_cli.py`: loads a simple `KEY=value` env file and starts Uvicorn.
+
+The default tests exercise `demo_service.py` and `demo_cli.py` without FastAPI. FastAPI route tests are skipped when demo dependencies are not installed.
 
 ## Testing and CI
 
