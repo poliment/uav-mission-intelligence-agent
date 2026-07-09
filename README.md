@@ -609,7 +609,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 87 tests
+Ran 88 tests
 OK
 ```
 

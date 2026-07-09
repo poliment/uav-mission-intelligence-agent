@@ -90,7 +90,7 @@ def load_demo_benchmark(
         try:
             path = Path(report_path)
             if path.exists():
-                report = json.loads(path.read_text(encoding="utf-8"))
+                report = json.loads(path.read_text(encoding="utf-8-sig"))
                 return _normalize_benchmark_report(report, source="saved-report")
         except (OSError, json.JSONDecodeError, TypeError, ValueError):
             pass

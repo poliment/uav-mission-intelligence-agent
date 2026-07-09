@@ -86,6 +86,22 @@ class DemoServiceTests(unittest.TestCase):
         self.assertEqual(payload["provider_comparison"][0]["provider_label"], "deepseek:deepseek-v4-flash")
         self.assertIn('"provider_comparison"', payload["json_report"])
 
+    def test_load_demo_benchmark_accepts_utf8_sig_saved_report(self):
+        report = {
+            "summary": {"benchmark_version": "2.0", "total_scenarios": 31},
+            "provider_comparison": [{"provider_label": "deepseek:deepseek-v4-flash", "average_score": 0.935}],
+            "difficulty_summary": [],
+            "results": [{"scenario_id": "s001", "score": 0.9}],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            report_path = Path(tmpdir) / "report.json"
+            report_path.write_text("\ufeff" + json.dumps(report), encoding="utf-8")
+
+            payload = load_demo_benchmark(report_path=report_path)
+
+        self.assertEqual(payload["source"], "saved-report")
+        self.assertEqual(payload["summary"]["total_scenarios"], 31)
+
     def test_load_demo_benchmark_falls_back_when_report_is_invalid(self):
         fallback_report = {
             "summary": {"benchmark_version": "2.0", "total_scenarios": 1},
