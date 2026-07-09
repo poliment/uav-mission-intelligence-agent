@@ -12,9 +12,9 @@
 >
 > This is a UAV-domain LLM/Agent project for mission understanding, planning assistance, knowledge retrieval, and structured mission configuration.
 
-UAV Mission Intelligence Agent 是一个面向无人机任务理解与任务规划辅助的公开原型项目。项目接收自然语言无人机任务请求，提取任务目标、区域、约束和协同条件，检索本地无人机规划知识，并生成包含规划建议、风险说明和 JSON 配置的结构化任务方案。当前版本默认离线运行，也支持通过 LangGraph backend、DeepSeek 或 OpenAI-compatible provider 对规划结果进行可选增强，并提供轻量 UAV trajectory intent recognition 模块。
+UAV Mission Intelligence Agent 是一个面向无人机任务理解与任务规划辅助的公开原型项目。项目接收自然语言无人机任务请求，提取任务目标、区域、约束和协同条件，通过默认离线 local vector RAG 检索本地无人机规划知识，并生成包含规划建议、风险说明和 JSON 配置的结构化任务方案。当前版本默认离线运行，也支持通过 LangGraph backend、DeepSeek 或 OpenAI-compatible provider 对规划结果进行可选增强，并提供轻量 UAV trajectory intent recognition 模块。
 
-UAV Mission Intelligence Agent is a public prototype for UAV mission understanding and planning assistance. It takes a natural-language UAV mission request, extracts mission goals, areas, constraints, and coordination conditions, retrieves local UAV planning knowledge, and generates a structured mission plan with recommendations, risks, and JSON configuration. The current version runs offline by default and can optionally refine planning results through a LangGraph backend, DeepSeek, or an OpenAI-compatible provider, and includes a lightweight UAV trajectory intent recognition module.
+UAV Mission Intelligence Agent is a public prototype for UAV mission understanding and planning assistance. It takes a natural-language UAV mission request, extracts mission goals, areas, constraints, and coordination conditions, retrieves local UAV planning knowledge through default offline local vector RAG, and generates a structured mission plan with recommendations, risks, and JSON configuration. The current version runs offline by default and can optionally refine planning results through a LangGraph backend, DeepSeek, or an OpenAI-compatible provider, and includes a lightweight UAV trajectory intent recognition module.
 
 ## Project Overview / 项目概述
 
@@ -43,8 +43,8 @@ The first version is intentionally offline and dependency-light, so it can run q
   Parses Chinese UAV mission descriptions.
 - 提取无人机数量、搜索区域、禁飞区、任务目标和协同约束。<br>
   Extracts UAV count, search areas, no-fly zones, objectives, and coordination constraints.
-- 从本地知识库检索无人机任务规划知识。<br>
-  Retrieves UAV planning knowledge from a local knowledge base.
+- 使用默认离线 local vector RAG 检索无人机任务规划知识，并记录 score、rank 和 matched tags。<br>
+  Retrieves UAV planning knowledge with default offline local vector RAG and records score, rank, and matched tags.
 - 生成搜索、覆盖、禁飞区规避和弱通信协同相关的规划建议。<br>
   Generates planning recommendations for search, coverage, no-fly-zone avoidance, and weak communication.
 - 输出结构化 JSON 任务配置。<br>
@@ -124,7 +124,9 @@ The project is modularized around task parsing, knowledge retrieval, planning ge
 | `task_parser.py` | 从自然语言输入中提取结构化任务字段。<br>Extract structured mission fields from natural-language input. |
 | `agent_graph.py` | 以可追踪 Agent 节点方式运行解析、检索、规划和复核流程。<br>Run parser, retriever, planner, and reviewer as traceable Agent nodes. |
 | `langgraph_workflow.py` | 使用可选 LangGraph `StateGraph` 运行同一组任务节点。<br>Run the same mission nodes through an optional LangGraph `StateGraph`. |
-| `knowledge_base.py` | 使用轻量 RAG 风格评分器检索相关无人机规划片段。<br>Retrieve relevant UAV planning snippets with a lightweight RAG-style scorer. |
+| `embeddings.py` | 生成确定性的本地稀疏向量 embedding，并计算 cosine similarity。<br>Generate deterministic local sparse-vector embeddings and cosine similarity. |
+| `retrievers.py` | 提供 `local-vector`、`keyword`、可选 `faiss` 和可选 `chroma` 检索后端。<br>Provide `local-vector`, `keyword`, optional `faiss`, and optional `chroma` retrieval backends. |
+| `knowledge_base.py` | 作为稳定知识库 facade，默认通过 local vector RAG 检索相关无人机规划片段。<br>Serve as the stable knowledge-base facade and retrieve UAV planning snippets through local vector RAG by default. |
 | `llm_provider.py` | 提供 DeepSeek/OpenAI-compatible provider adapter 和 provider factory。<br>Provide the DeepSeek/OpenAI-compatible provider adapter and provider factory. |
 | `models.py` | 定义任务、知识片段、任务方案、benchmark 场景、评估结果和 Agent trace 数据模型。<br>Define data models for tasks, knowledge snippets, mission plans, benchmark scenarios, evaluation results, and Agent traces. |
 | `trajectory.py` | 解析 UAV 轨迹点并计算高度、速度、航向和位移摘要。<br>Parse UAV trajectory points and compute altitude, speed, heading, and displacement summaries. |
@@ -174,6 +176,7 @@ uav-mission-intelligence-agent/
 |       +-- cli.py
 |       +-- costing.py
 |       +-- dashboard.py
+|       +-- embeddings.py
 |       +-- evaluator.py
 |       +-- intent_recognition.py
 |       +-- knowledge_base.py
@@ -182,6 +185,7 @@ uav-mission-intelligence-agent/
 |       +-- mission_visualization.py
 |       +-- models.py
 |       +-- planner.py
+|       +-- retrievers.py
 |       +-- schemas.py
 |       +-- scenario_loader.py
 |       +-- task_parser.py
@@ -195,9 +199,11 @@ uav-mission-intelligence-agent/
 |   +-- test_cli.py
 |   +-- test_costing.py
 |   +-- test_dashboard.py
+|   +-- test_embeddings.py
 |   +-- test_evaluator.py
 |   +-- test_intent_recognition.py
 |   +-- test_langgraph_workflow.py
+|   +-- test_knowledge_retrieval.py
 |   +-- test_llm_provider.py
 |   +-- test_mission_visualization.py
 |   +-- test_readme_assets.py
@@ -284,6 +290,31 @@ Use the optional LangGraph backend by installing the extra dependency and select
 python -m pip install -e ".[langgraph]"
 $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli --graph-backend langgraph "使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"
+```
+
+## RAG Retrieval Backends / RAG 检索后端
+
+默认检索路径使用 `local-vector` backend：它通过确定性的本地稀疏向量和 cosine similarity 执行 local vector RAG，不需要 API key、网络访问或第三方向量库。检索结果会携带 `retriever`、`rank`、`score` 和 `matched_tags`，便于在 Agent trace、dashboard 和 provider prompt 中展示检索证据。
+
+The default retrieval path uses the `local-vector` backend. It performs local vector RAG with deterministic sparse vectors and cosine similarity, without API keys, network access, or third-party vector-store dependencies. Retrieved snippets carry `retriever`, `rank`, `score`, and `matched_tags` fields for Agent trace, dashboard, and provider-prompt evidence.
+
+Optional FAISS and Chroma adapter boundaries are available through extras:
+
+```powershell
+pip install "uav-mission-intelligence-agent[rag-faiss]"
+pip install "uav-mission-intelligence-agent[rag-chroma]"
+```
+
+Retrieval evidence example:
+
+```json
+{
+  "topic": "low_bandwidth_coordination",
+  "retriever": "local-vector",
+  "rank": 1,
+  "score": 0.42,
+  "matched_tags": ["distributed"]
+}
 ```
 
 也可以直接运行 UAV trajectory intent recognition 示例。输入文件是轨迹点 JSON 数组，字段包含 `timestamp`、`latitude`、`longitude`、`altitude`、`speed`、`heading`、`roll`、`pitch` 和 `yaw`。
@@ -411,8 +442,8 @@ The following fragment shows the core JSON output structure, including the parse
   Benchmark evaluation is included through structured UAV scenarios and an evaluator, instead of only a single example.
 - dashboard 用于结果检查，CLI 可以生成静态 HTML 页面，展示本地运行结果。<br>
   The dashboard supports result inspection; the CLI can generate a static HTML page for local outputs.
-- RAG-ready，本地知识检索器后续可以替换为 FAISS、Chroma 或其他向量数据库。<br>
-  The project is RAG-ready; the local knowledge retriever can later be replaced by FAISS, Chroma, or another vector database.
+- local vector RAG 已实现，默认离线检索会返回 score、rank、retriever 和 matched tags，并保留可选 FAISS/Chroma adapter 边界。<br>
+  Local vector RAG is implemented; default offline retrieval returns score, rank, retriever, and matched tags while preserving optional FAISS/Chroma adapter boundaries.
 - Agent-ready，每个模块都可以进一步升级为 LangGraph 节点。<br>
   The project is Agent-ready; each module can become a LangGraph node in a future multi-agent workflow.
 - 当前原型可测试、可离线运行，当前行为由单元测试覆盖，不依赖网络访问。<br>
@@ -540,7 +571,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 57 tests
+Ran 68 tests
 OK
 ```
 
@@ -548,8 +579,8 @@ OK
 
 - 扩展 LangGraph backend，增加条件边、检查点和人工复核节点。<br>
   Extend the LangGraph backend with conditional edges, checkpoints, and human review nodes.
-- 用 FAISS 或 Chroma 替换本地轻量检索器。<br>
-  Replace the local retriever with FAISS or Chroma.
+- 扩展 RAG 检索评估，加入更大的 UAV 知识库、召回率指标和真实 embedding 模型选项。<br>
+  Extend RAG retrieval evaluation with a larger UAV knowledge base, recall metrics, and real embedding model options.
 - 扩展多模型 provider 对比实验，并持续校准公开 cost report。<br>
   Extend multi-model provider comparison experiments and keep public cost reports calibrated with current provider pricing.
 - 增加面向仿真器的结构化 YAML 输出。<br>
@@ -563,6 +594,6 @@ OK
 
 ## Project Summary / 项目总结
 
-构建了一个无人机领域 LLM/Agent 原型，能够将自然语言无人机任务请求转化为结构化任务方案，并结合可追踪 Agent 节点、任务解析、RAG 风格本地知识检索、可插拔 LLM provider、schema 输出、规划建议、风险解释、JSON 配置输出和 benchmark 场景评估。
+构建了一个无人机领域 LLM/Agent 原型，能够将自然语言无人机任务请求转化为结构化任务方案，并结合可追踪 Agent 节点、任务解析、local vector RAG 知识检索、可插拔 LLM provider、schema 输出、规划建议、风险解释、JSON 配置输出和 benchmark 场景评估。
 
-Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, an optional LangGraph backend, task parsing, RAG-style local knowledge retrieval, a pluggable LLM provider, schema output, UAV trajectory intent recognition, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.
+Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, an optional LangGraph backend, task parsing, local vector RAG knowledge retrieval, a pluggable LLM provider, schema output, UAV trajectory intent recognition, planning recommendations, risk explanation, JSON configuration output, and benchmark-style scenario evaluation.

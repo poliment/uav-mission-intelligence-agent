@@ -28,6 +28,9 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("区域A", result["mission_config"]["search_areas"])
         self.assertIn("禁飞区B", result["mission_config"]["avoid_zones"])
         self.assertGreaterEqual(len(result["retrieved_knowledge"]), 1)
+        self.assertEqual(result["retrieved_knowledge"][0]["retriever"], "local-vector")
+        self.assertIn("score", result["retrieved_knowledge"][0])
+        self.assertIn("rank", result["retrieved_knowledge"][0])
         self.assertGreaterEqual(len(result["recommendations"]), 2)
         self.assertGreaterEqual(len(result["risks"]), 1)
 

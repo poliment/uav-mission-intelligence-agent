@@ -21,11 +21,38 @@ Key modules:
 |---|---|
 | `agent_graph.py` | Traceable parser, retriever, planner, and reviewer nodes. |
 | `workflow.py` | End-to-end mission workflow with rule-based or optional LangGraph backend. |
+| `embeddings.py` | Deterministic local sparse-vector embeddings and cosine similarity. |
+| `retrievers.py` | Retrieval backend implementations for `local-vector`, `keyword`, optional `faiss`, and optional `chroma`. |
+| `knowledge_base.py` | Stable knowledge-base facade using local vector RAG by default. |
 | `llm_provider.py` | OpenAI-compatible provider adapter, including the DeepSeek alias. |
 | `costing.py` | Token usage normalization and configurable cost estimation. |
 | `benchmark.py` | Stable v1 benchmark summary. |
 | `benchmark_v2.py` | Provider comparison, latency, token usage, cost, and difficulty summaries. |
 | `dashboard.py` | Static local HTML dashboard with Agent flow and Benchmark v2 sections. |
+
+## RAG Retrieval
+
+The default retrieval backend is `local-vector`. It runs offline with deterministic sparse-vector embeddings, cosine similarity, and tag-match boosting. Retrieved snippets include:
+
+- `retriever`: backend name, such as `local-vector`
+- `rank`: 1-based retrieval rank
+- `score`: retrieval score after vector similarity and tag evidence
+- `matched_tags`: snippet tags that appeared in the query
+
+The stable agent-facing API is:
+
+```python
+KnowledgeBase.default().retrieve("weak communication UAV search", limit=3)
+```
+
+Optional adapter boundaries are available for standard vector-store stacks:
+
+```powershell
+python -m pip install -e ".[rag-faiss]"
+python -m pip install -e ".[rag-chroma]"
+```
+
+If those packages are not installed, selecting `faiss` or `chroma` raises a clear optional-dependency error with the matching install hint. Unit tests do not require FAISS, Chroma, API keys, or network access.
 
 ## Benchmark v2
 

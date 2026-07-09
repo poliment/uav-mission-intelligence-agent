@@ -20,6 +20,14 @@ class ReadmeAssetsTests(unittest.TestCase):
         self.assertIn("UAV-1", svg)
         self.assertIn("No-Fly Zone", svg)
 
+    def test_readme_documents_vector_rag_backends(self):
+        readme = README.read_text(encoding="utf-8")
+
+        self.assertIn("local vector RAG", readme)
+        self.assertIn("rag-faiss", readme)
+        self.assertIn("rag-chroma", readme)
+        self.assertNotIn("RAG-ready; the local knowledge retriever can later be replaced", readme)
+
 
 if __name__ == "__main__":
     unittest.main()

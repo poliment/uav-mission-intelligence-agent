@@ -8,6 +8,12 @@ dependencies = []
 
 [project.optional-dependencies]
 langgraph = ["langgraph>=0.2"]
+rag-faiss = ["faiss-cpu>=1.8"]
+rag-chroma = ["chromadb>=0.5"]
+rag = [
+    "faiss-cpu>=1.8",
+    "chromadb>=0.5",
+]
 
 [project.scripts]
 uav-mission-agent = "uav_mission_agent.cli:main"

@@ -22,9 +22,15 @@ class KnowledgeSnippet:
     topic: str
     content: str
     tags: list[str]
+    score: float | None = None
+    rank: int | None = None
+    retriever: str | None = None
+    matched_tags: list[str] | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        data["matched_tags"] = self.matched_tags or []
+        return data
 
 
 @dataclass
