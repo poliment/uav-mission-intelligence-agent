@@ -441,18 +441,20 @@ total_runs: 31
 estimated_total_cost: 0.0
 ```
 
-## Live DeepSeek Provider Run / DeepSeek 真实 Provider 实验
+## Provider Evaluation / Provider 评估
 
-2026-07-08 进行了一次真实 DeepSeek provider 对比实验，比较默认离线 baseline 与 `deepseek-v4-flash`。这次历史实验使用当时的 3 个无人机 benchmark 场景，并通过 Benchmark v2 记录 score、latency、token usage 和 estimated cost。当前公开 benchmark 已扩展为 31 个场景。
+项目支持离线 baseline 与真实 LLM provider 的统一评估。Benchmark v2 会记录 score、latency、token usage、estimated cost 和 provider comparison，用于比较规则 baseline 与 DeepSeek 等 OpenAI-compatible provider 的任务规划表现。
 
-On 2026-07-08, a live DeepSeek provider comparison run was executed against the offline baseline and `deepseek-v4-flash`. This historical run used the then-current three UAV benchmark scenarios and recorded score, latency, token usage, and estimated cost through Benchmark v2. The public benchmark has since been expanded to 31 scenarios.
+The project supports unified evaluation for the offline baseline and live LLM providers. Benchmark v2 records score, latency, token usage, estimated cost, and provider comparison, making it possible to compare the rule-based baseline with OpenAI-compatible providers such as DeepSeek.
+
+Example live provider run with `deepseek-v4-flash`, recorded on 2026-07-08:
 
 | Provider | Runs | Avg Score | Passed | Avg Latency | Estimated Cost |
 |---|---:|---:|---:|---:|---:|
 | `offline` | 3 | 1.00 | 3/3 | 0.633 ms | `$0.00000000` |
 | `deepseek-v4-flash` | 3 | 1.00 | 3/3 | 9373.597 ms | `$0.00118972` |
 
-DeepSeek token usage for the three scenarios:
+Token and cost summary:
 
 ```text
 prompt_tokens: 3790
@@ -461,7 +463,7 @@ total_tokens: 6144
 estimated_total_cost: $0.00118972
 ```
 
-Per-scenario DeepSeek results:
+Per-scenario live-provider results:
 
 | Scenario | Score | Latency | Estimated Cost |
 |---|---:|---:|---:|
@@ -469,19 +471,19 @@ Per-scenario DeepSeek results:
 | `no_fly_zone_replan` | 1.00 | 10709.325 ms | `$0.00046522` |
 | `target_tracking_multi_uav` | 1.00 | 7372.873 ms | `$0.00027580` |
 
-成本估算使用 2026-07-08 查询到的 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing) 中 `deepseek-v4-flash` 价格：cache-miss input `$0.14 / 1M tokens`，output `$0.28 / 1M tokens`。实际成本会随 provider 价格、缓存命中和模型策略变化。
+成本估算基于 2026-07-08 查询到的 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing)：`deepseek-v4-flash` cache-miss input `$0.14 / 1M tokens`，output `$0.28 / 1M tokens`。实际成本取决于 provider 价格、缓存命中和模型策略。
 
-Cost was estimated using the `deepseek-v4-flash` pricing checked on 2026-07-08 from [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing): cache-miss input `$0.14 / 1M tokens` and output `$0.28 / 1M tokens`. Actual cost can change with provider pricing, cache hits, and model policy.
+Cost estimation uses the `deepseek-v4-flash` pricing checked on 2026-07-08 from [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing): cache-miss input `$0.14 / 1M tokens` and output `$0.28 / 1M tokens`. Actual cost depends on provider pricing, cache hits, and model policy.
 
-本次实验还暴露出一个工程问题：当前 Windows/Codex 环境下 Python `urllib` 访问 DeepSeek 时可能出现 TLS EOF，而 `curl.exe` 可以正常访问同一 API。因此 provider adapter 保留 `urllib` 默认路径，并在网络/TLS 类请求失败时自动 fallback 到 `curl` transport。
+Provider adapter 默认使用 Python `urllib`，并在网络/TLS 请求失败时自动 fallback 到 `curl` transport，以提升 Windows/Codex 类环境下调用真实 provider 的稳定性。
 
-This run also exposed an engineering issue: in the current Windows/Codex environment, Python `urllib` may hit a TLS EOF when calling DeepSeek, while `curl.exe` can call the same API successfully. The provider adapter therefore keeps `urllib` as the default path and automatically falls back to a `curl` transport for network/TLS request failures.
+The provider adapter uses Python `urllib` by default and automatically falls back to a `curl` transport for network/TLS request failures, improving reliability for live provider calls in Windows/Codex-like environments.
 
-## Current Test Coverage / 当前测试覆盖
+## Test Coverage / 测试覆盖
 
-当前测试套件覆盖中文无人机任务字段提取、相关知识检索、端到端输出结构、场景加载、benchmark 评分、Benchmark v2 provider/cost 统计、CLI benchmark 模式、Agent trace 输出、本地 HTML dashboard 渲染、schema output、LLM provider adapter 和 CLI dashboard 生成模式。
+测试覆盖任务解析、知识检索、端到端 workflow、场景加载、benchmark 评分、Benchmark v2 provider/cost 统计、CLI 模式、Agent trace、本地 dashboard、任务执行可视化、schema output、LLM provider adapter、轨迹摘要和轨迹意图识别。
 
-The current test suite validates Chinese UAV mission field extraction, relevant UAV knowledge retrieval, end-to-end workflow output structure, scenario loading, benchmark scoring, Benchmark v2 provider/cost statistics, CLI benchmark mode, Agent graph trace output, optional LangGraph backend routing, local HTML dashboard rendering, schema output, LLM provider adapter, UAV trajectory summary, trajectory intent recognition, and CLI dashboard generation mode.
+The test suite covers task parsing, knowledge retrieval, end-to-end workflow output, scenario loading, benchmark scoring, Benchmark v2 provider/cost statistics, CLI modes, Agent trace, local dashboard rendering, mission execution visualization, schema output, LLM provider adapters, trajectory summary, and trajectory intent recognition.
 
 Run / 运行：
 
