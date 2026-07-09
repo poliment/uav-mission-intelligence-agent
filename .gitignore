@@ -11,3 +11,4 @@ build/
 .env
 .worktrees/
 .superpowers/
+docs/superpowers/
