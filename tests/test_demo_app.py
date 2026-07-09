@@ -93,6 +93,16 @@ class DemoAppTests(unittest.TestCase):
         self.assertEqual(payload["status"], "ok")
         self.assertIn("provider_comparison", payload)
 
+    @unittest.skipUnless(FASTAPI_AVAILABLE, "FastAPI is not installed")
+    def test_mission_route_accepts_json_body_payload(self):
+        from uav_mission_agent.demo_app import create_demo_app
+
+        app = create_demo_app()
+        route = next(route for route in app.routes if getattr(route, "path", None) == "/api/mission")
+
+        self.assertEqual([param.name for param in route.dependant.query_params], [])
+        self.assertEqual([param.name for param in route.dependant.body_params], ["body"])
+
 
 if __name__ == "__main__":
     unittest.main()

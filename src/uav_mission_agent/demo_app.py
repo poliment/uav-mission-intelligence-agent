@@ -10,7 +10,7 @@ DEMO_INSTALL_HINT = "FastAPI demo requires optional dependencies: pip install 'u
 
 def create_demo_app() -> Any:
     try:
-        from fastapi import FastAPI, Request
+        from fastapi import FastAPI
         from fastapi.responses import HTMLResponse, JSONResponse
     except ModuleNotFoundError as exc:
         raise RuntimeError(DEMO_INSTALL_HINT) from exc
@@ -30,9 +30,8 @@ def create_demo_app() -> Any:
         return load_demo_benchmark()
 
     @app.post("/api/mission")
-    async def mission(request: Request):
+    async def mission(body: dict[str, Any]):
         try:
-            body = await request.json()
             return build_mission_demo_payload(
                 mission_text=str(body.get("mission_text", "")),
                 provider=str(body.get("provider", "offline")),
