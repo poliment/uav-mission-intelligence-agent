@@ -38,6 +38,13 @@ class ReadmeAssetsTests(unittest.TestCase):
         self.assertIn("Agent trace", readme)
         self.assertIn("provider comparison", readme)
 
+    def test_readme_documents_swarm_algorithm_layer(self):
+        readme = README.read_text(encoding="utf-8")
+
+        self.assertIn("Swarm upgrade status", readme)
+        self.assertIn("swarm_algorithms.py", readme)
+        self.assertIn("A* path planning", readme)
+
 
 if __name__ == "__main__":
     unittest.main()

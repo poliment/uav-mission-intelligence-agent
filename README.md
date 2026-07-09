@@ -8,90 +8,44 @@
 
 ![Expanded UAV benchmark coverage](docs/assets/benchmark-coverage.svg)
 
-> 这是一个面向无人机任务理解、规划辅助、知识检索和结构化任务配置的 LLM/Agent 项目。
->
-> This is a UAV-domain LLM/Agent project for mission understanding, planning assistance, knowledge retrieval, and structured mission configuration.
+## Project overview / 项目概述
 
-UAV Mission Intelligence Agent 是一个面向无人机任务理解与任务规划辅助的公开原型项目。项目接收自然语言无人机任务请求，提取任务目标、区域、约束和协同条件，通过默认离线 local vector RAG 检索本地无人机规划知识，并生成包含规划建议、风险说明和 JSON 配置的结构化任务方案。当前版本默认离线运行，也支持通过 LangGraph backend、DeepSeek 或 OpenAI-compatible provider 对规划结果进行可选增强，并提供轻量 UAV trajectory intent recognition 模块。
+UAV Mission Intelligence Agent is an offline-first UAV mission intelligence prototype. It converts natural-language mission requests into structured mission plans, retrieves local UAV planning knowledge with local vector RAG, evaluates constraints, and produces traceable JSON output for demos, benchmarks, and future simulation integration.
 
-UAV Mission Intelligence Agent is a public prototype for UAV mission understanding and planning assistance. It takes a natural-language UAV mission request, extracts mission goals, areas, constraints, and coordination conditions, retrieves local UAV planning knowledge through default offline local vector RAG, and generates a structured mission plan with recommendations, risks, and JSON configuration. The current version runs offline by default and can optionally refine planning results through a LangGraph backend, DeepSeek, or an OpenAI-compatible provider, and includes a lightweight UAV trajectory intent recognition module.
+本项目是一个面向无人机任务理解与规划辅助的离线优先原型。它将自然语言任务请求转化为结构化任务方案，通过 local vector RAG 检索本地无人机规划知识，校验任务约束，并输出可追踪、可测试、可扩展到仿真展示的 JSON 结果。
 
-## Project Overview / 项目概述
+The project is designed around a clear separation of responsibilities:
 
-本项目围绕无人机任务智能展开，重点是把自然语言任务描述转化为可解释、可评估的结构化任务方案。当前版本使用离线规则和轻量 Agent 工作流实现核心流程，并提供标准 schema 输出和可插拔 LLM provider adapter。
+- LLM/Agent layer: mission understanding, retrieval context, planning explanation, and optional provider refinement.
+- Swarm model layer: independent UAV agent state, mission events, detected targets, and swarm memory.
+- Virtual environment layer: two-dimensional grid state, obstacles, no-fly zones, communication quality, battery drain, and deterministic ticks.
+- Traditional algorithm layer: A* path planning, path distance, battery feasibility, communication coverage, candidate scoring, and target assignment.
 
-This project focuses on UAV mission intelligence, converting natural-language mission requests into explainable and evaluable structured mission plans. The current version uses offline rules and a lightweight Agent workflow for the core pipeline, with standard schema output and a pluggable LLM provider adapter.
+## Swarm upgrade status
 
-| Project part / 项目部分 | Description / 内容说明 |
-|---|---|
-| Mission input / 任务输入 | 接收中文自然语言无人机任务描述，例如区域搜索、禁飞区规避、多机协同和弱通信约束。<br>Accepts Chinese natural-language UAV mission requests, such as area search, no-fly-zone avoidance, multi-UAV coordination, and weak-communication constraints. |
-| Agent workflow / Agent 工作流 | 通过 `task_parser_agent -> knowledge_retriever_agent -> mission_planner_agent -> mission_reviewer_agent` 完成解析、检索、规划和复核。<br>Uses `task_parser_agent -> knowledge_retriever_agent -> mission_planner_agent -> mission_reviewer_agent` to parse, retrieve, plan, and review. |
-| LangGraph backend / LangGraph 后端 | 保留默认无依赖 workflow，同时提供可选 LangGraph `StateGraph` backend。<br>Keeps the default dependency-free workflow while adding an optional LangGraph `StateGraph` backend. |
-| Structured output / 结构化输出 | 输出任务字段、规划建议、风险说明、JSON mission configuration 和可选 schema envelope。<br>Outputs task fields, planning recommendations, risk notes, JSON mission configuration, and an optional schema envelope. |
-| LLM provider / LLM 适配器 | 默认离线运行，也可以通过 DeepSeek 或 OpenAI-compatible API 对规划结果进行可选增强。<br>Runs offline by default, with optional planning refinement through DeepSeek or an OpenAI-compatible API. |
-| Trajectory intent / 轨迹意图识别 | 从经纬高、速度、航向和姿态角轨迹点中提取摘要并识别飞行意图。<br>Extracts trajectory summaries from latitude, longitude, altitude, speed, heading, and attitude angles, then recognizes flight intent. |
-| Benchmark / 场景评估 | 使用多场景 benchmark 评估任务解析、目标覆盖、约束覆盖和风险关键词覆盖。<br>Uses a multi-scenario benchmark to evaluate task parsing, objective coverage, constraint coverage, and risk keyword coverage. |
-| Dashboard / 可视化页面 | 生成本地 HTML 页面，集中展示任务输入、Agent 节点流、规划结果和 benchmark 分数。<br>Generates a local HTML page that presents mission input, Agent node flow, planning results, and benchmark scores. |
-| Interactive demo / 交互式 Demo | 提供本地 FastAPI + HTML 控制台，支持任务输入、provider 选择、Agent trace、JSON 输出、provider comparison 和任务态势图。<br>Provides a local FastAPI + HTML console for mission input, provider selection, Agent trace, JSON output, provider comparison, and the mission situation map. |
+The swarm prototype currently includes three completed layers:
 
-当前版本保持离线、轻依赖，因此无需 API Key 就能快速运行。需要接入外部模型时，可以通过命令行参数启用 DeepSeek 或 OpenAI-compatible provider。
+| Layer | Module | Status |
+|---|---|---|
+| Swarm data models | `swarm_models.py` | Models UAV agents, grid positions, detected targets, mission events, swarm memory, and mission state. |
+| Virtual environment | `swarm_environment.py` | Provides a bounded 2D grid, obstacles, no-fly zones, communication checks, battery drain, target discovery, and tick events. |
+| Traditional algorithms | `swarm_algorithms.py` | Uses A* path planning to find obstacle-aware routes, then runs battery, communication, scoring, and target-assignment checks. |
 
-The first version is intentionally offline and dependency-light, so it can run quickly without API keys. When external model calls are needed, DeepSeek or an OpenAI-compatible provider can be enabled through CLI options.
+This keeps the project grounded in deterministic engineering logic: the LLM can explain and coordinate high-level intent, while hard constraints are checked by algorithmic tools.
 
-## Key Features / 核心功能
+## Core capabilities / 核心能力
 
-- 解析中文无人机任务描述。<br>
-  Parses Chinese UAV mission descriptions.
-- 提取无人机数量、搜索区域、禁飞区、任务目标和协同约束。<br>
-  Extracts UAV count, search areas, no-fly zones, objectives, and coordination constraints.
-- 使用默认离线 local vector RAG 检索无人机任务规划知识，并记录 score、rank 和 matched tags。<br>
-  Retrieves UAV planning knowledge with default offline local vector RAG and records score, rank, and matched tags.
-- 生成搜索、覆盖、禁飞区规避和弱通信协同相关的规划建议。<br>
-  Generates planning recommendations for search, coverage, no-fly-zone avoidance, and weak communication.
-- 输出结构化 JSON 任务配置。<br>
-  Outputs a structured JSON mission configuration.
-- 支持 schema envelope 输出，包含 schema 名称、版本、JSON schema、校验结果和数据主体。<br>
-  Supports schema envelope output with schema name, version, JSON schema, validation result, and data payload.
-- 支持 DeepSeek 和 OpenAI-compatible LLM provider adapter，并保留默认离线 fallback。<br>
-  Supports DeepSeek and OpenAI-compatible LLM provider adapters while keeping the default offline fallback.
-- 支持可选 LangGraph backend，安装 `langgraph` 后可通过 CLI 切换。<br>
-  Supports an optional LangGraph backend that can be selected from the CLI after installing `langgraph`.
-- 支持 UAV trajectory intent recognition，根据轨迹摘要识别 `area_search`、`target_tracking`、`return_to_base`、`loitering` 或 `transit`。<br>
-  Supports UAV trajectory intent recognition for `area_search`, `target_tracking`, `return_to_base`, `loitering`, or `transit`.
-- 运行扩展无人机任务 benchmark，并给出 31 个场景的场景级评分。<br>
-  Runs an expanded UAV mission benchmark with scenario-level scoring across 31 scenarios.
-- 提供 Agent 节点追踪和复核输出，增强可解释性。<br>
-  Provides an Agent-style node trace and review output for explainability.
-- 生成本地 HTML 可视化页面，展示任务输入、Agent 节点流、规划输出、任务执行可视化、Benchmark v2 provider 对比和成本统计。<br>
-  Generates a local HTML dashboard for mission input, Agent node flow, planning output, mission execution visualization, Benchmark v2 provider comparison, and cost statistics.
-- 提供 FastAPI + HTML 交互式 demo，支持输入 UAV 任务、选择 provider、查看 Agent trace、JSON 输出、provider comparison 和任务态势图。<br>
-  Provides a FastAPI + HTML interactive demo for entering UAV missions, selecting a provider, and viewing Agent trace, JSON output, provider comparison, and the mission situation map.
-- 包含单元测试和示例输出，便于复现实验结果。<br>
-  Includes unit tests and example output for reproducible checks.
+- Parse Chinese UAV mission requests into UAV count, search areas, no-fly zones, objectives, and coordination constraints.
+- Retrieve UAV planning knowledge through default offline local vector RAG with `score`, `rank`, `retriever`, and `matched_tags` evidence.
+- Generate recommendations, risks, structured mission configuration, schema output, and Agent trace records.
+- Run an optional LangGraph backend while preserving the dependency-free default workflow.
+- Use optional DeepSeek or OpenAI-compatible providers for live refinement.
+- Recognize lightweight trajectory intent from UAV trajectory summaries.
+- Run benchmark and provider comparison reports with score, latency, token usage, and estimated cost.
+- Render local mission visualization and an interactive FastAPI + HTML demo.
+- Model multi-UAV swarm state and run deterministic grid/environment/algorithm checks.
 
-## Example Scenario / 示例任务
-
-下面是一个典型的中文无人机任务输入，要求 3 架无人机搜索指定区域、避开禁飞区、优先覆盖可疑目标点，并在弱通信条件下保持协同。
-
-The following is a typical Chinese UAV mission input. It asks three UAVs to search a target area, avoid a no-fly zone, prioritize suspicious target points, and maintain coordination under weak communication.
-
-Input / 输入：
-
-```text
-使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。
-```
-
-输出结果包括任务字段解析、相关无人机规划知识、规划建议、任务风险和 JSON 任务配置。
-
-The output includes task parsing, retrieved UAV planning knowledge, planning recommendations, mission risks, and JSON mission configuration.
-
-Representative output / 示例输出：[`examples/example_output.json`](examples/example_output.json)
-
-## Agent Workflow / Agent 工作流
-
-当前系统采用一个离线、无外部依赖的 Agent 图。每个节点都会读取和写入显式共享状态，最终输出可以包含 `agent_trace` 数组，用来解释哪些节点被执行、每个节点消费了什么输入、产生了什么输出。
-
-The current implementation is a dependency-free Agent graph. Each node reads and writes an explicit shared state, and the final output can include an `agent_trace` array that explains which nodes ran, what they consumed, and what they produced.
+## Architecture / 架构
 
 ```text
 Natural-language UAV mission
@@ -100,538 +54,234 @@ Natural-language UAV mission
 task_parser_agent
         |
         v
-knowledge_retriever_agent
+knowledge_retriever_agent  ---> local vector RAG
         |
         v
-mission_planner_agent
+mission_planner_agent      ---> optional DeepSeek / OpenAI-compatible provider
         |
         v
 mission_reviewer_agent
         |
         v
-Recommendations + Risks + JSON Config + Agent Trace
+Structured mission plan + risks + JSON config + Agent trace
+
+Swarm extension:
+
+SwarmMissionState
+        |
+        +--> SwarmGridEnvironment
+        |       +-- grid, obstacle, no-fly-zone, communication, battery, target events
+        |
+        +--> swarm_algorithms.py
+                +-- A* path planning
+                +-- battery feasibility
+                +-- communication coverage
+                +-- candidate scoring
+                +-- target assignment
 ```
 
-这种实现方式让当前原型易于运行，同时保留了向 LangGraph 多节点工作流升级的清晰路径。
+Important modules:
 
-This keeps the current prototype easy to run while preserving a clean path toward LangGraph-based multi-node workflows.
-
-## Architecture / 架构说明
-
-项目按任务解析、知识检索、规划生成、benchmark 评估、CLI 入口、任务执行可视化和 HTML dashboard 进行模块化拆分，便于后续替换为真实 LLM、向量检索或 LangGraph 节点。
-
-The project is modularized around task parsing, knowledge retrieval, planning generation, benchmark evaluation, CLI execution, mission execution visualization, and the HTML dashboard, making it easy to later replace components with a real LLM, vector retrieval, or LangGraph nodes.
-
-| Module / 模块 | Responsibility / 职责 |
+| Module | Responsibility |
 |---|---|
-| `task_parser.py` | 从自然语言输入中提取结构化任务字段。<br>Extract structured mission fields from natural-language input. |
-| `agent_graph.py` | 以可追踪 Agent 节点方式运行解析、检索、规划和复核流程。<br>Run parser, retriever, planner, and reviewer as traceable Agent nodes. |
-| `langgraph_workflow.py` | 使用可选 LangGraph `StateGraph` 运行同一组任务节点。<br>Run the same mission nodes through an optional LangGraph `StateGraph`. |
-| `embeddings.py` | 生成确定性的本地稀疏向量 embedding，并计算 cosine similarity。<br>Generate deterministic local sparse-vector embeddings and cosine similarity. |
-| `retrievers.py` | 提供 `local-vector`、`keyword`、可选 `faiss` 和可选 `chroma` 检索后端。<br>Provide `local-vector`, `keyword`, optional `faiss`, and optional `chroma` retrieval backends. |
-| `knowledge_base.py` | 作为稳定知识库 facade，默认通过 local vector RAG 检索相关无人机规划片段。<br>Serve as the stable knowledge-base facade and retrieve UAV planning snippets through local vector RAG by default. |
-| `llm_provider.py` | 提供 DeepSeek/OpenAI-compatible provider adapter 和 provider factory。<br>Provide the DeepSeek/OpenAI-compatible provider adapter and provider factory. |
-| `models.py` | 定义任务、知识片段、任务方案、benchmark 场景、评估结果和 Agent trace 数据模型。<br>Define data models for tasks, knowledge snippets, mission plans, benchmark scenarios, evaluation results, and Agent traces. |
-| `trajectory.py` | 解析 UAV 轨迹点并计算高度、速度、航向和位移摘要。<br>Parse UAV trajectory points and compute altitude, speed, heading, and displacement summaries. |
-| `intent_recognition.py` | 基于轨迹摘要识别轻量飞行意图。<br>Recognize lightweight flight intents from trajectory summaries. |
-| `planner.py` | 生成规划建议、风险说明和任务配置。<br>Generate recommendations, risk notes, and mission configuration. |
-| `schemas.py` | 定义标准输出 schema，并对任务方案进行轻量校验。<br>Define the public output schema and validate mission plans. |
-| `workflow.py` | 编排端到端任务智能流程。<br>Orchestrate the end-to-end mission intelligence workflow. |
-| `scenario_loader.py` | 加载结构化无人机 benchmark 场景。<br>Load structured UAV benchmark scenarios. |
-| `evaluator.py` | 根据场景期望对任务方案进行评分。<br>Score mission plans against scenario expectations. |
-| `benchmark.py` | 在场景集上运行工作流并汇总指标。<br>Run the workflow across a scenario set and summarize metrics. |
-| `benchmark_v2.py` | 运行多 provider 对比，汇总质量、延迟、token usage 和成本指标。<br>Run multi-provider comparison with quality, latency, token usage, and cost metrics. |
-| `costing.py` | 归一化 provider token usage，并根据可配置费率估算成本。<br>Normalize provider token usage and estimate cost from configurable pricing. |
-| `mission_visualization.py` | 根据任务方案渲染离线 UAV 任务执行 SVG 场景。<br>Render an offline UAV mission execution SVG scene from a mission plan. |
-| `dashboard.py` | 生成本地静态 HTML dashboard，展示 Agent 流、规划结果、任务执行可视化和 Benchmark v2 指标。<br>Generate a local static HTML dashboard for the Agent flow, planning output, mission execution visualization, and Benchmark v2 metrics. |
-| `demo_service.py` | 为交互 demo 构建任务 payload、benchmark payload、HTML 页面和 env-file 加载。<br>Build mission payloads, benchmark payloads, HTML, and env-file loading for the interactive demo. |
-| `demo_app.py` | 暴露可选 FastAPI demo app 和 JSON API。<br>Expose the optional FastAPI demo app and JSON API. |
-| `demo_cli.py` | 提供 `uav-mission-agent-demo` 本地服务启动入口。<br>Provide the local `uav-mission-agent-demo` server launcher. |
-| `cli.py` | 提供命令行运行入口。<br>Provide a command-line entry point. |
+| `task_parser.py` | Extract structured fields from natural-language UAV mission text. |
+| `agent_graph.py` | Run parser, retriever, planner, and reviewer nodes with trace output. |
+| `knowledge_base.py`, `embeddings.py`, `retrievers.py` | Provide local vector RAG and optional FAISS/Chroma adapter boundaries. |
+| `planner.py`, `schemas.py`, `workflow.py` | Generate and validate mission plans. |
+| `llm_provider.py` | Support offline, DeepSeek, and OpenAI-compatible provider paths. |
+| `swarm_models.py` | Define UAV agent states, mission events, detected targets, and swarm memory. |
+| `swarm_environment.py` | Simulate a simple deterministic 2D swarm environment. |
+| `swarm_algorithms.py` | Provide A* path planning and explainable constraint checks. |
+| `mission_visualization.py`, `dashboard.py` | Render local visual outputs. |
+| `demo_service.py`, `demo_app.py`, `demo_cli.py` | Serve the optional interactive demo. |
+| `benchmark.py`, `benchmark_v2.py`, `evaluator.py` | Evaluate mission quality and provider comparison runs. |
 
-项目目录结构如下，核心代码位于 `src/uav_mission_agent/`，示例、benchmark 数据、评估结果、dashboard 和 README 可视化资产分别放在独立目录中。
+## Quick start / 快速开始
 
-The project layout is shown below. Core code lives in `src/uav_mission_agent/`, while examples, benchmark data, evaluation results, the dashboard, and README visualization assets are organized in separate directories.
-
-```text
-uav-mission-intelligence-agent/
-+-- examples/
-|   +-- mission_zh.txt
-|   +-- example_output.json
-|   +-- trajectory_intent_example.json
-+-- data/
-|   +-- scenarios/
-|       +-- area_search_low_bandwidth.json
-|       +-- expanded_challenge_set.json
-|       +-- no_fly_zone_replan.json
-|       +-- target_tracking_multi_uav.json
-+-- results/
-|   +-- example_evaluation.json
-+-- dashboard/
-|   +-- uav_mission_dashboard.html
-+-- docs/
-|   +-- assets/
-|       +-- benchmark-coverage.svg
-|       +-- mission-execution-visualization.svg
-|       +-- uav-mission-demo.png
-+-- src/
-|   +-- uav_mission_agent/
-|       +-- agent_graph.py
-|       +-- benchmark.py
-|       +-- benchmark_v2.py
-|       +-- cli.py
-|       +-- costing.py
-|       +-- dashboard.py
-|       +-- demo_app.py
-|       +-- demo_cli.py
-|       +-- demo_service.py
-|       +-- embeddings.py
-|       +-- evaluator.py
-|       +-- intent_recognition.py
-|       +-- knowledge_base.py
-|       +-- langgraph_workflow.py
-|       +-- llm_provider.py
-|       +-- mission_visualization.py
-|       +-- models.py
-|       +-- planner.py
-|       +-- retrievers.py
-|       +-- schemas.py
-|       +-- scenario_loader.py
-|       +-- task_parser.py
-|       +-- trajectory.py
-|       +-- workflow.py
-+-- tests/
-|   +-- test_agent_graph.py
-|   +-- test_benchmark.py
-|   +-- test_benchmark_dataset.py
-|   +-- test_benchmark_v2.py
-|   +-- test_cli.py
-|   +-- test_costing.py
-|   +-- test_dashboard.py
-|   +-- test_demo_app.py
-|   +-- test_demo_cli.py
-|   +-- test_demo_service.py
-|   +-- test_embeddings.py
-|   +-- test_evaluator.py
-|   +-- test_intent_recognition.py
-|   +-- test_langgraph_workflow.py
-|   +-- test_knowledge_retrieval.py
-|   +-- test_llm_provider.py
-|   +-- test_mission_visualization.py
-|   +-- test_readme_assets.py
-|   +-- test_scenario_loader.py
-|   +-- test_schema_output.py
-|   +-- test_task_parser.py
-|   +-- test_trajectory.py
-|   +-- test_workflow.py
-+-- pyproject.toml
-+-- README.md
-```
-
-## Quick Start / 快速开始
-
-先克隆仓库并进入项目目录。
-
-First, clone the repository and enter the project directory.
+Clone the repository and run the default offline test suite:
 
 ```bash
 git clone https://github.com/poliment/uav-mission-intelligence-agent.git
 cd uav-mission-intelligence-agent
-```
-
-运行完整测试套件，确认本地环境可以正常执行。
-
-Run the full test suite to confirm that the local environment works correctly.
-
-```bash
 python -m unittest discover -s tests -v
 ```
 
-在 Windows PowerShell 中运行单条任务示例。
-
-Run a single-mission example on Windows PowerShell.
+Run a single mission from Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
 ```
 
-如果希望看到 Agent 节点执行轨迹，可以使用 `--trace` 参数。
-
-Use the `--trace` flag if you want to inspect the Agent node execution trace.
+Show Agent trace:
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m uav_mission_agent.cli --trace "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
+python -m uav_mission_agent.cli --trace "使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"
 ```
 
-如果需要标准 schema envelope 输出，可以使用 `--schema-output` 参数。
-
-Use `--schema-output` when a standard schema envelope is needed.
+Generate schema-wrapped output:
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m uav_mission_agent.cli --schema-output "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
+python -m uav_mission_agent.cli --schema-output "使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"
 ```
 
-如果需要调用 DeepSeek API 对规划结果进行增强，可以设置 `DEEPSEEK_API_KEY`，并使用 `--llm-provider deepseek`。默认模型为 `deepseek-v4-flash`。
-
-Use `DEEPSEEK_API_KEY` and `--llm-provider deepseek` to refine planning results through the DeepSeek API. The default model is `deepseek-v4-flash`.
-
-```powershell
-$env:PYTHONPATH="src"
-$env:DEEPSEEK_API_KEY="your-api-key"
-python -m uav_mission_agent.cli --llm-provider deepseek "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
-```
-
-也可以使用通用 OpenAI-compatible API。
-
-A generic OpenAI-compatible API can also be used.
-
-```powershell
-$env:PYTHONPATH="src"
-$env:OPENAI_API_KEY="your-api-key"
-python -m uav_mission_agent.cli --llm-provider openai-compatible --llm-model gpt-4o-mini --llm-base-url https://api.example.com/v1 "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
-```
-
-如果需要使用 LangGraph backend，可以安装可选依赖，并通过 `--graph-backend langgraph` 切换。未安装 LangGraph 时，默认 `rule-based` backend 仍可正常运行。
-
-Use the optional LangGraph backend by installing the extra dependency and selecting `--graph-backend langgraph`. Without LangGraph installed, the default `rule-based` backend continues to run normally.
-
-```powershell
-python -m pip install -e ".[langgraph]"
-$env:PYTHONPATH="src"
-python -m uav_mission_agent.cli --graph-backend langgraph "使用3架无人机搜索区域A，避开禁飞区B，并保持弱通信条件下协同。"
-```
-
-## RAG Retrieval Backends / RAG 检索后端
-
-默认检索路径使用 `local-vector` backend：它通过确定性的本地稀疏向量和 cosine similarity 执行 local vector RAG，不需要 API key、网络访问或第三方向量库。检索结果会携带 `retriever`、`rank`、`score` 和 `matched_tags`，便于在 Agent trace、dashboard 和 provider prompt 中展示检索证据。
-
-The default retrieval path uses the `local-vector` backend. It performs local vector RAG with deterministic sparse vectors and cosine similarity, without API keys, network access, or third-party vector-store dependencies. Retrieved snippets carry `retriever`, `rank`, `score`, and `matched_tags` fields for Agent trace, dashboard, and provider-prompt evidence.
-
-Optional FAISS and Chroma adapter boundaries are available through extras:
-
-```powershell
-pip install "uav-mission-intelligence-agent[rag-faiss]"
-pip install "uav-mission-intelligence-agent[rag-chroma]"
-```
-
-Retrieval evidence example:
-
-```json
-{
-  "topic": "low_bandwidth_coordination",
-  "retriever": "local-vector",
-  "rank": 1,
-  "score": 0.42,
-  "matched_tags": ["distributed"]
-}
-```
-
-也可以直接运行 UAV trajectory intent recognition 示例。输入文件是轨迹点 JSON 数组，字段包含 `timestamp`、`latitude`、`longitude`、`altitude`、`speed`、`heading`、`roll`、`pitch` 和 `yaw`。
-
-The UAV trajectory intent recognition example can also be run directly. The input file is a JSON array of trajectory points with `timestamp`, `latitude`, `longitude`, `altitude`, `speed`, `heading`, `roll`, `pitch`, and `yaw`.
-
-```powershell
-$env:PYTHONPATH="src"
-python -m uav_mission_agent.cli --trajectory-intent examples\trajectory_intent_example.json
-```
-
-在 macOS 或 Linux 上运行单条任务示例。
-
-Run a single-mission example on macOS or Linux.
-
-```bash
-PYTHONPATH=src python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
-```
-
-运行扩展版 benchmark，评估 31 个无人机任务场景中的任务解析、目标覆盖、约束覆盖、风险关键词和结构化配置等指标。
-
-Run the expanded benchmark to evaluate task parsing, objective coverage, constraint coverage, risk keywords, and structured configuration across 31 UAV mission scenarios.
+Run the expanded benchmark:
 
 ```powershell
 $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli --benchmark data\scenarios
 ```
 
-运行 Benchmark v2，查看 provider 对比、场景难度汇总、延迟、token usage 和成本统计。默认只运行离线 baseline，不需要 API key。
-
-Run Benchmark v2 to inspect provider comparison, difficulty summary, latency, token usage, and cost statistics. The default command runs only the offline baseline and does not require an API key.
+Run Benchmark v2 with provider comparison fields. The default run uses only the offline provider:
 
 ```powershell
 $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli --benchmark-v2 data\scenarios
 ```
 
-如果需要比较真实 LLM provider，可以设置 API key 后加入 `--benchmark-providers`。成本估算建议通过 `--benchmark-pricing` 显式传入当前 provider/model 的每百万 token 价格。
-
-For real LLM provider comparison, set the API key and add `--benchmark-providers`. Cost estimation should use `--benchmark-pricing` with the current per-1M-token price for the provider/model.
-
-```powershell
-$env:PYTHONPATH="src"
-$env:DEEPSEEK_API_KEY="your-api-key"
-python -m uav_mission_agent.cli `
-  --benchmark-v2 data\scenarios `
-  --benchmark-providers offline,deepseek/deepseek-v4-flash `
-  --benchmark-pricing deepseek/deepseek-v4-flash:0.14:0.28:USD
-```
-
-价格会随 provider 调整而变化，公开报告成本前请确认官方定价页，例如 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing) 和 [OpenAI pricing](https://platform.openai.com/docs/pricing)。
-
-Provider prices may change, so verify the current provider pricing before publishing live cost numbers, for example [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing) and [OpenAI pricing](https://platform.openai.com/docs/pricing).
-
-代表性 benchmark 结果保存在 [`results/example_evaluation.json`](results/example_evaluation.json)。
-
-A representative benchmark result is available at [`results/example_evaluation.json`](results/example_evaluation.json).
-
-生成本地 HTML dashboard，用于本地运行结果检查，集中呈现任务输入、Agent 节点流、规划输出、Benchmark v2 provider 对比和成本统计。
-
-Generate the local HTML dashboard for local result inspection, presenting the mission input, Agent node flow, planning output, Benchmark v2 provider comparison, and cost statistics in one page.
+Generate the local HTML dashboard:
 
 ```powershell
 $env:PYTHONPATH="src"
 python -m uav_mission_agent.cli --dashboard dashboard\uav_mission_dashboard.html
 ```
 
-生成后可以直接用浏览器打开 [`dashboard/uav_mission_dashboard.html`](dashboard/uav_mission_dashboard.html)。
+## RAG retrieval / RAG 检索
 
-After generation, open [`dashboard/uav_mission_dashboard.html`](dashboard/uav_mission_dashboard.html) directly in a browser.
+The default retrieval backend is local vector RAG. It uses deterministic sparse vectors and cosine similarity, so it runs without API keys, network calls, FAISS, Chroma, or embedding services.
+
+Optional vector-store boundaries are available through extras:
+
+```powershell
+python -m pip install -e ".[rag-faiss]"
+python -m pip install -e ".[rag-chroma]"
+```
+
+Supported backend names:
+
+- `local-vector`
+- `keyword`
+- `faiss` via the `rag-faiss` extra
+- `chroma` via the `rag-chroma` extra
+
+## A* swarm algorithm layer
+
+`swarm_algorithms.py` uses A* path planning over the Stage 2 grid environment. It treats obstacles, no-fly zones, and map boundaries as blocked cells, then exposes the resulting path to other checks:
+
+- `astar_path(...)`: shortest obstacle-aware grid path.
+- `check_battery_feasibility(...)`: required travel battery plus reserve.
+- `check_communication_coverage(...)`: weak communication points along the A* path.
+- `score_candidate_for_target(...)`: explainable UAV-to-target score.
+- `assign_targets_to_uavs(...)`: deterministic greedy target assignment.
+
+This layer is intentionally deterministic. It gives future coordinators and demos a reliable tool surface for "can this UAV execute this assignment?" before any LLM-generated explanation is accepted.
 
 ## Interactive Demo / 交互式 Demo
 
-交互式 demo 提供一个本地 FastAPI + HTML 控制台，可以输入 UAV 任务、选择 provider、查看 Agent trace、结构化 JSON 输出、Benchmark v2/provider comparison 和任务态势图。
-
-The interactive demo provides a local FastAPI + HTML console for entering UAV missions, selecting a provider, and inspecting Agent trace, structured JSON output, Benchmark v2/provider comparison, and the mission situation map.
-
-Install the optional demo dependencies:
+Install optional demo dependencies:
 
 ```powershell
 pip install -e ".[demo]"
 ```
 
-Run the offline demo:
+Start the local offline demo:
 
 ```powershell
 uav-mission-agent-demo --host 127.0.0.1 --port 8000
 ```
 
-Run with the existing DeepSeek env file:
+Run with a local env file for DeepSeek without writing secrets into the repository:
 
 ```powershell
 uav-mission-agent-demo --env-file D:\epacode\working\.secrets\deepseek.env
 ```
 
-Open `http://127.0.0.1:8000` after the server starts. The default `offline` provider requires no API key. Selecting `deepseek` uses `DEEPSEEK_API_KEY` from the environment or env file.
+Open `http://127.0.0.1:8000` after the server starts. The demo supports mission input, provider selection, Agent trace, structured JSON output, provider comparison, and mission visualization.
 
-也可以选择 editable install，之后直接通过模块方式运行 CLI。
+## Example output / 示例输出
 
-You can also use an editable install and then run the CLI as a module.
+Representative output:
 
-```bash
-python -m pip install -e .
-python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
-```
+- [`examples/example_output.json`](examples/example_output.json)
+- [`results/example_evaluation.json`](results/example_evaluation.json)
+- [`docs/assets/mission-execution-visualization.svg`](docs/assets/mission-execution-visualization.svg)
 
-## Sample Output Fragment / 输出片段示例
-
-下面展示的是输出 JSON 的核心结构，包括解析后的任务、任务配置和 Agent 复核结果。
-
-The following fragment shows the core JSON output structure, including the parsed task, mission configuration, and Agent review result.
-
-```json
-{
-  "task": {
-    "drone_count": 3,
-    "search_areas": ["区域A"],
-    "avoid_zones": ["禁飞区B"],
-    "objectives": ["area_search", "coverage", "suspicious_target_search"],
-    "constraints": [
-      "low_bandwidth_coordination",
-      "avoid_no_fly_zone",
-      "multi_uav_coordination"
-    ]
-  },
-  "mission_config": {
-    "uav_count": 3,
-    "coordination_mode": "distributed_low_bandwidth",
-    "planning_policy": "coverage_first_with_constraint_avoidance"
-  },
-  "agent_review": {
-    "ready": true,
-    "warning_count": 0
-  }
-}
-```
-
-## Implementation Notes / 实现说明
-
-- 任务领域明确，工作流围绕无人机任务规划构建，而不是通用聊天流程。<br>
-  The task domain is explicit; the workflow is designed for UAV mission planning rather than generic chat behavior.
-- 结构化推理清晰，系统把解析、检索、规划和配置生成拆分为不同阶段。<br>
-  Structured reasoning is clear; the pipeline separates parsing, retrieval, planning, and configuration generation.
-- Agent 可追踪，每个节点记录执行顺序、输入键、输出键和复核状态。<br>
-  The Agent graph is traceable, recording node order, input keys, output keys, and review status.
-- LLM provider 可插拔，内置 DeepSeek alias，默认离线路径不依赖外部 API。<br>
-  The LLM provider is pluggable, includes a DeepSeek alias, and keeps the default offline path independent from external APIs.
-- schema 输出可校验，便于下游系统稳定读取任务方案。<br>
-  Schema output is validated so downstream systems can consume mission plans consistently.
-- 包含 benchmark 评估，不只停留在单条示例，而是包含结构化无人机场景和评估器。<br>
-  Benchmark evaluation is included through structured UAV scenarios and an evaluator, instead of only a single example.
-- dashboard 用于结果检查，CLI 可以生成静态 HTML 页面，展示本地运行结果。<br>
-  The dashboard supports result inspection; the CLI can generate a static HTML page for local outputs.
-- local vector RAG 已实现，默认离线检索会返回 score、rank、retriever 和 matched tags，并保留可选 FAISS/Chroma adapter 边界。<br>
-  Local vector RAG is implemented; default offline retrieval returns score, rank, retriever, and matched tags while preserving optional FAISS/Chroma adapter boundaries.
-- Agent-ready，每个模块都可以进一步升级为 LangGraph 节点。<br>
-  The project is Agent-ready; each module can become a LangGraph node in a future multi-agent workflow.
-- 当前原型可测试、可离线运行，当前行为由单元测试覆盖，不依赖网络访问。<br>
-  The current prototype is testable and offline; current behavior is covered by unit tests and runs without network access.
-
-## Expanded Benchmark / 扩展 Benchmark
-
-当前 benchmark 包含 31 个无人机任务场景，其中 22 个为 hard 场景、9 个为 medium 场景。数据集覆盖区域搜索、动态禁飞区重规划、多无人机目标跟踪、弱通信协同、模糊指令、冲突约束、缺少无人机数量、区域边界不完整、禁飞区与目标区重叠、中英文混合任务和噪声表达。
-
-The current benchmark contains 31 UAV mission scenarios: 22 hard scenarios and 9 medium scenarios. The dataset covers area search, dynamic no-fly-zone replanning, multi-UAV target tracking, weak-communication coordination, ambiguous instructions, conflicting constraints, missing UAV counts, incomplete area boundaries, overlapping no-fly and target areas, mixed Chinese-English tasks, and noisy expressions.
-
-| Challenge type / 挑战类型 | Scenario count / 场景数 |
-|---|---|
-| `weak_comm_tracking_replan_combo` | 10 |
-| `noisy_expression` | 6 |
-| `conflicting_constraints` | 5 |
-| `overlapping_no_fly_and_target_area` | 5 |
-| `mixed_zh_en` | 5 |
-| `ambiguous_instruction` | 4 |
-| `missing_uav_count` | 4 |
-| `incomplete_area_boundary` | 4 |
-
-评估维度包括无人机数量提取、搜索区域提取、禁飞区提取、目标覆盖、约束覆盖和风险关键词覆盖。
-
-Evaluation dimensions include UAV count extraction, search area extraction, no-fly-zone extraction, objective coverage, constraint coverage, and risk keyword coverage.
-
-Current sample result / 当前示例结果：
+Typical mission input:
 
 ```text
-total_scenarios: 31
-average_score: 0.964
-passed_runs: 29
-hard_scenarios: 22
+使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。
 ```
 
-Benchmark v2 在 v1 场景评分基础上增加 provider comparison、difficulty summary、latency、token usage 和 estimated cost 字段，适合比较离线 baseline 与真实 LLM provider。
+Output includes:
 
-Benchmark v2 extends the v1 scenario score with provider comparison, difficulty summary, latency, token usage, and estimated cost fields, making it suitable for comparing the offline baseline with real LLM providers.
+- Parsed task fields.
+- Retrieved UAV planning knowledge.
+- Planning recommendations.
+- Risks.
+- JSON mission configuration.
+- Optional schema envelope.
+- Optional Agent trace.
 
-```text
-benchmark_version: 2.0
-provider_count: 1
-total_runs: 31
-estimated_total_cost: 0.0
-```
+## Testing / 测试
 
-## Provider Evaluation / Provider 评估
-
-项目支持离线 baseline 与真实 LLM provider 的统一评估。Benchmark v2 会记录 score、latency、token usage、estimated cost 和 provider comparison，用于比较规则 baseline 与 DeepSeek 等 OpenAI-compatible provider 的任务规划表现。
-
-The project supports unified evaluation for the offline baseline and live LLM providers. Benchmark v2 records score, latency, token usage, estimated cost, and provider comparison, making it possible to compare the rule-based baseline with OpenAI-compatible providers such as DeepSeek.
-
-Live 31-scenario provider run with `deepseek-v4-flash`, recorded on 2026-07-09. Raw report: `results/deepseek_provider_comparison_2026-07-09.json`.
-
-| Provider | Runs | Avg Score | Passed | Avg Latency | Estimated Cost |
-|---|---:|---:|---:|---:|---:|
-| `offline` | 31 | 0.964 | 29/31 | 0.173 ms | `$0.00000000` |
-| `deepseek-v4-flash` | 31 | 0.968 | 29/31 | 7688.837 ms | `$0.01294734` |
-
-Token and cost summary:
-
-```text
-prompt_tokens: 38771
-completion_tokens: 26855
-total_tokens: 65626
-estimated_total_cost: $0.01294734
-```
-
-Per-scenario live-provider results:
-
-| Scenario | Score | Pass | Latency | Estimated Cost | Tokens |
-|---|---:|---|---:|---:|---:|
-| `area_search_low_bandwidth` | 1.00 | yes | 6187.073 ms | `$0.00044142` | 2292 |
-| `ambiguous_quick_scan_no_count` | 0.78 | no | 6686.175 ms | `$0.00039942` | 2045 |
-| `ambiguous_patrol_unclear_priority` | 0.95 | yes | 7117.066 ms | `$0.00041888` | 2158 |
-| `ambiguous_scout_then_track` | 0.78 | no | 11398.340 ms | `$0.00058464` | 2680 |
-| `ambiguous_noise_words` | 1.00 | yes | 5534.660 ms | `$0.00037898` | 1991 |
-| `conflict_cross_and_avoid_same_nfz` | 1.00 | yes | 9869.865 ms | `$0.00041986` | 2141 |
-| `conflict_low_altitude_and_obstacle` | 0.89 | yes | 6860.939 ms | `$0.00033810` | 1724 |
-| `conflict_track_target_inside_nfz` | 1.00 | yes | 6315.603 ms | `$0.00041734` | 2137 |
-| `missing_count_area_search` | 1.00 | yes | 6379.223 ms | `$0.00042224` | 2159 |
-| `missing_count_tracking` | 1.00 | yes | 7509.070 ms | `$0.00033656` | 1685 |
-| `missing_count_replan` | 1.00 | yes | 10611.554 ms | `$0.00050960` | 2479 |
-| `incomplete_boundary_area_u` | 0.95 | yes | 10472.046 ms | `$0.00036428` | 1720 |
-| `incomplete_boundary_with_nfz` | 1.00 | yes | 14111.741 ms | `$0.00060998` | 2813 |
-| `incomplete_boundary_low_bandwidth` | 1.00 | yes | 6836.510 ms | `$0.00037968` | 1966 |
-| `overlap_search_area_and_nfz` | 0.95 | yes | 10124.433 ms | `$0.00049504` | 2410 |
-| `overlap_target_points_and_nfz` | 0.83 | yes | 11296.465 ms | `$0.00050148` | 2451 |
-| `overlap_tracking_target_near_nfz` | 0.95 | yes | 6749.662 ms | `$0.00039956` | 2087 |
-| `combo_weak_comm_tracking_replan` | 1.00 | yes | 8495.755 ms | `$0.00046046` | 2336 |
-| `combo_swarm_tracking_obstacle` | 1.00 | yes | 4236.998 ms | `$0.00032228` | 1812 |
-| `combo_search_track_low_bandwidth` | 1.00 | yes | 8996.971 ms | `$0.00048020` | 2348 |
-| `mixed_english_area_nfz` | 1.00 | yes | 4734.335 ms | `$0.00033530` | 1790 |
-| `mixed_zh_en_tracking` | 1.00 | yes | 5191.543 ms | `$0.00037982` | 2021 |
-| `mixed_replan_obstacle` | 1.00 | yes | 5402.043 ms | `$0.00033026` | 1856 |
-| `noisy_symbols_area_search` | 1.00 | yes | 8982.399 ms | `$0.00049154` | 2427 |
-| `noisy_parentheses_tracking` | 0.95 | yes | 6273.375 ms | `$0.00038500` | 1996 |
-| `noisy_chatty_mixed` | 1.00 | yes | 6880.545 ms | `$0.00041286` | 2064 |
-| `noisy_conflicting_mixed` | 1.00 | yes | 6349.323 ms | `$0.00035070` | 1815 |
-| `complex_missing_boundary_overlap` | 1.00 | yes | 8003.681 ms | `$0.00038864` | 2050 |
-| `complex_full_stack_stress` | 1.00 | yes | 9238.584 ms | `$0.00045752` | 2366 |
-| `no_fly_zone_replan` | 1.00 | yes | 5635.224 ms | `$0.00038962` | 2066 |
-| `target_tracking_multi_uav` | 1.00 | yes | 5872.752 ms | `$0.00034608` | 1741 |
-
-成本估算基于 2026-07-09 查询到的 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing)：`deepseek-v4-flash` cache-miss input `$0.14 / 1M tokens`，output `$0.28 / 1M tokens`。实际成本取决于 provider 价格、缓存命中和模型策略。
-
-Cost estimation uses the `deepseek-v4-flash` pricing checked on 2026-07-09 from [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing): cache-miss input `$0.14 / 1M tokens` and output `$0.28 / 1M tokens`. Actual cost depends on provider pricing, cache hits, and model policy.
-
-Provider adapter 默认使用 Python `urllib`，并在网络/TLS 请求失败时自动 fallback 到 `curl` transport，以提升 Windows/Codex 类环境下调用真实 provider 的稳定性。
-
-The provider adapter uses Python `urllib` by default and automatically falls back to a `curl` transport for network/TLS request failures, improving reliability for live provider calls in Windows/Codex-like environments.
-
-## Test Coverage / 测试覆盖
-
-测试覆盖任务解析、知识检索、端到端 workflow、场景加载、benchmark 评分、Benchmark v2 provider/cost 统计、CLI 模式、Agent trace、本地 dashboard、交互 demo service/API/CLI、任务执行可视化、schema output、LLM provider adapter、轨迹摘要和轨迹意图识别。
-
-The test suite covers task parsing, knowledge retrieval, end-to-end workflow output, scenario loading, benchmark scoring, Benchmark v2 provider/cost statistics, CLI modes, Agent trace, local dashboard rendering, interactive demo service/API/CLI behavior, mission execution visualization, schema output, LLM provider adapters, trajectory summary, and trajectory intent recognition.
-
-Run / 运行：
+Run the full suite:
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-Expected result / 预期结果：
+Or with pytest:
+
+```bash
+PYTHONPATH=src python -m pytest
+```
+
+The test suite is offline by default and uses fake or local providers only. CI does not require API keys.
+
+## Project structure / 项目结构
 
 ```text
-Ran 88 tests
-OK
+uav-mission-intelligence-agent/
++-- data/scenarios/                 benchmark scenario data
++-- dashboard/                      generated local dashboard
++-- docs/assets/                    README and dashboard visuals
++-- docs/superpowers/               design and implementation notes
++-- examples/                       sample mission and trajectory inputs
++-- results/                        sample benchmark outputs
++-- src/uav_mission_agent/          project source modules
++-- tests/                          unit tests
++-- pyproject.toml
++-- README.md
 ```
+
+## Provider and key hygiene
+
+Live provider calls are optional. The default path is offline.
+
+For DeepSeek:
+
+```powershell
+$env:DEEPSEEK_API_KEY="your-api-key"
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --llm-provider deepseek "use 3 UAVs to search area A"
+```
+
+For OpenAI-compatible APIs:
+
+```powershell
+$env:OPENAI_API_KEY="your-api-key"
+$env:PYTHONPATH="src"
+python -m uav_mission_agent.cli --llm-provider openai-compatible --llm-model gpt-4o-mini --llm-base-url https://api.openai.com/v1 "use 3 UAVs to search area A"
+```
+
+Keep API keys in environment variables or local env files. Do not commit keys, screenshots containing keys, or private env files.
 
 ## Roadmap / 路线图
 
-- 扩展 LangGraph backend，增加条件边、检查点和人工复核节点。<br>
-  Extend the LangGraph backend with conditional edges, checkpoints, and human review nodes.
-- 扩展 RAG 检索评估，加入更大的 UAV 知识库、召回率指标和真实 embedding 模型选项。<br>
-  Extend RAG retrieval evaluation with a larger UAV knowledge base, recall metrics, and real embedding model options.
-- 扩展多模型 provider 对比实验，并持续校准公开 cost report。<br>
-  Extend multi-model provider comparison experiments and keep public cost reports calibrated with current provider pricing.
-- 增加面向仿真器的结构化 YAML 输出。<br>
-  Add structured YAML output for simulator-style mission configuration.
-- 接入更真实的 UAV 轨迹样本，并增加基于经度、纬度、高度和姿态角的轨迹预测模块。<br>
-  Integrate more realistic UAV trajectory samples and add a trajectory prediction module based on longitude, latitude, altitude, and attitude-angle features.
-- 将任务执行可视化升级为交互式地图或仿真回放，用于展示路线重规划、目标跟踪和环境约束变化。<br>
-  Upgrade mission execution visualization into an interactive map or simulation replay for route replanning, target tracking, and changing environmental constraints.
-- 交互式 FastAPI + HTML demo 已提供，后续可扩展为多任务会话和更丰富的态势回放。<br>
-  The interactive FastAPI + HTML demo is available; future work can expand it into multi-mission sessions and richer situation replay.
-
-## Project Summary / 项目总结
-
-构建了一个无人机领域 LLM/Agent 原型，能够将自然语言无人机任务请求转化为结构化任务方案，并结合可追踪 Agent 节点、任务解析、local vector RAG 知识检索、可插拔 LLM provider、schema 输出、规划建议、风险解释、JSON 配置输出和 benchmark 场景评估。
-
-Built a UAV-domain LLM/Agent prototype that converts natural-language UAV mission requests into structured mission plans by combining traceable Agent nodes, an optional LangGraph backend, task parsing, local vector RAG knowledge retrieval, a pluggable LLM provider, schema output, UAV trajectory intent recognition, planning recommendations, risk explanation, JSON configuration output, benchmark-style scenario evaluation, and an interactive FastAPI + HTML demo.
+- Connect the swarm algorithm layer to a high-level swarm coordinator.
+- Add dynamic replanning demos for low battery, target discovery, and weak communication.
+- Expose swarm plan, event, and dialogue demos through the FastAPI UI.
+- Extend benchmark coverage for role assignment, A* feasibility, and communication constraints.
+- Add richer visualization for multi-UAV grid movement and event timelines.
