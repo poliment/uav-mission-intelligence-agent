@@ -127,7 +127,7 @@ class LLMProviderTests(unittest.TestCase):
         self.assertEqual(result["mission_config"]["planning_policy"], "llm_policy")
         self.assertEqual(captured["url"], "https://example.test/v1/chat/completions")
         self.assertEqual(captured["payload"]["model"], "test-model")
-        self.assertEqual(captured["payload"]["max_tokens"], 1200)
+        self.assertEqual(captured["payload"]["max_tokens"], 2400)
         self.assertEqual(captured["headers"]["Authorization"], "Bearer test-key")
         self.assertEqual(captured["timeout"], 12)
         self.assertEqual(provider.last_usage["prompt_tokens"], 100)

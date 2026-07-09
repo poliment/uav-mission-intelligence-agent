@@ -331,7 +331,7 @@ $env:DEEPSEEK_API_KEY="your-api-key"
 python -m uav_mission_agent.cli `
   --benchmark-v2 data\scenarios `
   --benchmark-providers offline,deepseek/deepseek-v4-flash `
-  --benchmark-pricing deepseek/deepseek-v4-flash:0.00:0.00:USD
+  --benchmark-pricing deepseek/deepseek-v4-flash:0.14:0.28:USD
 ```
 
 价格会随 provider 调整而变化，公开报告成本前请确认官方定价页，例如 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing) 和 [OpenAI pricing](https://platform.openai.com/docs/pricing)。
@@ -465,33 +465,61 @@ estimated_total_cost: 0.0
 
 The project supports unified evaluation for the offline baseline and live LLM providers. Benchmark v2 records score, latency, token usage, estimated cost, and provider comparison, making it possible to compare the rule-based baseline with OpenAI-compatible providers such as DeepSeek.
 
-Example live provider run with `deepseek-v4-flash`, recorded on 2026-07-08:
+Live 31-scenario provider run with `deepseek-v4-flash`, recorded on 2026-07-09. Raw report: `results/deepseek_provider_comparison_2026-07-09.json`.
 
 | Provider | Runs | Avg Score | Passed | Avg Latency | Estimated Cost |
 |---|---:|---:|---:|---:|---:|
-| `offline` | 3 | 1.00 | 3/3 | 0.633 ms | `$0.00000000` |
-| `deepseek-v4-flash` | 3 | 1.00 | 3/3 | 9373.597 ms | `$0.00118972` |
+| `offline` | 31 | 0.964 | 29/31 | 0.173 ms | `$0.00000000` |
+| `deepseek-v4-flash` | 31 | 0.968 | 29/31 | 7688.837 ms | `$0.01294734` |
 
 Token and cost summary:
 
 ```text
-prompt_tokens: 3790
-completion_tokens: 2354
-total_tokens: 6144
-estimated_total_cost: $0.00118972
+prompt_tokens: 38771
+completion_tokens: 26855
+total_tokens: 65626
+estimated_total_cost: $0.01294734
 ```
 
 Per-scenario live-provider results:
 
-| Scenario | Score | Latency | Estimated Cost |
-|---|---:|---:|---:|
-| `area_search_low_bandwidth` | 1.00 | 10038.593 ms | `$0.00044870` |
-| `no_fly_zone_replan` | 1.00 | 10709.325 ms | `$0.00046522` |
-| `target_tracking_multi_uav` | 1.00 | 7372.873 ms | `$0.00027580` |
+| Scenario | Score | Pass | Latency | Estimated Cost | Tokens |
+|---|---:|---|---:|---:|---:|
+| `area_search_low_bandwidth` | 1.00 | yes | 6187.073 ms | `$0.00044142` | 2292 |
+| `ambiguous_quick_scan_no_count` | 0.78 | no | 6686.175 ms | `$0.00039942` | 2045 |
+| `ambiguous_patrol_unclear_priority` | 0.95 | yes | 7117.066 ms | `$0.00041888` | 2158 |
+| `ambiguous_scout_then_track` | 0.78 | no | 11398.340 ms | `$0.00058464` | 2680 |
+| `ambiguous_noise_words` | 1.00 | yes | 5534.660 ms | `$0.00037898` | 1991 |
+| `conflict_cross_and_avoid_same_nfz` | 1.00 | yes | 9869.865 ms | `$0.00041986` | 2141 |
+| `conflict_low_altitude_and_obstacle` | 0.89 | yes | 6860.939 ms | `$0.00033810` | 1724 |
+| `conflict_track_target_inside_nfz` | 1.00 | yes | 6315.603 ms | `$0.00041734` | 2137 |
+| `missing_count_area_search` | 1.00 | yes | 6379.223 ms | `$0.00042224` | 2159 |
+| `missing_count_tracking` | 1.00 | yes | 7509.070 ms | `$0.00033656` | 1685 |
+| `missing_count_replan` | 1.00 | yes | 10611.554 ms | `$0.00050960` | 2479 |
+| `incomplete_boundary_area_u` | 0.95 | yes | 10472.046 ms | `$0.00036428` | 1720 |
+| `incomplete_boundary_with_nfz` | 1.00 | yes | 14111.741 ms | `$0.00060998` | 2813 |
+| `incomplete_boundary_low_bandwidth` | 1.00 | yes | 6836.510 ms | `$0.00037968` | 1966 |
+| `overlap_search_area_and_nfz` | 0.95 | yes | 10124.433 ms | `$0.00049504` | 2410 |
+| `overlap_target_points_and_nfz` | 0.83 | yes | 11296.465 ms | `$0.00050148` | 2451 |
+| `overlap_tracking_target_near_nfz` | 0.95 | yes | 6749.662 ms | `$0.00039956` | 2087 |
+| `combo_weak_comm_tracking_replan` | 1.00 | yes | 8495.755 ms | `$0.00046046` | 2336 |
+| `combo_swarm_tracking_obstacle` | 1.00 | yes | 4236.998 ms | `$0.00032228` | 1812 |
+| `combo_search_track_low_bandwidth` | 1.00 | yes | 8996.971 ms | `$0.00048020` | 2348 |
+| `mixed_english_area_nfz` | 1.00 | yes | 4734.335 ms | `$0.00033530` | 1790 |
+| `mixed_zh_en_tracking` | 1.00 | yes | 5191.543 ms | `$0.00037982` | 2021 |
+| `mixed_replan_obstacle` | 1.00 | yes | 5402.043 ms | `$0.00033026` | 1856 |
+| `noisy_symbols_area_search` | 1.00 | yes | 8982.399 ms | `$0.00049154` | 2427 |
+| `noisy_parentheses_tracking` | 0.95 | yes | 6273.375 ms | `$0.00038500` | 1996 |
+| `noisy_chatty_mixed` | 1.00 | yes | 6880.545 ms | `$0.00041286` | 2064 |
+| `noisy_conflicting_mixed` | 1.00 | yes | 6349.323 ms | `$0.00035070` | 1815 |
+| `complex_missing_boundary_overlap` | 1.00 | yes | 8003.681 ms | `$0.00038864` | 2050 |
+| `complex_full_stack_stress` | 1.00 | yes | 9238.584 ms | `$0.00045752` | 2366 |
+| `no_fly_zone_replan` | 1.00 | yes | 5635.224 ms | `$0.00038962` | 2066 |
+| `target_tracking_multi_uav` | 1.00 | yes | 5872.752 ms | `$0.00034608` | 1741 |
 
-成本估算基于 2026-07-08 查询到的 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing)：`deepseek-v4-flash` cache-miss input `$0.14 / 1M tokens`，output `$0.28 / 1M tokens`。实际成本取决于 provider 价格、缓存命中和模型策略。
+成本估算基于 2026-07-09 查询到的 [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing)：`deepseek-v4-flash` cache-miss input `$0.14 / 1M tokens`，output `$0.28 / 1M tokens`。实际成本取决于 provider 价格、缓存命中和模型策略。
 
-Cost estimation uses the `deepseek-v4-flash` pricing checked on 2026-07-08 from [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing): cache-miss input `$0.14 / 1M tokens` and output `$0.28 / 1M tokens`. Actual cost depends on provider pricing, cache hits, and model policy.
+Cost estimation uses the `deepseek-v4-flash` pricing checked on 2026-07-09 from [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing): cache-miss input `$0.14 / 1M tokens` and output `$0.28 / 1M tokens`. Actual cost depends on provider pricing, cache hits, and model policy.
 
 Provider adapter 默认使用 Python `urllib`，并在网络/TLS 请求失败时自动 fallback 到 `curl` transport，以提升 Windows/Codex 类环境下调用真实 provider 的稳定性。
 
@@ -522,8 +550,8 @@ OK
   Extend the LangGraph backend with conditional edges, checkpoints, and human review nodes.
 - 用 FAISS 或 Chroma 替换本地轻量检索器。<br>
   Replace the local retriever with FAISS or Chroma.
-- 运行 31 场景真实 provider 对比实验，并补充带真实 pricing 校准的公开 cost report。<br>
-  Run live 31-scenario provider comparison experiments and publish cost reports calibrated with current provider pricing.
+- 扩展多模型 provider 对比实验，并持续校准公开 cost report。<br>
+  Extend multi-model provider comparison experiments and keep public cost reports calibrated with current provider pricing.
 - 增加面向仿真器的结构化 YAML 输出。<br>
   Add structured YAML output for simulator-style mission configuration.
 - 接入更真实的 UAV 轨迹样本，并增加基于经度、纬度、高度和姿态角的轨迹预测模块。<br>

@@ -41,7 +41,7 @@ class OpenAICompatibleProvider:
     model: str
     base_url: str = "https://api.openai.com/v1"
     timeout: int = 60
-    max_tokens: int = 1200
+    max_tokens: int = 2400
     transport: Transport | None = None
 
     provider_name: str = "openai-compatible"

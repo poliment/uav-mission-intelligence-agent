@@ -101,10 +101,10 @@ $env:DEEPSEEK_API_KEY="your-api-key"
 python -m uav_mission_agent.cli `
   --benchmark-v2 data\scenarios `
   --benchmark-providers offline,deepseek/deepseek-v4-flash `
-  --benchmark-pricing deepseek/deepseek-v4-flash:0.00:0.00:USD
+  --benchmark-pricing deepseek/deepseek-v4-flash:0.14:0.28:USD
 ```
 
-Replace the `0.00` values with the current input and output prices per 1M tokens before using the cost report externally.
+Update the pricing values to the provider's current input and output prices per 1M tokens before using the cost report externally.
 
 ## Dashboard
 
