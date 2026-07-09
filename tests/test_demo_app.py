@@ -8,13 +8,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 
 try:
-    from fastapi.testclient import TestClient
+    import fastapi  # noqa: F401
+    FASTAPI_AVAILABLE = True
 except ModuleNotFoundError:
+    FASTAPI_AVAILABLE = False
+
+try:
+    from fastapi.testclient import TestClient
+except (ModuleNotFoundError, RuntimeError):
     TestClient = None
 
 
 class DemoAppTests(unittest.TestCase):
-    @unittest.skipIf(TestClient, "FastAPI is installed")
+    @unittest.skipIf(FASTAPI_AVAILABLE, "FastAPI is installed")
     def test_create_demo_app_reports_install_hint_when_fastapi_is_missing(self):
         from uav_mission_agent.demo_app import DEMO_INSTALL_HINT, create_demo_app
 
