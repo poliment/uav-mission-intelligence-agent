@@ -14,9 +14,14 @@ rag = [
     "faiss-cpu>=1.8",
     "chromadb>=0.5",
 ]
+demo = [
+    "fastapi>=0.100",
+    "uvicorn>=0.23",
+]
 
 [project.scripts]
 uav-mission-agent = "uav_mission_agent.cli:main"
+uav-mission-agent-demo = "uav_mission_agent.demo_cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]
