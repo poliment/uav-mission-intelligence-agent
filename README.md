@@ -57,12 +57,12 @@ The first version is intentionally offline and dependency-light, so it can run q
   Supports an optional LangGraph backend that can be selected from the CLI after installing `langgraph`.
 - 支持 UAV trajectory intent recognition，根据轨迹摘要识别 `area_search`、`target_tracking`、`return_to_base`、`loitering` 或 `transit`。<br>
   Supports UAV trajectory intent recognition for `area_search`, `target_tracking`, `return_to_base`, `loitering`, or `transit`.
-- 运行小型无人机任务 benchmark，并给出场景级评分。<br>
-  Runs a mini UAV mission benchmark with scenario-level scoring.
+- 运行扩展无人机任务 benchmark，并给出 31 个场景的场景级评分。<br>
+  Runs an expanded UAV mission benchmark with scenario-level scoring across 31 scenarios.
 - 提供 Agent 节点追踪和复核输出，增强可解释性。<br>
   Provides an Agent-style node trace and review output for explainability.
-- 生成本地 HTML 可视化页面，展示任务输入、Agent 节点流、规划输出和 benchmark 分数。<br>
-  Generates a local HTML dashboard for mission input, Agent node flow, planning output, and benchmark scores.
+- 生成本地 HTML 可视化页面，展示任务输入、Agent 节点流、规划输出、任务执行可视化、Benchmark v2 provider 对比和成本统计。<br>
+  Generates a local HTML dashboard for mission input, Agent node flow, planning output, mission execution visualization, Benchmark v2 provider comparison, and cost statistics.
 - 包含单元测试和示例输出，便于复现实验结果。<br>
   Includes unit tests and example output for reproducible checks.
 
@@ -115,9 +115,9 @@ This keeps the current prototype easy to run while preserving a clean path towar
 
 ## Architecture / 架构说明
 
-项目按任务解析、知识检索、规划生成、benchmark 评估、CLI 入口和 HTML 可视化进行模块化拆分，便于后续替换为真实 LLM、向量检索或 LangGraph 节点。
+项目按任务解析、知识检索、规划生成、benchmark 评估、CLI 入口、任务执行可视化和 HTML dashboard 进行模块化拆分，便于后续替换为真实 LLM、向量检索或 LangGraph 节点。
 
-The project is modularized around task parsing, knowledge retrieval, planning generation, benchmark evaluation, CLI execution, and HTML visualization, making it easy to later replace components with a real LLM, vector retrieval, or LangGraph nodes.
+The project is modularized around task parsing, knowledge retrieval, planning generation, benchmark evaluation, CLI execution, mission execution visualization, and the HTML dashboard, making it easy to later replace components with a real LLM, vector retrieval, or LangGraph nodes.
 
 | Module / 模块 | Responsibility / 职责 |
 |---|---|
@@ -126,6 +126,7 @@ The project is modularized around task parsing, knowledge retrieval, planning ge
 | `langgraph_workflow.py` | 使用可选 LangGraph `StateGraph` 运行同一组任务节点。<br>Run the same mission nodes through an optional LangGraph `StateGraph`. |
 | `knowledge_base.py` | 使用轻量 RAG 风格评分器检索相关无人机规划片段。<br>Retrieve relevant UAV planning snippets with a lightweight RAG-style scorer. |
 | `llm_provider.py` | 提供 DeepSeek/OpenAI-compatible provider adapter 和 provider factory。<br>Provide the DeepSeek/OpenAI-compatible provider adapter and provider factory. |
+| `models.py` | 定义任务、知识片段、任务方案、benchmark 场景、评估结果和 Agent trace 数据模型。<br>Define data models for tasks, knowledge snippets, mission plans, benchmark scenarios, evaluation results, and Agent traces. |
 | `trajectory.py` | 解析 UAV 轨迹点并计算高度、速度、航向和位移摘要。<br>Parse UAV trajectory points and compute altitude, speed, heading, and displacement summaries. |
 | `intent_recognition.py` | 基于轨迹摘要识别轻量飞行意图。<br>Recognize lightweight flight intents from trajectory summaries. |
 | `planner.py` | 生成规划建议、风险说明和任务配置。<br>Generate recommendations, risk notes, and mission configuration. |
@@ -136,40 +137,49 @@ The project is modularized around task parsing, knowledge retrieval, planning ge
 | `benchmark.py` | 在场景集上运行工作流并汇总指标。<br>Run the workflow across a scenario set and summarize metrics. |
 | `benchmark_v2.py` | 运行多 provider 对比，汇总质量、延迟、token usage 和成本指标。<br>Run multi-provider comparison with quality, latency, token usage, and cost metrics. |
 | `costing.py` | 归一化 provider token usage，并根据可配置费率估算成本。<br>Normalize provider token usage and estimate cost from configurable pricing. |
-| `dashboard.py` | 生成本地静态 HTML 可视化页面。<br>Generate a local static HTML visualization page. |
+| `mission_visualization.py` | 根据任务方案渲染离线 UAV 任务执行 SVG 场景。<br>Render an offline UAV mission execution SVG scene from a mission plan. |
+| `dashboard.py` | 生成本地静态 HTML dashboard，展示 Agent 流、规划结果、任务执行可视化和 Benchmark v2 指标。<br>Generate a local static HTML dashboard for the Agent flow, planning output, mission execution visualization, and Benchmark v2 metrics. |
 | `cli.py` | 提供命令行运行入口。<br>Provide a command-line entry point. |
 
-项目目录结构如下，核心代码位于 `src/uav_mission_agent/`，示例、benchmark 数据、评估结果和 dashboard 分别放在独立目录中。
+项目目录结构如下，核心代码位于 `src/uav_mission_agent/`，示例、benchmark 数据、评估结果、dashboard 和 README 可视化资产分别放在独立目录中。
 
-The project layout is shown below. Core code lives in `src/uav_mission_agent/`, while examples, benchmark data, evaluation results, and the dashboard are organized in separate directories.
+The project layout is shown below. Core code lives in `src/uav_mission_agent/`, while examples, benchmark data, evaluation results, the dashboard, and README visualization assets are organized in separate directories.
 
 ```text
 uav-mission-intelligence-agent/
 +-- examples/
 |   +-- mission_zh.txt
 |   +-- example_output.json
+|   +-- trajectory_intent_example.json
 +-- data/
 |   +-- scenarios/
 |       +-- area_search_low_bandwidth.json
+|       +-- expanded_challenge_set.json
 |       +-- no_fly_zone_replan.json
 |       +-- target_tracking_multi_uav.json
 +-- results/
 |   +-- example_evaluation.json
 +-- dashboard/
 |   +-- uav_mission_dashboard.html
++-- docs/
+|   +-- assets/
+|       +-- benchmark-coverage.svg
+|       +-- mission-execution-visualization.svg
+|       +-- uav-mission-demo.png
 +-- src/
 |   +-- uav_mission_agent/
+|       +-- agent_graph.py
 |       +-- benchmark.py
 |       +-- benchmark_v2.py
 |       +-- cli.py
 |       +-- costing.py
 |       +-- dashboard.py
-|       +-- agent_graph.py
 |       +-- evaluator.py
 |       +-- intent_recognition.py
 |       +-- knowledge_base.py
 |       +-- langgraph_workflow.py
 |       +-- llm_provider.py
+|       +-- mission_visualization.py
 |       +-- models.py
 |       +-- planner.py
 |       +-- schemas.py
@@ -180,13 +190,21 @@ uav-mission-intelligence-agent/
 +-- tests/
 |   +-- test_agent_graph.py
 |   +-- test_benchmark.py
+|   +-- test_benchmark_dataset.py
 |   +-- test_benchmark_v2.py
 |   +-- test_cli.py
 |   +-- test_costing.py
 |   +-- test_dashboard.py
 |   +-- test_evaluator.py
+|   +-- test_intent_recognition.py
+|   +-- test_langgraph_workflow.py
+|   +-- test_llm_provider.py
+|   +-- test_mission_visualization.py
+|   +-- test_readme_assets.py
 |   +-- test_scenario_loader.py
+|   +-- test_schema_output.py
 |   +-- test_task_parser.py
+|   +-- test_trajectory.py
 |   +-- test_workflow.py
 +-- pyproject.toml
 +-- README.md
@@ -285,9 +303,9 @@ Run a single-mission example on macOS or Linux.
 PYTHONPATH=src python -m uav_mission_agent.cli "使用3架无人机搜索区域A，避开禁飞区B，优先覆盖可疑目标点，并保持弱通信条件下协同。"
 ```
 
-运行小型 benchmark，评估任务解析、目标覆盖、约束覆盖、风险关键词和结构化配置等指标。
+运行扩展版 benchmark，评估 31 个无人机任务场景中的任务解析、目标覆盖、约束覆盖、风险关键词和结构化配置等指标。
 
-Run the mini benchmark to evaluate task parsing, objective coverage, constraint coverage, risk keywords, and structured configuration.
+Run the expanded benchmark to evaluate task parsing, objective coverage, constraint coverage, risk keywords, and structured configuration across 31 UAV mission scenarios.
 
 ```powershell
 $env:PYTHONPATH="src"
@@ -494,7 +512,7 @@ python -m unittest discover -s tests -v
 Expected result / 预期结果：
 
 ```text
-Ran 53 tests
+Ran 57 tests
 OK
 ```
 
@@ -504,14 +522,14 @@ OK
   Extend the LangGraph backend with conditional edges, checkpoints, and human review nodes.
 - 用 FAISS 或 Chroma 替换本地轻量检索器。<br>
   Replace the local retriever with FAISS or Chroma.
-- 增加更多 provider 后端，并补充带真实 pricing 校准的公开 cost report。<br>
-  Add more provider backends and publish cost reports calibrated with current provider pricing.
+- 运行 31 场景真实 provider 对比实验，并补充带真实 pricing 校准的公开 cost report。<br>
+  Run live 31-scenario provider comparison experiments and publish cost reports calibrated with current provider pricing.
 - 增加面向仿真器的结构化 YAML 输出。<br>
   Add structured YAML output for simulator-style mission configuration.
-- 扩展更多无人机场景，包括区域搜索、目标跟踪、禁飞区规避、弱通信和多无人机任务分配。<br>
-  Add more UAV scenarios, including area search, target tracking, no-fly-zone avoidance, weak communication, and multi-UAV task allocation.
-- 增加更难的 benchmark case，例如模糊指令和冲突约束。<br>
-  Add harder benchmark cases with ambiguous commands and conflicting constraints.
+- 接入更真实的 UAV 轨迹样本，并增加基于经度、纬度、高度和姿态角的轨迹预测模块。<br>
+  Integrate more realistic UAV trajectory samples and add a trajectory prediction module based on longitude, latitude, altitude, and attitude-angle features.
+- 将任务执行可视化升级为交互式地图或仿真回放，用于展示路线重规划、目标跟踪和环境约束变化。<br>
+  Upgrade mission execution visualization into an interactive map or simulation replay for route replanning, target tracking, and changing environmental constraints.
 - 在静态 dashboard 基线之后，增加交互式 Streamlit 页面或 FastAPI 服务。<br>
   Add an interactive Streamlit page or FastAPI service after the static dashboard baseline.
 
