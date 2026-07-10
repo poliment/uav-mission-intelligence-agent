@@ -22,13 +22,17 @@ CHINESE_DIGITS = {
 
 def parse_task(text: str) -> TaskSpec:
     request = text.strip()
+    drone_count = _extract_drone_count(request)
+    constraints = _extract_constraints(request)
+    if drone_count > 1 and "multi_uav_coordination" not in constraints:
+        constraints.append("multi_uav_coordination")
     return TaskSpec(
         raw_request=request,
-        drone_count=_extract_drone_count(request),
+        drone_count=drone_count,
         search_areas=_extract_regions(request),
         avoid_zones=_extract_avoid_zones(request),
         objectives=_extract_objectives(request),
-        constraints=_extract_constraints(request),
+        constraints=constraints,
     )
 
 
@@ -65,7 +69,11 @@ def _extract_objectives(text: str) -> list[str]:
         objectives.append("area_search")
     if "覆盖" in text or "coverage" in lowered or "cover" in lowered:
         objectives.append("coverage")
-    if "可疑目标" in text or "目标点" in text:
+    if (
+        "可疑目标" in text
+        or "目标点" in text
+        or ("疑似" in text and "目标" in text)
+    ):
         objectives.append("suspicious_target_search")
     if "重新规划" in text or "重规划" in text or "再规划" in text or "replan" in lowered or "reroute" in lowered:
         objectives.append("replanning")
@@ -87,6 +95,10 @@ def _extract_constraints(text: str) -> list[str]:
         constraints.append("multi_uav_coordination")
     if "避障" in text or "障碍" in text or "obstacle" in lowered or "blocked" in lowered:
         constraints.append("obstacle_avoidance")
+    if "中继" in text or "relay" in lowered:
+        constraints.append("communication_relay")
+    if "低电量" in text or "电量不足" in text or "battery reserve" in lowered:
+        constraints.append("battery_reserve")
     return constraints
 
 
@@ -111,6 +123,7 @@ def _extract_labeled_regions(label: str, text: str) -> list[str]:
 
 def _extract_regions(text: str) -> list[str]:
     values = _extract_labeled_regions("区域", text)
+    values.extend(_extract_labeled_regions("山区", text))
     values.extend(_extract_unique(r"\b(area[_-]?[0-9A-Za-z]+)\b", text, flags=re.IGNORECASE))
     return _dedupe(values)
 

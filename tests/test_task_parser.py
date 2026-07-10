@@ -42,6 +42,20 @@ class TaskParserTests(unittest.TestCase):
         self.assertIn("low_bandwidth_coordination", task.constraints)
         self.assertIn("avoid_no_fly_zone", task.constraints)
 
+    def test_extracts_swarm_coordinator_demo_requirements(self):
+        task = parse_task(
+            "使用4架无人机搜索山区A，优先寻找疑似热源目标，其中1架保持通信中继，"
+            "低电量无人机不得进入远端区域。"
+        )
+
+        self.assertEqual(task.drone_count, 4)
+        self.assertEqual(task.search_areas, ["山区A"])
+        self.assertIn("area_search", task.objectives)
+        self.assertIn("suspicious_target_search", task.objectives)
+        self.assertIn("communication_relay", task.constraints)
+        self.assertIn("battery_reserve", task.constraints)
+        self.assertIn("multi_uav_coordination", task.constraints)
+
 
 if __name__ == "__main__":
     unittest.main()

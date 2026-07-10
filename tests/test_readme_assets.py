@@ -45,6 +45,22 @@ class ReadmeAssetsTests(unittest.TestCase):
         self.assertIn("swarm_algorithms.py", readme)
         self.assertIn("A* path planning", readme)
 
+    def test_readme_documents_swarm_coordinator_stage(self):
+        readme = README.read_text(encoding="utf-8")
+
+        self.assertIn("Swarm Coordinator", readme)
+        self.assertIn("swarm_coordinator.py", readme)
+        self.assertIn("examples/swarm_coordinator_demo.py", readme)
+        self.assertIn("Dynamic replanning / 动态重规划", readme)
+
+    def test_readme_documents_multi_agent_collaboration_stage(self):
+        readme = README.read_text(encoding="utf-8")
+
+        self.assertIn("Multi-Agent Collaboration", readme)
+        self.assertIn("swarm_dialogue.py", readme)
+        self.assertIn("examples/swarm_dialogue_demo.py", readme)
+        self.assertIn("agent message timeline", readme)
+
 
 if __name__ == "__main__":
     unittest.main()
