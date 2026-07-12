@@ -17,11 +17,17 @@ rag = [
 demo = [
     "fastapi>=0.100",
     "uvicorn>=0.23",
+    "streamlit>=1.32,<2",
+    "plotly>=5.22,<6",
+]
+test = [
+    "httpx2>=2,<3",
 ]
 
 [project.scripts]
 uav-mission-agent = "uav_mission_agent.cli:main"
 uav-mission-agent-demo = "uav_mission_agent.demo_cli:main"
+uav-mission-agent-api = "uav_mission_agent.api_cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]

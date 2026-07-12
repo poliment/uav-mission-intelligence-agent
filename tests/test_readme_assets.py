@@ -5,6 +5,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 README = REPO_ROOT / "README.md"
 MISSION_ASSET = REPO_ROOT / "docs" / "assets" / "mission-execution-visualization.svg"
+STREAMLIT_ASSET = REPO_ROOT / "docs" / "assets" / "streamlit-swarm-console.jpg"
 
 
 class ReadmeAssetsTests(unittest.TestCase):
@@ -35,8 +36,22 @@ class ReadmeAssetsTests(unittest.TestCase):
         self.assertIn('pip install -e ".[demo]"', readme)
         self.assertIn("uav-mission-agent-demo --host 127.0.0.1 --port 8000", readme)
         self.assertIn("uav-mission-agent-demo --env-file D:\\epacode\\working\\.secrets\\deepseek.env", readme)
-        self.assertIn("Agent trace", readme)
-        self.assertIn("provider comparison", readme)
+        self.assertIn("uav-mission-agent-api --host 127.0.0.1 --port 8010", readme)
+        self.assertIn("Swarm Plan", readme)
+        self.assertIn("Event Response", readme)
+        self.assertIn("Agent Dialogue", readme)
+        self.assertIn("Mission Intelligence", readme)
+        self.assertIn("Evaluation", readme)
+        self.assertIn("/api/swarm/demo-dialogue", readme)
+
+    def test_readme_references_streamlit_console_screenshot(self):
+        readme = README.read_text(encoding="utf-8")
+
+        self.assertIn("docs/assets/streamlit-swarm-console.jpg", readme)
+
+    def test_streamlit_console_screenshot_exists(self):
+        self.assertTrue(STREAMLIT_ASSET.exists())
+        self.assertGreater(STREAMLIT_ASSET.stat().st_size, 50_000)
 
     def test_readme_documents_swarm_algorithm_layer(self):
         readme = README.read_text(encoding="utf-8")

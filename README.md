@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/poliment/uav-mission-intelligence-agent/actions/workflows/test.yml/badge.svg)](https://github.com/poliment/uav-mission-intelligence-agent/actions/workflows/test.yml)
 
-![UAV Mission Intelligence Agent demo / 无人机任务智能体演示](docs/assets/uav-mission-demo.png)
+![Streamlit UAV swarm mission console / Streamlit 无人机集群任务控制台](docs/assets/streamlit-swarm-console.jpg)
 
 ![UAV mission execution visualization / 无人机任务执行可视化](docs/assets/mission-execution-visualization.svg)
 
@@ -25,7 +25,7 @@ The implementation intentionally separates LLM-facing reasoning from determinist
 - **Swarm feasibility / 集群可行性**: Models multi-UAV state and checks grid movement, obstacles, no-fly zones, battery reserve, communication coverage, and target assignment. / 建模多无人机状态，并校验网格移动、障碍物、禁飞区、电量余量、通信覆盖和目标分配。
 - **Swarm coordination / 集群协调**: Assigns per-UAV roles from a natural-language mission and replans after low-battery, target-detection, and degraded-communication events. / 根据自然语言任务为每架无人机分配角色，并在低电量、目标发现和通信下降事件后执行重规划。
 - **Multi-agent collaboration / 多智能体协作**: Converts real swarm events and assignment changes into a structured agent message timeline with explicit senders, recipients, acknowledgements, and memory links. / 将真实集群事件和任务变更转换为结构化智能体消息时间线，包含明确的发送者、接收者、确认消息和记忆关联。
-- **Evaluation and demo / 评测与演示**: Runs benchmark reports, provider comparison, estimated cost summaries, local mission visualization, and an optional FastAPI + HTML demo. / 支持基准评测、供应商对比、成本估算、本地任务可视化，以及可选的 FastAPI + HTML 交互演示。
+- **Evaluation and demo / 评测与演示**: Runs benchmark reports, provider comparison, local mission visualization, a Python Streamlit console, and a compatible FastAPI JSON service. / 支持基准评测、供应商对比、本地任务可视化、Python Streamlit 控制台和兼容的 FastAPI JSON 服务。
 
 ## Technical Architecture / 技术架构
 
@@ -60,6 +60,8 @@ swarm_coordinator.py / Swarm Coordinator
         +--> SwarmMissionState + SwarmMemory / 集群状态与记忆
         +--> optional provider explanation / 可选模型解释增强
         +--> swarm_dialogue.py / structured collaboration messages / 结构化协作消息
+        +--> swarm_demo.py / deterministic shared demo session / 确定性共享演示会话
+        +--> streamlit_app.py + swarm_visualization.py / Python UI + Plotly map
         |
         +--> SwarmGridEnvironment / 集群网格环境
         |       +-- grid, obstacle, no-fly-zone, communication, battery, target events
@@ -91,8 +93,10 @@ The repository is organized around clear module responsibilities, making it easi
 | `swarm_algorithms.py` | Provides A* planning, battery checks, communication checks, scoring, and assignment. / 提供 A* 路径规划、电量校验、通信校验、评分和分配算法。 |
 | `swarm_coordinator.py` | Converts natural-language swarm missions and runtime events into checked role assignments, rationale, and memory updates. / 将自然语言集群任务和运行事件转换为经过校验的角色分配、决策解释和记忆更新。 |
 | `swarm_dialogue.py` | Builds event-linked UAV reports, task handoffs, relay acknowledgements, coordinator summaries, and memory records. / 生成与事件关联的无人机报告、任务接替、中继确认、协调器总结和记忆记录。 |
+| `swarm_demo.py`, `swarm_visualization.py` | Share the deterministic four-UAV session and render its 20×20 Plotly map. / 共享确定性的四机演示会话，并渲染 20×20 Plotly 地图。 |
+| `streamlit_app.py` | Provides the Python-only five-view mission console. / 提供纯 Python 编写的五视图任务控制台。 |
 | `mission_visualization.py`, `dashboard.py` | Render local mission visuals and dashboard reports. / 渲染本地任务可视化和仪表盘报告。 |
-| `demo_service.py`, `demo_app.py`, `demo_cli.py` | Serve the optional FastAPI demo experience. / 提供可选的 FastAPI 演示服务。 |
+| `demo_service.py`, `demo_app.py`, `demo_cli.py`, `api_cli.py` | Preserve single-mission helpers and expose separate Streamlit and FastAPI launchers. / 保留单任务能力，并分别提供 Streamlit 与 FastAPI 启动入口。 |
 | `benchmark.py`, `benchmark_v2.py`, `evaluator.py` | Evaluate mission quality, latency, provider comparison, and estimated cost. / 评估任务质量、延迟、供应商对比和估算成本。 |
 
 ## Swarm upgrade status / 集群升级状态
@@ -106,6 +110,7 @@ The swarm layer adds deterministic tools that can be called before accepting an 
 | Traditional algorithms / 传统算法 | `swarm_algorithms.py` | Uses A* paths with battery, communication, scoring, and target-assignment checks. / 使用 A* 路径，并结合电量、通信、评分和目标分配校验。 |
 | High-level coordination / 高层集群协调 | `swarm_coordinator.py` | Assigns `scout`, `tracker`, `relay`, `reserve`, and `returning` roles, then records explainable decisions in swarm memory. / 分配 `scout`、`tracker`、`relay`、`reserve` 和 `returning` 角色，并将可解释决策写入集群记忆。 |
 | Multi-Agent Collaboration / 多智能体协作 | `swarm_dialogue.py` | Produces a UI-ready agent message timeline from target, battery, handoff, relay, and coordinator messages. / 根据目标、电量、接替、中继和协调器消息生成可供 UI 使用的智能体消息时间线。 |
+| Demo/UI integration / Demo 与界面集成 | `swarm_demo.py`, `streamlit_app.py`, `swarm_visualization.py` | Shares one stateful deterministic session across five Streamlit views and exposes the same scenario through JSON APIs. / 在五个 Streamlit 视图中共享一个有状态确定性会话，并通过 JSON API 暴露相同场景。 |
 
 `swarm_algorithms.py` exposes `astar_path(...)`, `check_battery_feasibility(...)`, `check_communication_coverage(...)`, `score_candidate_for_target(...)`, and `assign_targets_to_uavs(...)` as explainable planning primitives. / `swarm_algorithms.py` 暴露 `astar_path(...)`、`check_battery_feasibility(...)`、`check_communication_coverage(...)`、`score_candidate_for_target(...)` 和 `assign_targets_to_uavs(...)` 作为可解释的规划基础能力。
 
@@ -200,12 +205,22 @@ Supported backend names are `local-vector`, `keyword`, `faiss`, and `chroma`. / 
 
 ## Interactive Demo / 交互式 Demo
 
-The optional demo package starts a local FastAPI service with mission input, provider selection, Agent trace, structured JSON output, provider comparison, and mission visualization. / 可选演示包会启动本地 FastAPI 服务，提供任务输入、供应商选择、Agent 追踪、结构化 JSON 输出、供应商对比和任务可视化。
+The optional demo package starts a local Streamlit mission console written in Python. It defaults to an offline, reproducible four-UAV session; an online provider can enhance only the initial plan, while event handling and Agent dialogue remain deterministic. / 可选演示包会启动一个纯 Python 编写的本地 Streamlit 任务控制台。默认使用离线、可复现的四机共享会话；在线供应商只增强初始方案，事件处理与 Agent 对话仍保持确定性。
 
 ```powershell
 pip install -e ".[demo]"
 uav-mission-agent-demo --host 127.0.0.1 --port 8000
 ```
+
+Add `--no-browser` for a headless launch. Open `http://127.0.0.1:8000` when the process is ready. / 无界面启动时增加 `--no-browser`；进程就绪后打开 `http://127.0.0.1:8000`。
+
+The console has five operational views. / 控制台包含五个操作视图。
+
+- **Swarm Plan**: 4 roles, A* paths, battery checks, communication checks, and provider advisory. / 四机角色、A* 路径、电量校验、通信校验和供应商建议。
+- **Event Response**: Process the fixed target, battery, and communication events one by one or together. / 逐个或一次性处理固定的目标、电量和通信事件。
+- **Agent Dialogue**: Inspect 9 structured messages and their 9 memory links. / 查看 9 条结构化消息及对应的 9 个记忆关联。
+- **Mission Intelligence**: Inspect the legacy single-mission Agent trace, SVG, validation, and JSON. / 查看原单任务 Agent 追踪、SVG、校验和 JSON。
+- **Evaluation**: Inspect offline benchmark and provider comparison results. / 查看离线基准和供应商对比结果。
 
 Use a local environment file when you want provider keys during a demo without committing secrets into the repository. / 演示时如果需要供应商密钥，可以使用本地环境文件，避免把密钥提交到仓库。
 
@@ -213,7 +228,13 @@ Use a local environment file when you want provider keys during a demo without c
 uav-mission-agent-demo --env-file D:\epacode\working\.secrets\deepseek.env
 ```
 
-Open `http://127.0.0.1:8000` after the server starts. / 服务启动后打开 `http://127.0.0.1:8000`。
+FastAPI remains available as a stateless JSON compatibility layer and can run on a separate port. / FastAPI 继续作为无状态 JSON 兼容层，可在另一个端口启动。
+
+```powershell
+uav-mission-agent-api --host 127.0.0.1 --port 8010
+```
+
+Available routes are `GET /`, `GET /api/health`, `POST /api/mission`, `GET /api/benchmark`, `GET /api/swarm/demo-plan`, `GET /api/swarm/demo-events`, and `GET /api/swarm/demo-dialogue`. The three swarm routes create fresh offline sessions so their output is stable across calls. / 三个集群接口每次创建新的离线会话，因此多次调用结果保持稳定。
 
 ## Example Outputs / 示例输出
 
@@ -223,6 +244,7 @@ Representative outputs are kept in the repository for quick inspection and regre
 - `examples/swarm_coordinator_demo.py`: Reproducible Swarm Coordinator plan and event-response demo. / 可复现的集群协调任务规划与事件响应示例。
 - `examples/swarm_dialogue_demo.py`: Reproducible three-event multi-agent collaboration timeline. / 可复现的三事件多智能体协作时间线。
 - `results/example_evaluation.json`: Example evaluation report. / 示例评估报告。
+- `docs/assets/streamlit-swarm-console.jpg`: Credential-free Streamlit console screenshot. / 不含凭据的 Streamlit 控制台截图。
 - `docs/assets/mission-execution-visualization.svg`: Mission execution visualization asset. / 任务执行可视化资源。
 
 Typical mission input is Chinese because the current parser is optimized for Chinese UAV mission requests. / 典型任务输入使用中文，因为当前解析器主要面向中文无人机任务请求优化。
@@ -241,6 +263,13 @@ The test suite is offline by default and uses fake or local providers, so CI doe
 python -m unittest discover -s tests -v
 ```
 
+Install the Demo and Test extras to run Streamlit AppTest, Plotly, and FastAPI TestClient coverage. / 安装 Demo 与 Test 扩展后可运行 Streamlit AppTest、Plotly 和 FastAPI TestClient 测试。
+
+```bash
+python -m pip install -e ".[demo,test]"
+python -m unittest discover -s tests -v
+```
+
 Pytest can also be used when it is available in the local environment. / 本地环境安装 pytest 时也可以使用 pytest。
 
 ```bash
@@ -253,6 +282,7 @@ The repository keeps source code, test cases, benchmark data, example outputs, a
 
 ```text
 uav-mission-intelligence-agent/
++-- .streamlit/                     Streamlit theme / Streamlit 主题
 +-- data/scenarios/                 benchmark scenario data / 基准场景数据
 +-- dashboard/                      generated local dashboard / 生成的本地仪表盘
 +-- docs/assets/                    README and dashboard visuals / README 与仪表盘视觉资源
@@ -288,6 +318,6 @@ Keep API keys in environment variables or local env files, and do not commit key
 
 ## Roadmap / 路线图
 
-- Expose swarm plan, event, and dialogue demos through the FastAPI UI. / 在 FastAPI 界面中展示集群方案、事件和对话演示。
 - Extend benchmark coverage for role assignment, A* feasibility, and communication constraints. / 扩展角色分配、A* 可行性和通信约束的基准覆盖。
-- Add richer visualization for multi-UAV grid movement and event timelines. / 为多无人机网格移动和事件时间线增加更丰富的可视化。
+- Connect the deterministic session to a simulator adapter without changing its public API. / 在不改变公共 API 的前提下连接确定性会话与仿真器适配层。
+- Add optional deployment and authentication profiles while keeping local mode offline-first. / 在保持本地离线优先的同时增加可选部署与认证配置。

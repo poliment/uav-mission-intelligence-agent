@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from uav_mission_agent.demo_service import (
     DemoError,
-    build_demo_html,
     build_mission_demo_payload,
     load_demo_benchmark,
     load_env_file,
@@ -149,18 +148,10 @@ class DemoServiceTests(unittest.TestCase):
                 self.assertEqual(loaded["OPENAI_MODEL"], "demo-model")
                 self.assertEqual(loaded["EMPTY_VALUE"], "")
 
-    def test_demo_html_contains_core_interactive_regions(self):
-        html = build_demo_html()
+    def test_demo_service_no_longer_exposes_embedded_html_builder(self):
+        import uav_mission_agent.demo_service as demo_service
 
-        self.assertIn('id="mission-form"', html)
-        self.assertIn('id="mission-text"', html)
-        self.assertIn('id="provider-select"', html)
-        self.assertIn('id="agent-trace"', html)
-        self.assertIn('id="json-output"', html)
-        self.assertIn('id="benchmark-table"', html)
-        self.assertIn('id="mission-map"', html)
-        self.assertIn("/api/mission", html)
-        self.assertIn("/api/benchmark", html)
+        self.assertFalse(hasattr(demo_service, "build_demo_html"))
 
 
 if __name__ == "__main__":

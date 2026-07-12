@@ -38,16 +38,18 @@ class DemoAppTests(unittest.TestCase):
         self.assertEqual(response.json()["status"], "ok")
 
     @unittest.skipUnless(TestClient, "FastAPI is not installed")
-    def test_index_route_returns_demo_html(self):
+    def test_index_route_returns_json_service_index(self):
         from uav_mission_agent.demo_app import create_demo_app
 
         client = TestClient(create_demo_app())
         response = client.get("/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("text/html", response.headers["content-type"])
-        self.assertIn("UAV Mission Intelligence Demo", response.text)
-        self.assertIn('id="mission-form"', response.text)
+        self.assertIn("application/json", response.headers["content-type"])
+        payload = response.json()
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["service"], "uav-mission-agent-api")
+        self.assertIn("/api/swarm/demo-plan", payload["endpoints"])
 
     @unittest.skipUnless(TestClient, "FastAPI is not installed")
     def test_mission_route_returns_offline_payload(self):
@@ -92,6 +94,44 @@ class DemoAppTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(payload["status"], "ok")
         self.assertIn("provider_comparison", payload)
+
+    @unittest.skipUnless(TestClient, "FastAPI TestClient dependencies are not installed")
+    def test_swarm_demo_plan_route_returns_initial_plan(self):
+        from uav_mission_agent.demo_app import create_demo_app
+
+        payload = TestClient(create_demo_app()).get("/api/swarm/demo-plan").json()
+
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["demo"], "swarm")
+        self.assertTrue(payload["mission_id"])
+        self.assertTrue(payload["mission_text"])
+        self.assertEqual(len(payload["swarm_state"]["agents"]), 4)
+        self.assertEqual(len(payload["initial_plan"]["role_assignments"]), 4)
+
+    @unittest.skipUnless(TestClient, "FastAPI TestClient dependencies are not installed")
+    def test_swarm_demo_events_route_runs_fixed_sequence(self):
+        from uav_mission_agent.demo_app import create_demo_app
+
+        payload = TestClient(create_demo_app()).get("/api/swarm/demo-events").json()
+
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["demo"], "swarm")
+        self.assertEqual(len(payload["event_responses"]), 3)
+        self.assertEqual(len(payload["replanning_memory"]), 3)
+
+    @unittest.skipUnless(TestClient, "FastAPI TestClient dependencies are not installed")
+    def test_swarm_demo_dialogue_route_returns_nine_linked_messages(self):
+        from uav_mission_agent.demo_app import create_demo_app
+
+        payload = TestClient(create_demo_app()).get("/api/swarm/demo-dialogue").json()
+
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["demo"], "swarm")
+        self.assertEqual(len(payload["event_results"]), 3)
+        self.assertEqual(len(payload["timeline"]), 9)
+        self.assertEqual(len(payload["coordinator_summaries"]), 3)
+        self.assertEqual(len(payload["message_memory"]), 9)
+        self.assertTrue(all(item["source_message_id"] for item in payload["message_memory"]))
 
     @unittest.skipUnless(FASTAPI_AVAILABLE, "FastAPI is not installed")
     def test_mission_route_accepts_json_body_payload(self):
