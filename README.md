@@ -70,13 +70,15 @@ uav-mission-agent-api --host 127.0.0.1 --port 8010
 |---|---|---|
 | `GET` | `/` | 服务索引与接口清单 |
 | `GET` | `/api/health` | 健康检查 |
-| `POST` | `/api/mission` | 单任务规划；请求体支持 `mission_text`、`provider`、`model`、`base_url` |
+| `POST` | `/api/mission` | 单任务规划；请求体支持 `mission_text`、`provider`、`model` |
 | `GET` | `/api/benchmark` | 离线评测报告 |
 | `GET` | `/api/swarm/demo-plan` | 固定场景的初始集群计划 |
 | `GET` | `/api/swarm/demo-events` | 三个事件的确定性响应与重规划 memory |
 | `GET` | `/api/swarm/demo-dialogue` | 事件结果、消息时间线、协调摘要和消息 memory |
 
 三个 Swarm Demo 接口每次创建新的离线会话，因此调用之间不共享可变状态。
+
+`/api/mission` 不接受客户端提供的 `base_url`。在线 provider 的服务地址只能通过 API 服务进程的 `DEEPSEEK_BASE_URL` 或 `OPENAI_BASE_URL` 环境变量配置，避免将服务端凭据发送到调用者指定的地址。
 
 ## CLI 与扩展能力
 
@@ -185,6 +187,7 @@ uav-mission-intelligence-agent/
 +-- src/uav_mission_agent/   核心源码
 +-- tests/                   单元、API 与 AppTest 测试
 +-- docs/assets/             README 视觉资源
++-- docs/maintenance.md      维护期未决事项与许可证决策
 +-- pyproject.toml           依赖、extras 与命令入口
 +-- README.md                项目使用说明
 ```

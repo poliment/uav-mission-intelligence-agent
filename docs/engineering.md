@@ -29,9 +29,13 @@ Key modules:
 | `benchmark.py` | Stable v1 benchmark summary. |
 | `benchmark_v2.py` | Provider comparison, latency, token usage, cost, and difficulty summaries. |
 | `dashboard.py` | Static local HTML dashboard with Agent flow and Benchmark v2 sections. |
-| `demo_service.py` | Dependency-free payload, benchmark, env-file, and HTML helpers for the interactive demo. |
-| `demo_app.py` | Optional FastAPI app for the interactive demo. |
-| `demo_cli.py` | Local Uvicorn launcher for the interactive demo. |
+| `swarm_demo.py` | Shared deterministic four-UAV demo session, events, dialogue, and API payloads. |
+| `swarm_visualization.py` | Plotly map rendering for the environment, UAVs, targets, and A* paths. |
+| `streamlit_app.py` | Stateful Python UI with the five mission-console views. |
+| `demo_service.py` | Mission payload, benchmark loading, env-file, and mission SVG helpers. |
+| `demo_app.py` | Stateless FastAPI JSON compatibility service. |
+| `demo_cli.py` | Streamlit launcher used by `uav-mission-agent-demo`. |
+| `api_cli.py` | Uvicorn launcher used by `uav-mission-agent-api`. |
 
 ## RAG Retrieval
 
@@ -156,40 +160,55 @@ The dashboard shows:
 - token and estimated cost summary
 - raw Agent JSON and Benchmark v2 JSON
 
-## Interactive Demo
+## Streamlit Demo and JSON API
 
-The interactive demo is a thin service/UI layer over the existing offline-first Agent workflow.
+The primary interactive experience is a stateful Streamlit console. It keeps the mission plan, fixed event sequence, dialogue timeline, and evaluation views in one Python session.
 
-Run it with optional dependencies:
+Install the optional dependencies and start the console:
 
 ```powershell
 python -m pip install -e ".[demo]"
 uav-mission-agent-demo --host 127.0.0.1 --port 8000
 ```
 
-Use the DeepSeek env file without printing secrets:
+An optional env file can supply provider credentials without placing them in commands or source files:
 
 ```powershell
-uav-mission-agent-demo --env-file D:\epacode\working\.secrets\deepseek.env
+uav-mission-agent-demo --env-file .env --no-browser
 ```
 
-Demo responsibilities:
+The console contains five views:
 
-- `demo_service.py`: validates mission input, builds offline or live-provider mission payloads, renders the mission SVG, loads saved provider comparison reports, and falls back to offline Benchmark v2.
-- `demo_app.py`: exposes `GET /`, `GET /api/health`, `GET /api/benchmark`, and `POST /api/mission`.
-- `demo_cli.py`: loads a simple `KEY=value` env file and starts Uvicorn.
+- `Swarm Plan`: initial roles, Plotly map, A* paths, and provider advisory.
+- `Event Response`: deterministic processing of the three fixed events.
+- `Agent Dialogue`: nine structured messages and their memory links.
+- `Mission Intelligence`: single-mission trace, validation, SVG, and JSON output.
+- `Evaluation`: offline benchmark and provider comparison.
 
-The default tests exercise `demo_service.py` and `demo_cli.py` without FastAPI. FastAPI route tests are skipped when demo dependencies are not installed.
+FastAPI remains a separate stateless JSON compatibility service:
+
+```powershell
+uav-mission-agent-api --host 127.0.0.1 --port 8010
+```
+
+It exposes the service index, health, mission, benchmark, and three deterministic Swarm Demo endpoints. The API binds to `127.0.0.1` by default. `POST /api/mission` rejects a client-supplied `base_url`; live-provider endpoints must be configured on the server with `DEEPSEEK_BASE_URL` or `OPENAI_BASE_URL`.
 
 ## Testing and CI
 
-Run the full unit test suite:
+Run the offline core suite:
 
-```bash
+```powershell
 python -B -m unittest discover -s tests -v
 ```
 
-The GitHub Actions workflow runs the same test suite on every push and pull request. Tests use offline or fake providers only, so CI does not require API keys.
+Install the Demo and Test extras to include Streamlit AppTest, Plotly, and FastAPI TestClient coverage:
+
+```powershell
+python -m pip install -e ".[demo,test]"
+python -B -m unittest discover -s tests -v
+```
+
+GitHub Actions runs the core suite on Python 3.10 through 3.12 and a Demo job on Python 3.12. Tests use offline or fake providers only, so CI does not require API keys.
 
 ## API Key Hygiene
 
@@ -197,3 +216,7 @@ The GitHub Actions workflow runs the same test suite on every push and pull requ
 - Do not put keys in README files, examples, tests, screenshots, or commits.
 - Prefer fake providers in tests.
 - If a key is ever pasted into a public place, revoke it immediately and create a new one.
+
+## Maintenance
+
+Project closure decisions that remain unresolved are tracked in [`maintenance.md`](maintenance.md). The current list records the license decision and the concrete repository changes required after a reuse policy is selected.

@@ -72,6 +72,26 @@ class DemoAppTests(unittest.TestCase):
         self.assertIn("<svg", payload["mission_svg"])
 
     @unittest.skipUnless(TestClient, "FastAPI is not installed")
+    def test_mission_route_rejects_client_supplied_base_url(self):
+        from uav_mission_agent.demo_app import create_demo_app
+
+        client = TestClient(create_demo_app())
+        response = client.post(
+            "/api/mission",
+            json={
+                "mission_text": "Inspect area A.",
+                "provider": "offline",
+                "base_url": "https://attacker.example/v1",
+            },
+        )
+
+        payload = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(payload["status"], "error")
+        self.assertEqual(payload["error"]["code"], "base_url_not_allowed")
+        self.assertIn("server-configured", payload["error"]["message"])
+
+    @unittest.skipUnless(TestClient, "FastAPI is not installed")
     def test_mission_route_returns_structured_error_for_empty_mission(self):
         from uav_mission_agent.demo_app import create_demo_app
 

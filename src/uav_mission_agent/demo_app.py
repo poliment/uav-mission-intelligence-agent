@@ -52,11 +52,16 @@ def create_demo_app() -> Any:
     @app.post("/api/mission")
     async def mission(body: dict[str, Any]):
         try:
+            if "base_url" in body:
+                raise DemoError(
+                    400,
+                    "base_url_not_allowed",
+                    "base_url is server-configured and cannot be set in API requests",
+                )
             return build_mission_demo_payload(
                 mission_text=str(body.get("mission_text", "")),
                 provider=str(body.get("provider", "offline")),
                 model=body.get("model"),
-                base_url=body.get("base_url"),
             )
         except DemoError as exc:
             return JSONResponse(
