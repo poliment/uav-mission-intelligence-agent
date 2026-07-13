@@ -84,13 +84,13 @@ uav-mission-agent-api --host 127.0.0.1 --port 8010
 
 `/api/mission` 会使用服务端环境变量中的 API key 向在线 provider 发起请求。如果允许调用方同时指定 `base_url`，服务端可能把凭据作为 `Authorization` 请求头发送到不受信任的地址。因此，API 请求体只允许 `mission_text`、`provider` 和 `model`；地址与密钥必须由服务端管理员配置。
 
-真实 DeepSeek 调用可使用未纳入版本控制的 `.env` 文件：
+真实 DeepSeek 调用可使用未纳入版本控制的 `.env` 文件，每行采用通用的 `KEY=value` 格式：
 
-```dotenv
-DEEPSEEK_API_KEY=replace-with-real-key
-DEEPSEEK_MODEL=replace-with-provider-model-id
-DEEPSEEK_BASE_URL=https://api.deepseek.com
-```
+| 服务端变量 | 配置内容 |
+|---|---|
+| `DEEPSEEK_API_KEY` | 实际 API key，仅保存在本地或密钥管理系统中。 |
+| `DEEPSEEK_MODEL` | provider 提供的真实 model ID。 |
+| `DEEPSEEK_BASE_URL` | provider endpoint，例如 `https://api.deepseek.com`。 |
 
 启动 API 服务：
 
