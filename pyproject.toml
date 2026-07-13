@@ -17,8 +17,9 @@ rag = [
 demo = [
     "fastapi>=0.100",
     "uvicorn>=0.23",
-    "streamlit>=1.32,<2",
-    "plotly>=5.22,<6",
+    "streamlit==1.32.0",
+    "plotly==5.22.0",
+    "pyarrow==14.0.2",
 ]
 test = [
     "httpx2>=2,<3",

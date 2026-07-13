@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -12,7 +13,48 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+def _demo_dependencies(pyproject: str) -> set[str]:
+    try:
+        import tomllib
+    except ModuleNotFoundError:
+        section = re.search(
+            r"(?ms)^\[project\.optional-dependencies\]\s*(.*?)(?=^\[|\Z)",
+            pyproject,
+        )
+        if section is None:
+            raise AssertionError("project optional dependencies section is missing")
+        match = re.search(r"(?ms)^demo\s*=\s*\[(.*?)^\]", section.group(1))
+        if match is None:
+            raise AssertionError("demo optional dependency group is missing")
+        return set(re.findall(r'"([^"]+)"', match.group(1)))
+
+    parsed = tomllib.loads(pyproject)
+    return set(parsed["project"]["optional-dependencies"]["demo"])
+
+
 class DemoCliTests(unittest.TestCase):
+    def test_demo_dependency_fallback_reads_optional_dependencies_section(self):
+        pyproject = """
+[tool.example]
+demo = [
+    "wrong-package",
+]
+
+[project.optional-dependencies]
+demo = [
+    "streamlit==1.32.0",
+    "pyarrow==14.0.2",
+]
+"""
+
+        with patch.dict(sys.modules, {"tomllib": None}):
+            dependencies = _demo_dependencies(pyproject)
+
+        self.assertEqual(
+            dependencies,
+            {"streamlit==1.32.0", "pyarrow==14.0.2"},
+        )
+
     def test_parser_defaults_to_localhost_and_port_8000(self):
         from uav_mission_agent.demo_cli import build_parser
 
@@ -74,12 +116,19 @@ class DemoCliTests(unittest.TestCase):
 
     def test_pyproject_declares_demo_extra_and_script(self):
         pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        demo_dependencies = _demo_dependencies(pyproject)
 
         self.assertIn("demo = [", pyproject)
-        self.assertIn('"fastapi>=0.100"', pyproject)
-        self.assertIn('"uvicorn>=0.23"', pyproject)
-        self.assertIn('"streamlit>=1.32,<2"', pyproject)
-        self.assertIn('"plotly>=5.22,<6"', pyproject)
+        self.assertEqual(
+            demo_dependencies,
+            {
+                "fastapi>=0.100",
+                "uvicorn>=0.23",
+                "streamlit==1.32.0",
+                "plotly==5.22.0",
+                "pyarrow==14.0.2",
+            },
+        )
         self.assertIn("test = [", pyproject)
         self.assertIn('"httpx2>=2,<3"', pyproject)
         self.assertIn('uav-mission-agent-demo = "uav_mission_agent.demo_cli:main"', pyproject)
