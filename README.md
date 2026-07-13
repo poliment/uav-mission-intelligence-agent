@@ -80,6 +80,63 @@ uav-mission-agent-api --host 127.0.0.1 --port 8010
 
 `/api/mission` 不接受客户端提供的 `base_url`。在线 provider 的服务地址只能通过 API 服务进程的 `DEEPSEEK_BASE_URL` 或 `OPENAI_BASE_URL` 环境变量配置，避免将服务端凭据发送到调用者指定的地址。
 
+### API 安全边界与真实 AI 调用
+
+`/api/mission` 会使用服务端环境变量中的 API key 向在线 provider 发起请求。如果允许调用方同时指定 `base_url`，服务端可能把凭据作为 `Authorization` 请求头发送到不受信任的地址。因此，API 请求体只允许 `mission_text`、`provider` 和 `model`；地址与密钥必须由服务端管理员配置。
+
+真实 DeepSeek 调用可使用未纳入版本控制的 `.env` 文件：
+
+```dotenv
+DEEPSEEK_API_KEY=replace-with-real-key
+DEEPSEEK_MODEL=replace-with-provider-model-id
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+```
+
+启动 API 服务：
+
+```powershell
+uav-mission-agent-api --env-file .env --host 127.0.0.1 --port 8010
+```
+
+从客户端提交任务时不要包含 `base_url`：
+
+```powershell
+$body = @{
+  mission_text = "使用3架无人机搜索区域A，并避开禁飞区B。"
+  provider = "deepseek"
+  model = "replace-with-provider-model-id"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8010/api/mission" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $body
+```
+
+使用其他 OpenAI-compatible 服务时，在 API 服务器上设置 `OPENAI_API_KEY`、`OPENAI_MODEL` 和 `OPENAI_BASE_URL`，并将请求中的 `provider` 改为 `openai-compatible`。自定义 endpoint 仍应通过服务端环境变量或 `--env-file` 调整，不要重新允许客户端传入 `base_url`。
+
+API 失败时返回结构化错误：
+
+```json
+{
+  "status": "error",
+  "error": {
+    "code": "base_url_not_allowed",
+    "message": "base_url is server-configured and cannot be set in API requests"
+  }
+}
+```
+
+| Error code | 调整策略 |
+|---|---|
+| `invalid_mission` | 提供非空的 `mission_text`。 |
+| `unsupported_provider` | 使用 `offline`、`deepseek` 或 `openai-compatible`。 |
+| `base_url_not_allowed` | 删除请求体中的 `base_url`，改在 API 服务端配置 provider 地址。 |
+| `provider_error` | 检查服务端 API key、model、网络和 endpoint；需要保持演示连续时，使用 `provider: "offline"` 重新提交。 |
+
+FastAPI 不会在在线 provider 失败后静默切换为离线模式；调用方必须明确决定是否以 `offline` 重试。Streamlit Swarm 控制台则会显示 `offline fallback`，其事件处理与 Agent dialogue 继续保持确定性。
+
 ## CLI 与扩展能力
 
 安装项目后可通过 `uav-mission-agent` 使用单任务工作流：
