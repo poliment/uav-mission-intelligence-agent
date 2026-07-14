@@ -244,7 +244,14 @@ uav-mission-intelligence-agent/
 +-- src/uav_mission_agent/   核心源码
 +-- tests/                   单元、API 与 AppTest 测试
 +-- docs/assets/             README 视觉资源
-+-- docs/maintenance.md      维护期未决事项与许可证决策
++-- docs/maintenance.md      维护决策与许可证说明
 +-- pyproject.toml           依赖、extras 与命令入口
 +-- README.md                项目使用说明
++-- LICENSE                  Apache License 2.0 全文
 ```
+
+## License / 许可证
+
+本项目采用 [Apache License 2.0](LICENSE) 开源许可证。你可以在许可证条款允许的范围内使用、修改和分发本项目。
+
+This project is licensed under the [Apache License 2.0](LICENSE). You may use, modify, and distribute it in accordance with the license terms.

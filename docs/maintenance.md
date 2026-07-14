@@ -4,13 +4,8 @@ This file records decisions that should remain visible while the project is in m
 
 ## License
 
-**Status:** Decision deferred.
+**Status:** Adopted.
 
-The repository does not currently include a `LICENSE` file. Until the project owner selects a reuse policy, no open-source permission is granted beyond rights provided by applicable law.
+The project is licensed under the Apache License, Version 2.0 (`Apache-2.0`). The authoritative terms are in the root [`LICENSE`](../LICENSE) file.
 
-Before inviting external reuse or contributions:
-
-1. Choose an SPDX license identifier, or explicitly retain all rights.
-2. Add the corresponding root `LICENSE` file.
-3. Add the license metadata and relevant classifiers to `pyproject.toml`.
-4. State the selected policy in `README.md`.
+Python distribution metadata declares the SPDX expression and includes the license file through `pyproject.toml`. GitHub and package tooling can therefore identify the same repository-wide policy.

@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Offline MVP for a UAV mission planning LLM/Agent project."
 readme = "README.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 dependencies = []
 
 [project.optional-dependencies]
@@ -31,7 +33,7 @@ uav-mission-agent-demo = "uav_mission_agent.demo_cli:main"
 uav-mission-agent-api = "uav_mission_agent.api_cli:main"
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]

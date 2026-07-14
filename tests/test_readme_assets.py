@@ -130,6 +130,7 @@ class ReadmeAssetsTests(unittest.TestCase):
                 "架构",
                 "测试",
                 "项目结构",
+                "License / 许可证",
             ],
         )
 
